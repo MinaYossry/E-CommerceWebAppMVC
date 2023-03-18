@@ -9,10 +9,10 @@ namespace FinalProjectMVC.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey(nameof(order))]
+        [ForeignKey(nameof(Order))]
         public int OrderId { get; set; }
 
-        public Order order { get; set; }
+        public Order? Order { get; set; }
 
         //public int SallerId { get; set; }
         //public int ProductId { get; set; }
