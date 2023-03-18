@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinalProjectMVC.Models
 {
@@ -6,5 +7,11 @@ namespace FinalProjectMVC.Models
     {
         [DataType(DataType.Currency)]
         public decimal? Balance { get; set; }
+
+        [ForeignKey("Cart")]
+        public int CartId { get; set; }
+        public virtual Cart? Cart { get; set; }
+
+        public virtual ICollection<Order>? Orders { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinalProjectMVC.Models
 {
@@ -7,8 +8,9 @@ namespace FinalProjectMVC.Models
         [Key]
         public int CartId { get; set; }
 
-        //Forignkey
-        //public int CustomerId { get; set; }
-        //public Customer customer { get; set; }
+        [Required]
+        [ForeignKey("Customer")]
+        public int CustomerId { get; set; }
+        public virtual Customer? Customer { get; set; }
     }
 }
