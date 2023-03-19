@@ -9,9 +9,9 @@ namespace FinalProjectMVC.Models
         public int Id { get; set; }
 
         [Required]
-        [ForeignKey("Cart")]
-        public int CartId { get; set; }
-        public virtual Cart? Cart { get; set; }
+        [ForeignKey(nameof(Customer))]
+        public int CustomerId { get; set; }
+        public virtual Customer? Customer { get; set; }
 
         [Required]
         [ForeignKey("Product")]
