@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using FinalProjectMVC.Models;
 
-namespace FinalProjectMVC.Models
+namespace FinalProjectMVC.Areas.AdminPanel.Models
 {
     public class Category
     {
@@ -12,6 +13,6 @@ namespace FinalProjectMVC.Models
         public required string Name { get; set; }
 
         // Navigation property for Products
-        public virtual ICollection<Product>? Products { get; set; }
+        public virtual ICollection<SubCategory>? SubCategories { get; set; }
     }
 }

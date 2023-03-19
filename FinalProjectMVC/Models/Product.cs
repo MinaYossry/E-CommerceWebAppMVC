@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using FinalProjectMVC.Areas.AdminPanel.Models;
 
 namespace FinalProjectMVC.Models
 {
@@ -31,12 +32,12 @@ namespace FinalProjectMVC.Models
         public int Rating { get; set; }
 
         [Required]
-        [ForeignKey("Category")]
-        public int CategoryId { get; set; }
+        [ForeignKey(nameof(SubCategory))]
+        public int SubCategoryId { get; set; }
 
         // Navigation property for Category
         // Marked as virtual to enable lazy loading
-        public virtual Category? Category { get; set; }
+        public virtual SubCategory? SubCategory { get; set; }
 
         [Required]
         [ForeignKey("Brand")]
