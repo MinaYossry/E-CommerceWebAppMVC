@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.Models
 {
-    [PrimaryKey("SerialNumber")]
     public class Product
     {
+        public int Id { get; set; }
+
         public int SerialNumber { get; set; }
 
         [Required]
@@ -44,5 +45,9 @@ namespace FinalProjectMVC.Models
         // Navigation property for Brand
         // Marked as virtual to enable lazy loading
         public virtual Brand? Brand { get; set; }
+
+
+        public virtual ICollection<Review>? Reviews { get; set; }
+        public virtual ICollection<Report>? Reports { get; set; }
     }
 }

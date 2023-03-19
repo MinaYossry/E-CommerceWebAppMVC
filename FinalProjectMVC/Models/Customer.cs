@@ -13,5 +13,7 @@ namespace FinalProjectMVC.Models
         public virtual Cart? Cart { get; set; }
 
         public virtual ICollection<Order>? Orders { get; set; }
+        public virtual ICollection<Report>? Reports { get; set; } 
+        public virtual ICollection<Review>? Reviews { get; set; }
     }
 }
