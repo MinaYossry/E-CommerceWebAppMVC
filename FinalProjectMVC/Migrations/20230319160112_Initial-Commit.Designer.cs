@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProjectMVC.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20230319142614_Initial-Commit")]
+    [Migration("20230319160112_Initial-Commit")]
     partial class InitialCommit
     {
         /// <inheritdoc />
@@ -92,6 +92,110 @@ namespace FinalProjectMVC.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("SubCategories");
+                });
+
+            modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<byte[]>("ProductImage")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<int>("SerialNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BrandId");
+
+                    b.HasIndex("SubCategoryId");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Seller", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TaxNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sellers");
+                });
+
+            modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.SellerProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SellerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SellerId");
+
+                    b.ToTable("SellerProducts");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Brand", b =>
@@ -222,59 +326,6 @@ namespace FinalProjectMVC.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("FinalProjectMVC.Models.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BrandId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Folder")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Height")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SerialNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SubCategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Weight")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Width")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BrandId");
-
-                    b.HasIndex("SubCategoryId");
-
-                    b.ToTable("Products");
-                });
-
             modelBuilder.Entity("FinalProjectMVC.Models.Report", b =>
                 {
                     b.Property<int>("Id")
@@ -351,6 +402,44 @@ namespace FinalProjectMVC.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Product", b =>
+                {
+                    b.HasOne("FinalProjectMVC.Models.Brand", "Brand")
+                        .WithMany("Products")
+                        .HasForeignKey("BrandId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FinalProjectMVC.Areas.AdminPanel.Models.SubCategory", "SubCategory")
+                        .WithMany("Products")
+                        .HasForeignKey("SubCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Brand");
+
+                    b.Navigation("SubCategory");
+                });
+
+            modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.SellerProduct", b =>
+                {
+                    b.HasOne("FinalProjectMVC.Areas.SellerPanel.Models.Product", "Product")
+                        .WithMany("SellerProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FinalProjectMVC.Areas.SellerPanel.Models.Seller", "Seller")
+                        .WithMany("SellerProducts")
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Seller");
+                });
+
             modelBuilder.Entity("FinalProjectMVC.Models.CartItem", b =>
                 {
                     b.HasOne("FinalProjectMVC.Models.Customer", "Customer")
@@ -359,7 +448,7 @@ namespace FinalProjectMVC.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalProjectMVC.Models.Product", "Product")
+                    b.HasOne("FinalProjectMVC.Areas.SellerPanel.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -389,7 +478,7 @@ namespace FinalProjectMVC.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalProjectMVC.Models.Product", "Product")
+                    b.HasOne("FinalProjectMVC.Areas.SellerPanel.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -400,25 +489,6 @@ namespace FinalProjectMVC.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("FinalProjectMVC.Models.Product", b =>
-                {
-                    b.HasOne("FinalProjectMVC.Models.Brand", "Brand")
-                        .WithMany("Products")
-                        .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FinalProjectMVC.Areas.AdminPanel.Models.SubCategory", "SubCategory")
-                        .WithMany("Products")
-                        .HasForeignKey("SubCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Brand");
-
-                    b.Navigation("SubCategory");
-                });
-
             modelBuilder.Entity("FinalProjectMVC.Models.Report", b =>
                 {
                     b.HasOne("FinalProjectMVC.Models.Customer", "Customer")
@@ -427,7 +497,7 @@ namespace FinalProjectMVC.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalProjectMVC.Models.Product", "Product")
+                    b.HasOne("FinalProjectMVC.Areas.SellerPanel.Models.Product", "Product")
                         .WithMany("Reports")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -446,7 +516,7 @@ namespace FinalProjectMVC.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalProjectMVC.Models.Product", "Product")
+                    b.HasOne("FinalProjectMVC.Areas.SellerPanel.Models.Product", "Product")
                         .WithMany("Reviews")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -465,6 +535,20 @@ namespace FinalProjectMVC.Migrations
             modelBuilder.Entity("FinalProjectMVC.Areas.AdminPanel.Models.SubCategory", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Product", b =>
+                {
+                    b.Navigation("Reports");
+
+                    b.Navigation("Reviews");
+
+                    b.Navigation("SellerProducts");
+                });
+
+            modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Seller", b =>
+                {
+                    b.Navigation("SellerProducts");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Brand", b =>
@@ -486,13 +570,6 @@ namespace FinalProjectMVC.Migrations
             modelBuilder.Entity("FinalProjectMVC.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
-                });
-
-            modelBuilder.Entity("FinalProjectMVC.Models.Product", b =>
-                {
-                    b.Navigation("Reports");
-
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

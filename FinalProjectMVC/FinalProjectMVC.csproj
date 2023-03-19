@@ -23,10 +23,8 @@
     <Folder Include="Areas\AdminPanel\Controllers\" />
     <Folder Include="Areas\AdminPanel\Data\" />
     <Folder Include="Areas\AdminPanel\Views\" />
-    <Folder Include="Areas\SellerPanel\Controllers\" />
     <Folder Include="Areas\SellerPanel\Data\" />
     <Folder Include="Areas\SellerPanel\Models\" />
-    <Folder Include="Areas\SellerPanel\Views\" />
   </ItemGroup>
 
 </Project>

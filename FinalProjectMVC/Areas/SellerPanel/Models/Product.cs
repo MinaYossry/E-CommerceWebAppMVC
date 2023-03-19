@@ -19,18 +19,16 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         [StringLength(500)]
         public string? Description { get; set; }
 
-        public string? Image { get; set; }
+        public byte[]? ProductImage { get; set; }
 
-        public string? Folder { get; set; }
+        //public double Weight { get; set; }
 
-        public double Weight { get; set; }
+        //public double Height { get; set; }
 
-        public double Height { get; set; }
+        //public double Width { get; set; }
 
-        public double Width { get; set; }
-
-        [Range(0, 5)]
-        public int Rating { get; set; } = 0;
+        //[Range(0, 5)]
+        //public int Rating { get; set; } = 0;
 
         [Required]
         [ForeignKey(nameof(SubCategory))]
