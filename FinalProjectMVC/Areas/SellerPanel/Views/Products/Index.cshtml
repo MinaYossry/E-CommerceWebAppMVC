@@ -7,7 +7,16 @@
     List<Brand> Brands = ViewBag.Brands;
 }
 
-
+@section Header {
+    <div class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">Shop in style</h1>
+                <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
+            </div>
+        </div>
+    </div>
+}
 
 <div class="row">
     <div class="container col-2 border border-secondary border-2 rounded-2 p-2">
@@ -40,7 +49,7 @@
                     <!-- Product image-->
                     @if (item.ProductImage != null && item.ProductImage.Length > 0)
                     {
-                            <img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(item.ProductImage))" />
+                            <a asp-action="Details" asp-route-id="@item.Id"><img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(item.ProductImage))" /></a>
                     }
                     <!-- Product details-->
                     <div class="card-body p-4">
