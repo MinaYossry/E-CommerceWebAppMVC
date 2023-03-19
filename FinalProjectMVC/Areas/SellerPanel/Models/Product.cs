@@ -2,8 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.AdminPanel.Models;
+using FinalProjectMVC.Models;
 
-namespace FinalProjectMVC.Models
+namespace FinalProjectMVC.Areas.SellerPanel.Models
 {
     public class Product
     {
@@ -28,8 +29,8 @@ namespace FinalProjectMVC.Models
 
         public double Width { get; set; }
 
-        [Range(1, 5)]
-        public int Rating { get; set; }
+        [Range(0, 5)]
+        public int Rating { get; set; } = 0;
 
         [Required]
         [ForeignKey(nameof(SubCategory))]

@@ -1,4 +1,5 @@
 ﻿using FinalProjectMVC.Areas.AdminPanel.Models;
+using FinalProjectMVC.Areas.SellerPanel.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.Models

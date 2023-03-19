@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FinalProjectMVC.Models
+namespace FinalProjectMVC.Areas.SellerPanel.Models
 {
     public class SellerProduct
     {
@@ -16,6 +16,6 @@ namespace FinalProjectMVC.Models
 
         [ForeignKey(nameof(Product))]
         public int ProductId { get; set; }
-        public virtual Product? Product { get; set; }    
+        public virtual Product? Product { get; set; }
     }
 }

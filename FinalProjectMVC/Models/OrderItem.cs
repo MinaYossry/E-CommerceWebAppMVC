@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Net.Http.Headers;
+using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Models
 {
