@@ -49,5 +49,6 @@ namespace FinalProjectMVC.Models
 
         public virtual ICollection<Review>? Reviews { get; set; }
         public virtual ICollection<Report>? Reports { get; set; }
+        public virtual ICollection<SellerProduct>? SellerProducts { get; set; }
     }
 }
