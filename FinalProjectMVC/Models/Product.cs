@@ -47,7 +47,6 @@ namespace FinalProjectMVC.Models
         // Marked as virtual to enable lazy loading
         public virtual Brand? Brand { get; set; }
 
-
         public virtual ICollection<Review>? Reviews { get; set; }
         public virtual ICollection<Report>? Reports { get; set; }
     }
