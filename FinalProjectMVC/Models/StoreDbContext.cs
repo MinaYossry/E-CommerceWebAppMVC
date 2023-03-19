@@ -10,7 +10,15 @@ namespace FinalProjectMVC.Models
             
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+            base.OnModelCreating(modelBuilder);
+        }
+
         public virtual DbSet<Product> Products { get;  set; }
+        public virtual DbSet<Seller> Sellers { get; set; }
+        public virtual DbSet<SellerProduct> SellerProducts { get; set; }
         public virtual DbSet<Brand> Brands { get; set; }
         public virtual DbSet<CartItem> CartItems { get; set; } 
         public virtual DbSet<Customer> Customers { get; set; }

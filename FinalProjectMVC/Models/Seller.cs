@@ -11,5 +11,6 @@ namespace FinalProjectMVC.Models
         [Range (1,5)]
         public int Rating { get; set; }
 
+        public virtual ICollection<SellerProduct>? SellerProducts { get; set; }
     }
 }
