@@ -22,18 +22,25 @@
     <div class="container col-2 border border-secondary border-2 rounded-2 p-2">
         @foreach (var Category in Categories)
         {
-            <h5>@Category.Name</h5>
-            @foreach(var Sub in Category.SubCategories)
-            {
-                <p> - @Sub.Name</p>
-            }
+            <h6>@Category.Name</h6>
+            <ul>
+                @if (Category.SubCategories is not null)
+                {
+                    foreach(var Sub in Category.SubCategories)
+                    {
+                        <li>@Sub.Name</li>
+                    }
+                }
+            </ul>
         }
         <hr/>
         <h5>Brands</h5>
-        @foreach (var Brand in Brands)
-        {
-            <p> - @Brand.Name</p>
-        }
+        <ul>
+            @foreach (var Brand in Brands)
+            {
+                <li>@Brand.Name</li>
+            }
+        </ul>
     </div>
     <div class="container col-10">
         <h1>Index</h1>
