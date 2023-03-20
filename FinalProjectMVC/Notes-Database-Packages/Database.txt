@@ -1,0 +1,11 @@
+﻿
+1- To Apply migrations to your local database, copy all the commands below for each context,
+And run them in the packages manger. 
+
+Update-Database -Context StoreDbContext
+Update-Database -Context ApplicationDbContext
+
+
+our database name is : aspnet-FinalProjectMVC-a1554ac4-a340-486c-b7eb-10284d643d0b
+
+for adding migration  == > Add-Migration MyMigration -Context MyDbContext
