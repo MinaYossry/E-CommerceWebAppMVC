@@ -1,7 +1,0 @@
-﻿.list-group, .list-group-item{height: 100%;}
-
-.list-group {
-    display: flex;
-    flex-direction: column;
-}
-}
