@@ -1,5 +1,9 @@
 using FinalProjectMVC.Areas.Identity.Data;
+using FinalProjectMVC.Areas.AdminPanel.Models;
+using FinalProjectMVC.Areas.SellerPanel.Models;
+using FinalProjectMVC.Data;
 using FinalProjectMVC.Models;
+using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -59,6 +63,21 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(
     Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
+
+builder.Services.AddScoped<IRepository<Admin>, AdminRepoService>();
+builder.Services.AddScoped<IRepository<Brand>, BrandRepoService>();
+builder.Services.AddScoped<IRepository<CartItem>, CartItemsRepoService>();
+builder.Services.AddScoped<IRepository<Category>, CategoryRepoService>();
+builder.Services.AddScoped<IRepository<Customer>, CustomerRepoService>();
+builder.Services.AddScoped<IRepository<OrderItem>, OrderItemRepoService>();
+builder.Services.AddScoped<IRepository<Product>, ProductRepoService>();
+builder.Services.AddScoped<IRepository<Report>, ReportRepoService>();
+builder.Services.AddScoped<IRepository<Review>, ReviewRepoService>();
+builder.Services.AddScoped<IRepository<SellerProduct>, SellerProductRepoService>();
+builder.Services.AddScoped<IRepository<Seller>, SellerRepoService>();
+builder.Services.AddScoped<IRepository<SubCategory>, SubCategoryRepoService>();
+
+
 
 var app = builder.Build();
 
