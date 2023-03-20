@@ -7,15 +7,19 @@ namespace FinalProjectMVC.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly StoreDbContext _context;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, StoreDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
+            ViewBag.Categories = _context.Categories.ToList();
+            ViewBag.Brands = _context.Brands.ToList();
             return View();
         }
 
