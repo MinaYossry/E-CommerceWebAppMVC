@@ -1,3 +1,4 @@
+using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Data;
@@ -11,16 +12,53 @@ using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+#region Main DB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+ 
+// Identity Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+// Store Context
 builder.Services.AddDbContext<StoreDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+#endregion
+
+
+#region Identity customization
+// Adjusted after adding new Identity class
+
+//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+/* ApplicationUser class => We created it, it ineherites from IdentityUser
+ *  Note: Also adjusted in _LoginPartial.cshtml
+ *  
+   IdentityRole is the default class.*/
+
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+//    .AddEntityFrameworkStores<ApplicationDbContext>()
+//    .AddDefaultUI()
+//    .AddDefaultTokenProviders()
+//    .AddUserManager<UserManager<ApplicationUser>>(); // Note included in video but needed.
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultUI()
+    .AddDefaultTokenProviders();
+
+
+
+
+
+
+#endregion
+
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(
