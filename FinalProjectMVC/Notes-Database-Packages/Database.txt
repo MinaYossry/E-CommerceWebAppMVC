@@ -8,4 +8,6 @@ Update-Database -Context ApplicationDbContext
 
 our database name is : aspnet-FinalProjectMVC-a1554ac4-a340-486c-b7eb-10284d643d0b
 
-for adding migration  == > Add-Migration MyMigration -Context MyDbContext
+for adding migration  == > 
+
+Add-Migration CustomizedIdentity -Context ApplicationDBContext
