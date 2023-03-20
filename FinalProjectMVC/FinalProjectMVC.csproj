@@ -27,6 +27,7 @@
     <Folder Include="Areas\SellerPanel\Models\" />
     <Folder Include="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\" />
     <Folder Include="wwwroot\1-LandingPage %28otherpages -about %29\" />
+    <Folder Include="wwwroot\Uploads\" />
   </ItemGroup>
 
 </Project>

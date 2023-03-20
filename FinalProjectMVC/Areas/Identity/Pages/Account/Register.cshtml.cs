@@ -71,6 +71,24 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account
         /// </summary>
         public class InputModel
         {
+
+            #region Adding new fields 
+
+            [Required]
+            [StringLength(50)]
+            public required string Name { get; set; }
+
+          /*  [DataType(DataType.PhoneNumber)]
+            [RegularExpression(@"^(01[0-2]|010|011|012|015)[0-9]{8}$")]
+            public string Phone { get; set; }
+
+            public string Address { get; set; } */
+                
+
+            #endregion
+
+
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -109,11 +127,14 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+
+                user.Name = Input.Name;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
