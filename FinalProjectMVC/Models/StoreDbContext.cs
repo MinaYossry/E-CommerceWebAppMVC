@@ -25,7 +25,11 @@ namespace FinalProjectMVC.Models
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderItem> OrderItems { get; set; }
-        public virtual DbSet<Admin> Admins { get; set; }
+
+
+        //public virtual DbSet<Admin> Admins { get; set; }
+
+
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<SubCategory> SubCategories { get; set; }
         public virtual DbSet<Report> Reports { get; set; }

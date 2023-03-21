@@ -1,6 +1,8 @@
 ﻿@using FinalProjectMVC.Areas.Identity.Data;
+@using FinalProjectMVC.ExtensionMethods;
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.EntityFrameworkCore;
+
 
 
 @inject SignInManager<ApplicationUser> SignInManager
@@ -28,9 +30,31 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                        @*  @if (User.Identity.IsAuthenticated)
+                                { }
+                        *@
+                       
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                            <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index" aria-current="page">Home</a>
                         </li>
+                        
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link active" asp-area="AdminPanel" asp-controller="Admin" asp-action="ManageUserRoles" aria-current="page">AdminPage</a>
+                            </li>
+                        }
+                        @* Important NOTE: IsInAnyRole is an extension method we created
+                                based on .IsInRole()
+                        *@
+                        @if (User.IsInAnyRole("Admin", "Seller"))
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link active" asp-area="SellerPanel" asp-controller="Products" asp-action="Index" aria-current="page">SellerProducts</a>
+                        </li>
+                        }
+
                         @{
                             var Categories = _context.Categories.Include(C => C.SubCategories).ToList();
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using FinalProjectMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 //builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
 // Store Context
+
 builder.Services.AddDbContext<StoreDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -40,29 +42,34 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
  *  
    IdentityRole is the default class.*/
 
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-//    .AddEntityFrameworkStores<ApplicationDbContext>()
-//    .AddDefaultUI()
-//    .AddDefaultTokenProviders()
-//    .AddUserManager<UserManager<ApplicationUser>>(); // Note included in video but needed.
+/*builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultUI()
+    .AddDefaultTokenProviders()
+    .AddUserManager<UserManager<ApplicationUser>>(); // Note included in video but needed.*/
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 
-
-
+// Service for manging profile picture.
+builder.Services.AddScoped<IFileService, FileService>();   
 
 
 
 #endregion
 
 
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(
     Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
+
+
+
+#region Services using => Repository pattern scopes 
 
 builder.Services.AddScoped<IRepository<Admin>, AdminRepoService>();
 builder.Services.AddScoped<IRepository<Brand>, BrandRepoService>();
@@ -76,6 +83,10 @@ builder.Services.AddScoped<IRepository<Review>, ReviewRepoService>();
 builder.Services.AddScoped<IRepository<SellerProduct>, SellerProductRepoService>();
 builder.Services.AddScoped<IRepository<Seller>, SellerRepoService>();
 builder.Services.AddScoped<IRepository<SubCategory>, SubCategoryRepoService>();
+
+#endregion
+
+
 
 
 
@@ -111,5 +122,19 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+
+
+#region Roles
+
+// Must be added after the `build`, so that all the builds would be available for it
+using (var scope = app.Services.CreateScope())
+{
+    await DbSeeder.SeedRolesAndAdminAsync(scope.ServiceProvider);
+}
+
+#endregion
+
+
 
 app.Run();
