@@ -33,8 +33,12 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 PhoneNumberConfirmed = true
             };
             var userInDb = await userManager.FindByEmailAsync(user.Email);
+
+
             // If no user is found with that email (Email = "admin@gmail.com")
             // Then we create an new account and set it as admin.
+
+            // This part ensures that there is always an admin account.
             if (userInDb == null)
             {
                 // setting it's password

@@ -61,6 +61,7 @@ builder.Services.AddScoped<IFileService, FileService>();
 #endregion
 
 
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(
@@ -81,9 +82,11 @@ builder.Services.AddScoped<IRepository<Report>, ReportRepoService>();
 builder.Services.AddScoped<IRepository<Review>, ReviewRepoService>();
 builder.Services.AddScoped<IRepository<SellerProduct>, SellerProductRepoService>();
 builder.Services.AddScoped<IRepository<Seller>, SellerRepoService>();
-builder.Services.AddScoped<IRepository<SubCategory>, SubCategoryRepoService>(); 
+builder.Services.AddScoped<IRepository<SubCategory>, SubCategoryRepoService>();
 
 #endregion
+
+
 
 
 
@@ -119,5 +122,19 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+
+
+#region Roles
+
+// Must be added after the `build`, so that all the builds would be available for it
+using (var scope = app.Services.CreateScope())
+{
+    await DbSeeder.SeedRolesAndAdminAsync(scope.ServiceProvider);
+}
+
+#endregion
+
+
 
 app.Run();

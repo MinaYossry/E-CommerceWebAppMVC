@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 {
     [Area("SellerPanel")]
+    [Authorize(Roles = "Admin,Seller")]
     public class ProductsController : Controller
     {
         private readonly StoreDbContext _context;
