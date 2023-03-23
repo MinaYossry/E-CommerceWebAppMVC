@@ -13,6 +13,21 @@ namespace FinalProjectMVC.Areas.Identity.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<SellerProduct>()
+                .HasIndex("SellerId", "ProductId")
+                .IsUnique();
+
+            //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
+            //builder.Entity<SellerProduct>().Navigation(s => s.Product).AutoInclude();
+            //builder.Entity<SellerProduct>().Navigation(s => s.Seller).AutoInclude();
+            //builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
+            //builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
+        }
+
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Seller> Sellers { get; set; }
         public virtual DbSet<SellerProduct> SellerProducts { get; set; }
