@@ -9,18 +9,14 @@ namespace FinalProjectMVC.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
         [ForeignKey(nameof(Customer))]
-        public int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
         public virtual Customer? Customer { get; set; }
 
-        [Required]
-        [ForeignKey("Product")]
-        public int ProductId { get; set; }
-        public virtual Product? Product { get; set; }
+        //[ForeignKey("SellerProduct")]
+        //public int SellerProductId { get; set; }
 
-        //public int SallerId { get; set; }
-        //public  Saller saller { get; set; }
+        //public virtual SellerProduct? SellerProduct { get; set; }
 
         [Required]
         public int Count { get; set; }

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Authorization;
+using FinalProjectMVC.Areas.Identity.Data;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 {
@@ -15,9 +16,9 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
     [Authorize(Roles = "Admin,Seller")]
     public class ProductsController : Controller
     {
-        private readonly StoreDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public ProductsController(StoreDbContext context)
+        public ProductsController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -27,8 +28,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         {
             ViewBag.Categories = _context.Categories.Include(c => c.SubCategories).ToList();
             ViewBag.Brands = _context.Brands.ToList();
-            var storeDbContext = _context.Products.Include(p => p.Brand).Include(p => p.SubCategory);
-            return View(await storeDbContext.ToListAsync());
+            var ApplicationDbContext = _context.Products.Include(p => p.Brand).Include(p => p.SubCategory);
+            return View(await ApplicationDbContext.ToListAsync());
         }
 
         // GET: SellerPanel/Products/Details/5
@@ -167,7 +168,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         {
             if (_context.Products == null)
             {
-                return Problem("Entity set 'StoreDbContext.Products'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Products'  is null.");
             }
             var product = await _context.Products.FindAsync(id);
             if (product != null)

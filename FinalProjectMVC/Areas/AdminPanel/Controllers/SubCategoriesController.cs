@@ -7,15 +7,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Models;
+using FinalProjectMVC.Areas.Identity.Data;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
     public class SubCategoriesController : Controller
     {
-        private readonly StoreDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public SubCategoriesController(StoreDbContext context)
+        public SubCategoriesController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -23,8 +24,8 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         // GET: AdminPanel/SubCategories
         public async Task<IActionResult> Index()
         {
-            var storeDbContext = _context.SubCategories.Include(s => s.Category);
-            return View(await storeDbContext.ToListAsync());
+            var ApplicationDbContext = _context.SubCategories.Include(s => s.Category);
+            return View(await ApplicationDbContext.ToListAsync());
         }
 
         // GET: AdminPanel/SubCategories/Details/5
@@ -149,7 +150,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         {
             if (_context.SubCategories == null)
             {
-                return Problem("Entity set 'StoreDbContext.SubCategories'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.SubCategories'  is null.");
             }
             var subCategory = await _context.SubCategories.FindAsync(id);
             if (subCategory != null)

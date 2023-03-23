@@ -1,11 +1,12 @@
-﻿using FinalProjectMVC.Models;
+﻿using FinalProjectMVC.Areas.Identity.Data;
+using FinalProjectMVC.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.RepositoryPattern
 {
     public class OrderItemRepoService : EFCoreRepo<OrderItem>
     {
-        public OrderItemRepoService(StoreDbContext context) : base(context)
+        public OrderItemRepoService(ApplicationDbContext context) : base(context)
         {
         }
     }

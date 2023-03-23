@@ -11,6 +11,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         [ForeignKey("ApplicationUser")]
         public required string Id { get; set; }
 
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "money")]
         public decimal Balance { get; set; } = 0;
 
         public string? TaxNumber { get; set; }

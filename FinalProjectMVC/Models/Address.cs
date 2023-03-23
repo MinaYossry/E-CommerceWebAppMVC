@@ -21,5 +21,6 @@ namespace FinalProjectMVC.Models
         public required string UserId { get; set; }
 
         public virtual ApplicationUser? ApplicationUser { get; set; }
+
     }
 }

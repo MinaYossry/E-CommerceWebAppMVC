@@ -77,14 +77,18 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account
 
             [Required]
             [StringLength(50)]
-            public required string Name { get; set; }
+            public required string FirstName { get; set; }
 
-          /*  [DataType(DataType.PhoneNumber)]
-            [RegularExpression(@"^(01[0-2]|010|011|012|015)[0-9]{8}$")]
-            public string Phone { get; set; }
+            [Required]
+            [StringLength(50)]
+            public required string LastName { get; set; }
 
-            public string Address { get; set; } */
-                
+            /*  [DataType(DataType.PhoneNumber)]
+              [RegularExpression(@"^(01[0-2]|010|011|012|015)[0-9]{8}$")]
+              public string Phone { get; set; }
+
+              public string Address { get; set; } */
+
 
             #endregion
 
@@ -135,7 +139,8 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                user.Name = Input.Name;
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);

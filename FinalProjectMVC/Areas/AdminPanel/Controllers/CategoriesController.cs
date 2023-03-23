@@ -7,15 +7,16 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Models;
+using FinalProjectMVC.Areas.Identity.Data;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
     public class CategoriesController : Controller
     {
-        private readonly StoreDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public CategoriesController(StoreDbContext context)
+        public CategoriesController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -25,7 +26,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         {
               return _context.Categories != null ? 
                           View(await _context.Categories.ToListAsync()) :
-                          Problem("Entity set 'StoreDbContext.Categories'  is null.");
+                          Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
         }
 
         // GET: AdminPanel/Categories/Details/5
@@ -144,7 +145,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         {
             if (_context.Categories == null)
             {
-                return Problem("Entity set 'StoreDbContext.Categories'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
             }
             var category = await _context.Categories.FindAsync(id);
             if (category != null)
