@@ -20,6 +20,9 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using FinalProjectMVC.Constants;
+using Microsoft.EntityFrameworkCore;
+using FinalProjectMVC.Areas.SellerPanel.Models;
+using FinalProjectMVC.Models;
 
 namespace FinalProjectMVC.Areas.Identity.Pages.Account
 {
@@ -31,14 +34,18 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
+
 
         public RegisterModel(
+            ApplicationDbContext applicationDbContext,
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
+            _context = applicationDbContext;
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
@@ -82,6 +89,10 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account
             [Required]
             [StringLength(50)]
             public required string LastName { get; set; }
+
+            public string? TaxNumber { get; set; }
+
+            public required string Role { get; set; }
 
             /*  [DataType(DataType.PhoneNumber)]
               [RegularExpression(@"^(01[0-2]|010|011|012|015)[0-9]{8}$")]
@@ -151,32 +162,51 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account
                     // WARNING !!!!!!!!!!!!!!!!!!!!!!!
                     // This adds Customer role to any new user .
 
-                    await _userManager.AddToRoleAsync(user, Roles.Customer.ToString());
+                    var AddingRole =  await _userManager.AddToRoleAsync(user, Input.Role);
+                    if (AddingRole.Succeeded)
+                    {
+                        _logger.LogInformation("User created a new account with password.");
+
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                        var callbackUrl = Url.Page(
+                            "/Account/ConfirmEmail",
+                            pageHandler: null,
+                            values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                            protocol: Request.Scheme);
+
+                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                        if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                        {
+                            return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        }
+                        else
+                        {
+                            if (Input.Role == Roles.Customer.ToString())
+                            {
+                                await _context.Customers.AddAsync(new Customer { Id = userId, ApplicationUser = user });
+                            }
+                            else if (Input.Role == Roles.Seller.ToString())
+                            {
+                                await _context.Sellers.AddAsync(new Seller { Id = userId, ApplicationUser = user, TaxNumber = Input.TaxNumber });
+                            }
+
+                            if (await _context.SaveChangesAsync() > 0)
+                            {
+                                await _signInManager.SignInAsync(user, isPersistent: false);
+                                return LocalRedirect(returnUrl);
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("Error", "Sorry! Can't Create New user");
+                            }
+                        }
+                    }
 
                     ////////
-                    _logger.LogInformation("User created a new account with password.");
-
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
-
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
                 }
                 foreach (var error in result.Errors)
                 {

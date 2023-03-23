@@ -15,7 +15,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         [Column(TypeName = "money")]
         public decimal Balance { get; set; } = 0;
 
-        public string? TaxNumber { get; set; }
+        public required string TaxNumber { get; set; }
 
 
         public virtual ApplicationUser? ApplicationUser { get; set; }
