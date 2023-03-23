@@ -18,7 +18,7 @@ namespace FinalProjectMVC.Models
         public DateTime CreatedDate { get; } = DateTime.Now;
 
         [ForeignKey(nameof(Customer))]
-        public int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
         public virtual Customer? Customer { get; set; }
 
         // public virtual Seller Seller { get; set; }

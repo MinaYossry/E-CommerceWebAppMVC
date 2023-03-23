@@ -31,7 +31,8 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 {
                     UserName = "admin@gmail.com",
                     Email = "admin@gmail.com",
-                    Name = "Raoufalaadin",
+                    FirstName = "Raouf",
+                    LastName = "Alaaeldin",
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true
                 };

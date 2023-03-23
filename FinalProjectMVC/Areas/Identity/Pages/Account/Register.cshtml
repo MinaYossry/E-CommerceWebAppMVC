@@ -2,22 +2,33 @@
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
+    string role = string.Empty;
+    role = Request.Query["Customer"][0] == "True" ? "Customer" : "Seller";
+    var isCustomer = (role == "Customer");
 }
 
 <h1>@ViewData["Title"]</h1>
 
 <div class="row">
     <div class="col-md-4">
-        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-            <h2>Create a new account.</h2>
+        <form id="registerForm" asp-route-Customer="@isCustomer" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Create a new account as @role.</h2>
             <hr />
 
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
+            <input hidden asp-for="Input.Role" class="form-control" aria-required="true" value="@role" />
+
             <div class="form-floating mb-3">
-                <input asp-for="Input.Name" class="form-control" autocomplete="name" aria-required="true" placeholder="John deo" />
-                <label asp-for="Input.Name">Name</label>
-                <span asp-validation-for="Input.Name" class="text-danger"></span>
+                <input asp-for="Input.FirstName" class="form-control" autocomplete="name" aria-required="true" placeholder="John" />
+                <label asp-for="Input.FirstName">Name</label>
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.LastName" class="form-control" autocomplete="name" aria-required="true" placeholder="Doe" />
+                <label asp-for="Input.LastName">Name</label>
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
             </div>
 
             <div class="form-floating mb-3">
@@ -35,6 +46,14 @@
                 <label asp-for="Input.ConfirmPassword">Confirm Password</label>
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
+            @if(!isCustomer)
+            {
+                <div class="form-floating mb-3">
+                    <input required asp-for="Input.TaxNumber" class="form-control" aria-required="true" placeholder="Tax Number" />
+                    <label asp-for="Input.TaxNumber">Tax Number</label>
+                    <span asp-validation-for="Input.TaxNumber" class="text-danger"></span>
+                </div>
+            }
             @* 
             <div class="form-floating mb-3">
                 <input asp-for="Input.Phone" class="form-control" autocomplete="Phone-number" aria-required="true" placeholder="01264912761" />

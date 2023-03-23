@@ -27,9 +27,15 @@
                 <span asp-validation- for="Input.PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-floating mb-3">
-                <input asp-for="Input.Name" class="form-control" placeholder="Please enter your name " />
-                <label asp-for="Input.Name" class="form-label"></label>
-                <span asp-validation-for="Input.Name" class="text-danger"></span>
+                <input asp-for="Input.FirstName" class="form-control" placeholder="Please enter your name " />
+                <label asp-for="Input.FirstName" class="form-label"></label>
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.LastName" class="form-control" placeholder="Please enter your name " />
+                <label asp-for="Input.LastName" class="form-label"></label>
+                <span asp-validation-for="Input.LastName" class="text-danger"></span>
             </div>
             <div class="m-2">
                 <label class="form-label" for="ProfilePicture">Profile picture <br /></label>

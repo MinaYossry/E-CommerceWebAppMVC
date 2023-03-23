@@ -2,7 +2,7 @@
 1- To Apply migrations to your local database, copy all the commands below for each context,
 And run them in the packages manger. 
 
-Update-Database -Context StoreDbContext
+Update-Database -Context ApplicationDbContext
 Update-Database -Context ApplicationDbContext
 
 

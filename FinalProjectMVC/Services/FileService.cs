@@ -38,7 +38,7 @@
                 return new Tuple<int, string>(1, newFileName);
                 ;
             }
-            catch (Exception ex)
+            catch
             {
                 return new Tuple<int, string>(0, "Error has occured");
             }
@@ -57,7 +57,7 @@
                 }
                 return false;
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }

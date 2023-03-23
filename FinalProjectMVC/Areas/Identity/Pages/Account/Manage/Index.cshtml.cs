@@ -68,7 +68,10 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
             /// </summary>
            
             [StringLength(50)]
-            public  string Name { get; set; }
+            public  string FirstName { get; set; }
+
+            [StringLength(50)]
+            public string LastName { get; set; }
 
 
             [Phone]
@@ -103,7 +106,8 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
                 for us to view it on the profile page. 
                 */
                 PhoneNumber = phoneNumber,
-                Name = user.Name,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 ProfilePicture = user.ProfilePicture
                
                 
@@ -147,9 +151,15 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            if (Input.Name != user.Name)
+            if (Input.FirstName != user.FirstName)
             {
-                user.Name = Input.Name;
+                user.FirstName = Input.FirstName;
+                await _userManager.UpdateAsync(user);
+            }
+
+            if (Input.LastName != user.LastName)
+            {
+                user.LastName = Input.LastName;
                 await _userManager.UpdateAsync(user);
             }
 
