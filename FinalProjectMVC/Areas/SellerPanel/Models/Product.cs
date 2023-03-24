@@ -48,7 +48,6 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         public virtual Brand? Brand { get; set; }
 
         public virtual ICollection<Review>? Reviews { get; set; }
-        public virtual ICollection<Report>? Reports { get; set; }
         public virtual ICollection<SellerProduct>? SellerProducts { get; set; }
     }
 }

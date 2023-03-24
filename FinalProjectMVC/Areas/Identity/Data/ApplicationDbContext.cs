@@ -3,6 +3,7 @@ using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace FinalProjectMVC.Areas.Identity.Data
 {
@@ -21,11 +22,34 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .HasIndex("SellerId", "ProductId")
                 .IsUnique();
 
-            //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
+            builder.Entity<Product>()
+                .HasIndex(p => p.SerialNumber)
+                .IsUnique();
+
+            builder.Entity<OrderItem>()
+                .HasOne(p => p.SellerProduct)
+                .WithMany(s => s.OrderItems)
+                .HasForeignKey(p => p.SellerProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CartItem>()
+                .HasOne(p => p.SellerProduct)
+                .WithMany(s => s.CartItems)
+                .HasForeignKey(p => p.SellerProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Report>()
+                .HasOne(p => p.Review)
+                .WithMany(s => s.Reports)
+                .HasForeignKey(p => p.ReviewId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+
+            builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
             //builder.Entity<SellerProduct>().Navigation(s => s.Product).AutoInclude();
             //builder.Entity<SellerProduct>().Navigation(s => s.Seller).AutoInclude();
-            //builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
-            //builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
+            builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
+            builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
         }
 
         public virtual DbSet<Product> Products { get; set; }

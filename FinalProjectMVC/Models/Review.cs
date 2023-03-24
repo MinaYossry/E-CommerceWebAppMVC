@@ -21,10 +21,14 @@ namespace FinalProjectMVC.Models
         public required string CustomerId { get; set; }
         public virtual Customer? Customer { get; set; }
 
-        // public virtual Seller Seller { get; set; }
+        [ForeignKey(nameof(Seller))]
+        public required string SellerId { get; set; }
+        public virtual Seller? Seller { get; set; }
 
         [ForeignKey(nameof(Product))]
         public int ProductId { get; set; }
         public virtual Product? Product { get; set; }
+
+        public virtual ICollection<Report>? Reports { get; set; }
     }
 }

@@ -16,7 +16,6 @@ namespace FinalProjectMVC.Models
         public virtual List<Address>? Addresses { get; set; }
         public virtual ApplicationUser? ApplicationUser { get; set; }
         public virtual ICollection<Order>? Orders { get; set; }
-        public virtual ICollection<Report>? Reports { get; set; } 
         public virtual ICollection<Review>? Reviews { get; set; }
         public virtual ICollection<CartItem>? CartItems { get; set; }
     }

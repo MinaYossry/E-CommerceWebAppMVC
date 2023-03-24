@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FinalProjectMVC.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Models
@@ -20,5 +21,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         [ForeignKey(nameof(Product))]
         public int ProductId { get; set; }
         public virtual Product? Product { get; set; }
+
+        public virtual ICollection<OrderItem>? OrderItems { get; set; }
+        public virtual ICollection<CartItem>? CartItems { get; set; }    
     }
 }
