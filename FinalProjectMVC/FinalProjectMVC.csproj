@@ -329,7 +329,6 @@
     <Content Include="wwwroot\AdminPanel\bower_components\ionicons\lerna.json" />
     <Content Include="wwwroot\AdminPanel\bower_components\ionicons\package-lock.json" />
     <Content Include="wwwroot\AdminPanel\bower_components\ionicons\package.json" />
-    <Content Include="wwwroot\AdminPanel\bower_components\ionicons\tsconfig.json" />
     <Content Include="wwwroot\AdminPanel\bower_components\ionicons\tsconfig.spec.json" />
     <Content Include="wwwroot\AdminPanel\bower_components\jquery\.bower.json" />
     <Content Include="wwwroot\AdminPanel\bower_components\jquery\AUTHORS.txt" />
@@ -359,6 +358,9 @@
     <Folder Include="Areas\AdminPanel\Views\Shared\" />
     <Folder Include="Areas\SellerPanel\Data\" />
     <Folder Include="Areas\SellerPanel\Models\" />
+    <Folder Include="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\" />
+    <Folder Include="wwwroot\1-LandingPage %28otherpages -about %29\" />
+    <Folder Include="wwwroot\Uploads\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -5849,7 +5851,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="wwwroot\AdminPanel\bower_components\font-awesome\js-packages\%40fortawesome\fontawesome-common-types\index.d.ts" />
+    <Content Update="Areas\SellerPanel\Views\_ViewImports.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\SellerPanel\Views\_ViewStart.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\SellerPanel\Views\_Layout.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Areas\SellerPanel\Views\_Layout.cshtml" />
   </ItemGroup>
 
 </Project>

@@ -18,7 +18,7 @@ namespace FinalProjectMVC.RepositoryPattern
             _context.SaveChanges();
         }
 
-        public virtual void Update(int? id, T entity)
+        public virtual void Update<PType>(PType id, T entity)
         {
             var existingEntity = _context.Set<T>().Find(id);
             if (existingEntity is not null)
@@ -28,7 +28,7 @@ namespace FinalProjectMVC.RepositoryPattern
             }
         }
 
-        public virtual void Delete(int? id)
+        public virtual void Delete<PType>(PType id)
         {
             var existingEntity = _context.Set<T>().Find(id);
             if (existingEntity is not null)
@@ -38,7 +38,7 @@ namespace FinalProjectMVC.RepositoryPattern
             }
         }
 
-        public virtual T? GetDetails(int? id)
+        public virtual T? GetDetails<PType>(PType id)
         {
             return _context.Set<T>().Find(id);
         }

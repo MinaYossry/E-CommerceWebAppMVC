@@ -1,6 +1,11 @@
-﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+﻿@using FinalProjectMVC.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
+
+
+@* It was important to change from IdentityUser to ApplicationUser, or else `error`*@
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 <ul class="navbar-nav">
 @if (SignInManager.IsSignedIn(User))
@@ -17,8 +22,11 @@
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+        <a class="nav-link text-dark" asp-route-Customer="True" asp-area="Identity" asp-page="/Account/Register">Register</a>
     </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-route-Customer="False" asp-area="Identity" asp-page="/Account/Register">Start Selling</a>
+        </li>
     <li class="nav-item">
         <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
     </li>

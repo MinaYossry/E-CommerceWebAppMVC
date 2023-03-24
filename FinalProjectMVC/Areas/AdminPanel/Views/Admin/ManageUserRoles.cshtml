@@ -1,0 +1,33 @@
+﻿@using FinalProjectMVC.Areas.AdminPanel.Models;
+@model FinalProjectMVC.Areas.AdminPanel.Models.ManageUserRolesViewModel;
+
+
+<h2>Manage User Roles</h2>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+  <div class="alert alert-success">
+      @TempData["SuccessMessage"]
+  </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+  <div class="alert alert-danger">
+      @TempData["ErrorMessage"]
+  </div>
+}
+
+
+<form asp-controller="Admin" asp-action="SetUserRole" method="post">
+  <div>
+      <label>Select User:</label>
+      <select asp-for="SelectedUserId" asp-items="@(new SelectList(Model.Users,"Id","UserName"))"></select>
+  </div>
+  <div>
+      <label>Select Role:</label>
+      <select asp-for="SelectedRoleId" asp-items="@(new SelectList(Model.Roles,"Id","Name"))"></select>
+  </div>
+  <button type="submit">Set Role</button>
+</form>

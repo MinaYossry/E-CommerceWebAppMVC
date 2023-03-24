@@ -14,13 +14,10 @@ namespace FinalProjectMVC.Models
         public int OrderId { get; set; }
         public virtual Order? Order { get; set; }
 
-        [Required]
-        [ForeignKey("Product")]
-        public int ProductId { get; set; }
-        public virtual Product? Product { get; set; }
+        [ForeignKey("SellerProduct")]
+        public int SellerProductId { get; set; }
 
-        //public int SallerId { get; set; }
-        //public  Saller saller { get; set; }
+        public virtual SellerProduct? SellerProduct { get; set; }
 
         [Required]
         [Range(0,10)]
@@ -28,6 +25,7 @@ namespace FinalProjectMVC.Models
 
         [Required]
         [DataType(DataType.Currency)]
+        [Column(TypeName = "money")]
         public decimal Price { get; set; }
 
     }

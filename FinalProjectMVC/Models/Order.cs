@@ -11,16 +11,18 @@ namespace FinalProjectMVC.Models
 
         [Required]
         [ForeignKey("Customer")]
-        public int CustomerId { get; set; }
+        public required string CustomerId { get; set; }
         public virtual Customer? Customer { get; set; }
 
         [Required]
         [DataType(DataType.Currency)]
+        [Column(TypeName = "money")]
         public decimal TotalPrice { get; set; }
 
         [Required, DataType(DataType.DateTime)]
         public DateTime OrderDate { get; set; }
 
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
+        public virtual Address? Address { get; set; }
     }
 }

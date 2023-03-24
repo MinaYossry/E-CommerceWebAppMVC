@@ -6,6 +6,7 @@ using FinalProjectMVC.Models;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Models
 {
+    //[Table("Product")] => This prevents forces a name on the table.
     public class Product
     {
         public int Id { get; set; }
@@ -47,7 +48,6 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         public virtual Brand? Brand { get; set; }
 
         public virtual ICollection<Review>? Reviews { get; set; }
-        public virtual ICollection<Report>? Reports { get; set; }
         public virtual ICollection<SellerProduct>? SellerProducts { get; set; }
     }
 }
