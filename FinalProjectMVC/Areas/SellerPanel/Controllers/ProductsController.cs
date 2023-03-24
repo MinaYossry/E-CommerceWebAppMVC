@@ -60,7 +60,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
                 //ViewBag.Categories = _context.Categories.Include(c => c.SubCategories).ToList();
                 //ViewBag.Brands = _context.Brands.ToList();
-                var ProductList = _context.SellerProducts.Where(s => s.SellerId == UserID).Include(s => s.Product).ToList();
+
+                var ProductList = _context.SellerProducts.Where(s => s.SellerId == UserID).Include(p=>p.Product).ToList();
 
                 return View(ProductList);
             }

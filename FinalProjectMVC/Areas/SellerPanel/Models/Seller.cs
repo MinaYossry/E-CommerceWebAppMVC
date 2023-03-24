@@ -17,7 +17,6 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
 
         public required string TaxNumber { get; set; }
 
-
         public virtual ApplicationUser? ApplicationUser { get; set; }
 
         public virtual ICollection<SellerProduct>? SellerProducts { get; set; }

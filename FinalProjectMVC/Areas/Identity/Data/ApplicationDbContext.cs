@@ -38,12 +38,18 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .HasForeignKey(p => p.SellerProductId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<Report>()
+                .HasOne(p => p.Review)
+                .WithMany(s => s.Reports)
+                .HasForeignKey(p => p.ReviewId)
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
+
+            builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
             //builder.Entity<SellerProduct>().Navigation(s => s.Product).AutoInclude();
             //builder.Entity<SellerProduct>().Navigation(s => s.Seller).AutoInclude();
-            //builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
-            //builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
+            builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
+            builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
         }
 
         public virtual DbSet<Product> Products { get; set; }
