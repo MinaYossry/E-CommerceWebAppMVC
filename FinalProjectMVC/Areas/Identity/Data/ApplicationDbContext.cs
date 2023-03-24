@@ -3,6 +3,7 @@ using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace FinalProjectMVC.Areas.Identity.Data
 {
@@ -24,6 +25,18 @@ namespace FinalProjectMVC.Areas.Identity.Data
             builder.Entity<Product>()
                 .HasIndex(p => p.SerialNumber)
                 .IsUnique();
+
+            builder.Entity<OrderItem>()
+                .HasOne(p => p.SellerProduct)
+                .WithMany(s => s.OrderItems)
+                .HasForeignKey(p => p.SellerProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<CartItem>()
+                .HasOne(p => p.SellerProduct)
+                .WithMany(s => s.CartItems)
+                .HasForeignKey(p => p.SellerProductId)
+                .OnDelete(DeleteBehavior.Restrict);
 
 
             //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();

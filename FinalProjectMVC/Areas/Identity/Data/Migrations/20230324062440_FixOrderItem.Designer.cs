@@ -4,6 +4,7 @@ using FinalProjectMVC.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProjectMVC.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230324062440_FixOrderItem")]
+    partial class FixOrderItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,14 +317,9 @@ namespace FinalProjectMVC.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("SellerProductId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("SellerProductId");
 
                     b.ToTable("CartItems");
                 });
@@ -691,15 +689,7 @@ namespace FinalProjectMVC.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FinalProjectMVC.Areas.SellerPanel.Models.SellerProduct", "SellerProduct")
-                        .WithMany("CartItems")
-                        .HasForeignKey("SellerProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Customer");
-
-                    b.Navigation("SellerProduct");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Customer", b =>
@@ -860,8 +850,6 @@ namespace FinalProjectMVC.Data.Migrations
 
             modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.SellerProduct", b =>
                 {
-                    b.Navigation("CartItems");
-
                     b.Navigation("OrderItems");
                 });
 

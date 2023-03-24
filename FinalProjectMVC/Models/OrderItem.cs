@@ -14,10 +14,10 @@ namespace FinalProjectMVC.Models
         public int OrderId { get; set; }
         public virtual Order? Order { get; set; }
 
-        //[ForeignKey("SellerProduct")]
-        //public int SellerProductId { get; set; }
+        [ForeignKey("SellerProduct")]
+        public int SellerProductId { get; set; }
 
-        //public virtual SellerProduct? SellerProduct { get; set; }
+        public virtual SellerProduct? SellerProduct { get; set; }
 
         [Required]
         [Range(0,10)]
