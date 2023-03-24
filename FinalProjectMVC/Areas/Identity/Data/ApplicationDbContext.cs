@@ -21,6 +21,11 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .HasIndex("SellerId", "ProductId")
                 .IsUnique();
 
+            builder.Entity<Product>()
+                .HasIndex(p => p.SerialNumber)
+                .IsUnique();
+
+
             //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
             //builder.Entity<SellerProduct>().Navigation(s => s.Product).AutoInclude();
             //builder.Entity<SellerProduct>().Navigation(s => s.Seller).AutoInclude();
