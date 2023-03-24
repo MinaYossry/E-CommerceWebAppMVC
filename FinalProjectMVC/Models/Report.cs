@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Models
 {
@@ -11,16 +12,13 @@ namespace FinalProjectMVC.Models
 
         public required string Description { get; set; }
 
+        public bool IsSolved { get; set; } = false;
+
         public DateTime CreatedDate { get; } = DateTime.Now;
 
-        [ForeignKey(nameof(Customer))]
-        public int CustomerId { get; set; }
-        public virtual Customer? Customer { get; set; }
+        [ForeignKey(nameof(Review))]
+        public int ReviewId { get; set; }
 
-        // public virtual Seller Seller { get; set; }
-
-        [ForeignKey(nameof(Product))]
-        public int ProductId { get; set; }
-        public virtual Product? Product { get; set; }
+        public Review? Review { get; set; }
     }
 }

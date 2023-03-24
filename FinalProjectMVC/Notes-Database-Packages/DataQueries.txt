@@ -1,0 +1,43 @@
+﻿-- insert data into the categories table
+INSERT INTO categories ( Name) VALUES
+('Electronics'),
+( 'Clothing'),
+( 'Home and Kitchen');
+
+-- insert data into the subcategoryclass table
+INSERT INTO SubCategories(Name, CategoryId) VALUES
+('Smartphones', 1),
+( 'Laptops', 1),
+('T-Shirts', 2),
+( 'Jeans', 2),
+( 'Cookware', 3),
+( 'Bedding', 3);
+
+-- insert data into the brands table
+INSERT INTO brands ( Name) VALUES
+( 'Apple'),
+( 'Samsung'),
+( 'HP'),
+( 'Dell'),
+( 'Nike'),
+( 'Adidas'),
+( 'Levi''s'),
+( 'Calvin Klein'),
+( 'Cuisinart'),
+( 'Hamilton Beach'),
+( 'Boll and Branch'),
+( 'Brooklinen');
+
+INSERT INTO products (serialNumber, name, Description, subcategoryID, brandID) VALUES
+(123456789, 'iPhone 13 Pro', 'The latest and greatest iPhone', 1, 1),
+(567890123, 'Galaxy S22', 'Samsung''s newest flagship phone', 1, 2),
+(901234567, 'HP Spectre x360', 'A versatile and powerful laptop', 2, 3),
+(345678901, 'Dell XPS 13', 'A slim and stylish laptop', 2, 4),
+(789012345, 'Nike Dri-FIT T-Shirt', 'Moisture-wicking and comfortable', 3, 5),
+(234567890, 'Adidas Originals Trefoil Tee', 'A classic Adidas t-shirt', 3, 6),
+(678901234, 'Levi''s 501 Jeans', 'The original blue jean', 4, 7),
+(123456780, 'Calvin Klein Slim Fit Jeans', 'A stylish and comfortable choice', 4, 8),
+(567890123, 'Cuisinart Chef''s Classic Stainless Steel Cookware Set', 'Durable and versatile pots and pans', 5, 9),
+(901234567, 'Hamilton Beach Breakfast Sandwich Maker', 'Make delicious breakfast sandwiches at home', 5, 10),
+(345678901, 'Boll and Branch Classic Hemmed Sheet Set', 'Luxurious and eco-friendly sheets', 6, 11),
+(789012345, 'Brooklinen Luxe Sateen Sheet Set', 'Soft and silky sheets', 6, 12);
