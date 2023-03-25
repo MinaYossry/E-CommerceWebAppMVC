@@ -6,6 +6,7 @@ using FinalProjectMVC.Constants;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -51,7 +52,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         {
             if (User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Seller.ToString()))
             {
-                var UserID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var UserID = User.GetUserId();
 
                 var ProductList = _sellerProductRepo.Filter(p => p.SellerId == UserID);
 
@@ -71,7 +72,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.GetUserId();
             if (userId is null)
             {
                 return RedirectToAction(nameof(Index));
@@ -80,7 +81,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             var currentProduct = _productRepository.GetDetails(id);
             if (currentProduct is null)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
 
             var sellerProduct = _sellerProductRepo.Filter(sp => sp.SellerId == userId && sp.ProductId == currentProduct.Id).FirstOrDefault();
@@ -110,7 +111,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.GetUserId();
             if (userId is null)
             {
                 return RedirectToAction(nameof(Index));
@@ -277,50 +278,71 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             return View(viewModel);
         }
 
-        //    // GET: SellerPanel/Products/Delete/5
-        //    public async Task<IActionResult> Delete(int? id)
-        //    {
-        //        if (id == null || _context.Products == null)
-        //        {
-        //            return NotFound();
-        //        }
+        // GET: SellerPanel/Products/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (!User.IsSeller())
+            {
+                return RedirectToAction("Index");
+            }
 
-        //        var product = await _context.Products
-        //            .Include(p => p.Brand)
-        //            .Include(p => p.SubCategory)
-        //            .FirstOrDefaultAsync(m => m.Id == id);
-        //        if (product == null)
-        //        {
-        //            return NotFound();
-        //        }
+            var sellerProduct = _sellerProductRepo.GetDetails(id);
+            if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
+            {
+                return RedirectToAction("Index");
+            }
 
-        //        return View(product);
-        //    }
+            if (sellerProduct.Product == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new DeleteSellerProductViewModel()
+            {
+                SellerProductId = sellerProduct.Id,
+                SerialNumber = sellerProduct.Product.SerialNumber,
+                Name = sellerProduct.Product.Name,
+                Description = sellerProduct.Product.Description,
+                ProductImage = sellerProduct.Product.ProductImage,
+                Count = sellerProduct.Count,
+                Price = sellerProduct.Price
+            };
+
+            return View(viewModel);
+        }
 
         //    // POST: SellerPanel/Products/Delete/5
-        //    [HttpPost, ActionName("Delete")]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> DeleteConfirmed(int id)
-        //    {
-        //        if (_context.Products == null)
-        //        {
-        //            return Problem("Entity set 'ApplicationDbContext.Products'  is null.");
-        //        }
-        //        var product = await _context.Products.FindAsync(id);
-        //        if (product != null)
-        //        {
-        //            _context.Products.Remove(product);
-        //        }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (!User.IsSeller())
+            {
+                return RedirectToAction("Index");
+            }
 
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
+            var sellerProduct = _sellerProductRepo.GetDetails(id);
+            if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
+            {
+                return RedirectToAction("Index");
+            }
 
-        //    private bool ProductExists(int id)
-        //    {
-        //      return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
-        //    }
+            try
+            {
+                _sellerProductRepo.Delete(sellerProduct.Id);
+            }
+
+            catch
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
+        }
+
+        //private bool ProductExists(int id)
+        //{
+        //    return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
         //}
     }
-
 }
+

@@ -23,15 +23,6 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
 
         public byte[]? ProductImage { get; set; }
 
-        //public double Weight { get; set; }
-
-        //public double Height { get; set; }
-
-        //public double Width { get; set; }
-
-        //[Range(0, 5)]
-        //public int Rating { get; set; } = 0;
-
 
         [Required]
         [ForeignKey(nameof(SubCategory))]
