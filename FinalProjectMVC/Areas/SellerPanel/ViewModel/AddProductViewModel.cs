@@ -10,12 +10,16 @@ namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
 {
     public class AddProductViewModel
     {
+        [Required(ErrorMessage = "Must enter unique serial number for the product")]
+        [DisplayName("Serial Number")]
         public int SerialNumber { get; set; } 
 
-        [StringLength(100, ErrorMessage = "Name can't be more that 100 letters")]
+        [StringLength(maximumLength: 100, MinimumLength = 5, ErrorMessage = "Name can't be less than 5 more that 100 letters")]
+        [DisplayName("Product Name")]
         public string ProductName { get; set; } = string.Empty;
 
-        [StringLength(500, ErrorMessage = "Description can't be more that 500 letters")]
+        [StringLength(500, MinimumLength = 10, ErrorMessage = "Description can't be less than 10 more that 500 letters")]
+        [DisplayName("Product Details")]
         public string ProductDescription { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Must choose sub category for the product")]
@@ -26,14 +30,20 @@ namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
         [DisplayName("Brand")]
         public int BrandId { get; set; }
 
+        [Required(ErrorMessage = "Must add an image for the product")]
         [DisplayName("Product Image")]
-        public IFormFile formFile { get; set; }
+        public IFormFile? formFile { get; set; }
 
         [HiddenInput]
         public required string SellerID { get; set; }
 
-        public int Price { get; set; }
+        [Required(ErrorMessage = "Must enter price for your product")]
+        [Range(0, 100000, ErrorMessage = "Price can't be negative")]
+        [DataType(DataType.Currency)]
+        public decimal Price { get; set; }
 
+        [Required(ErrorMessage = "Must enter stock for your product")]
+        [Range(0, 100000, ErrorMessage = "Count can't be negative")]
         public int Count { get; set; }
 
         public SelectList? Brands { get; set; }
