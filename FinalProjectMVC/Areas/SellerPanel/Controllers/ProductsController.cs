@@ -18,7 +18,7 @@ using System.Security.Claims;
 namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 {
     [Area("SellerPanel")]
-    [Authorize(Roles = "Admin,Seller")]
+    [Authorize(Roles = "Seller")]
     public class ProductsController : Controller
     {
 
@@ -56,12 +56,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             if (User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Seller.ToString()))
             {
                 var UserID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var currentSeller = _sellerRepository.GetDetails(UserID);
 
-                //ViewBag.Categories = _context.Categories.Include(c => c.SubCategories).ToList();
-                //ViewBag.Brands = _context.Brands.ToList();
-
-                var ProductList = _context.SellerProducts.Where(s => s.SellerId == UserID).Include(p=>p.Product).ToList();
+                var ProductList = _sellerProductRepo.Filter(p => p.SellerId == UserID);
 
                 return View(ProductList);
             }
@@ -106,6 +102,17 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,SerialNumber,Name,Description,SubCategoryId,BrandId")] Product product, IFormFile file, string SellerID, int Price, int Count)
         {
+            var productExist = _productRepository.Filter(p => p.SerialNumber == product.SerialNumber).FirstOrDefault();
+
+            if (productExist is not null)
+            {
+                var SellerHaveProduct = _sellerProductRepo.Filter(sp => sp.ProductId == productExist.Id && sp.SellerId == SellerID).FirstOrDefault();
+                if (SellerHaveProduct is not null)
+                {
+                    ModelState.AddModelError("Already Exist", "Sorry you already have this product for sale");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 if (file is not null && file.Length > 0)
@@ -118,10 +125,16 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 }
 
                 // If other seller added the same product, don't create new one
-                var productExist = await _context.Products.FirstOrDefaultAsync(p => p.SerialNumber == product.SerialNumber);
                 if (productExist is null)
                 {
-                    _productRepository.Insert(product);
+                    try
+                    {
+                        _productRepository.Insert(product);
+                    }
+                    catch
+                    {
+                        throw new Exception("Can't Add new Product");
+                    }
                     productExist = product;
                 }
 
@@ -129,6 +142,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 { 
                     SellerId = SellerID, ProductId = productExist.Id, Count = Count, Price = Price
                 };
+
                 try
                 {
                     _sellerProductRepo.Insert(newItem);
@@ -141,6 +155,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
             ViewData["SubCategoryId"] = new SelectList(_context.SubCategories, "Id", "Name", product.SubCategoryId);
             return View(product);
