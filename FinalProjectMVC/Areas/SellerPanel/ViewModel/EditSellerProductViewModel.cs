@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
 {
@@ -19,8 +20,13 @@ namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
         [ReadOnly(true)]
         public byte[]? ProductImage { get; set; }
 
-        public int Count { get; set; }
-
+        [Required(ErrorMessage = "Must enter price for your product")]
+        [Range(0, 100000, ErrorMessage = "Price can't be negative")]
+        [DataType(DataType.Currency)]
         public decimal Price { get; set; }
+
+        [Required(ErrorMessage = "Must enter stock for your product")]
+        [Range(0, 100000, ErrorMessage = "Count can't be negative")]
+        public int Count { get; set; }
     }
 }
