@@ -64,24 +64,43 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         }
 
         // GET: SellerPanel/Products/Details/5
-        //    public async Task<IActionResult> Details(int? id)
-        //    {
-        //        if (id == null || _context.Products == null)
-        //        {
-        //            return NotFound();
-        //        }
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole(Roles.Seller.ToString()))
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
-        //        var product = await _context.Products
-        //            .Include(p => p.Brand)
-        //            .Include(p => p.SubCategory)
-        //            .FirstOrDefaultAsync(m => m.Id == id);
-        //        if (product == null)
-        //        {
-        //            return NotFound();
-        //        }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
-        //        return View(product);
-        //    }
+            var currentProduct = _productRepository.GetDetails(id);
+            if (currentProduct is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var sellerProduct = _sellerProductRepo.Filter(sp => sp.SellerId == userId && sp.ProductId == currentProduct.Id).FirstOrDefault();
+            if (sellerProduct is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var viewModel = new DisplaySellerProductDetailesViewModel()
+            {
+                SerialNumber = currentProduct.SerialNumber,
+                Name = currentProduct.Name,
+                Description = currentProduct.Description,
+                ProductImage = currentProduct.ProductImage,
+                Count = sellerProduct.Count,
+                Price = sellerProduct.Price
+            };
+
+            return View(viewModel);
+        }
 
         public IActionResult Create()
         {
