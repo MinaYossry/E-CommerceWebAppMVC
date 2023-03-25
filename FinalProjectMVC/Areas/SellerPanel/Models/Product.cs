@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Models;
+using System.ComponentModel;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Models
 {
@@ -31,8 +32,10 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         //[Range(0, 5)]
         //public int Rating { get; set; } = 0;
 
+
         [Required]
         [ForeignKey(nameof(SubCategory))]
+        [DisplayName("Sub Category")]
         public int SubCategoryId { get; set; }
 
         // Navigation property for Category
@@ -41,6 +44,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
 
         [Required]
         [ForeignKey("Brand")]
+        [DisplayName("Brand")]
         public int BrandId { get; set; }
 
         // Navigation property for Brand

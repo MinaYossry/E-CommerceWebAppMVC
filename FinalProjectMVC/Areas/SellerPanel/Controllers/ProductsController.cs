@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FinalProjectMVC.Areas.AdminPanel.Models;
+using FinalProjectMVC.Areas.Identity.Data;
+using FinalProjectMVC.Areas.SellerPanel.Models;
+using FinalProjectMVC.Areas.SellerPanel.ViewModel;
+using FinalProjectMVC.Constants;
+using FinalProjectMVC.Models;
+using FinalProjectMVC.RepositoryPattern;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.SellerPanel.Models;
-using FinalProjectMVC.Models;
-using Microsoft.AspNetCore.Authorization;
-using FinalProjectMVC.Areas.Identity.Data;
-using FinalProjectMVC.RepositoryPattern;
-using FinalProjectMVC.Areas.AdminPanel.Models;
-using Microsoft.AspNetCore.Identity;
-using FinalProjectMVC.Constants;
 using System.Security.Claims;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Controllers
@@ -26,8 +22,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         private readonly IRepository<Seller> _sellerRepository;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<Brand> _brandRepository;
+        private readonly IRepository<SubCategory> _subCategoryRepository;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ApplicationDbContext _context;
         private readonly IRepository<SellerProduct> _sellerProductRepo;
 
         public ProductsController(
@@ -35,8 +31,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             IRepository<Seller> sellerRepository,
             IRepository<Category> categoryRepository,
             IRepository<Brand> brandRepository,
+            IRepository<SubCategory> subCategoryRepository,
             SignInManager<ApplicationUser> signInManager,
-            ApplicationDbContext context,
             IRepository<SellerProduct> sellerProductRepo
             )
 
@@ -45,8 +41,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             this._sellerRepository = sellerRepository;
             this._categoryRepository = categoryRepository;
             this._brandRepository = brandRepository;
+            this._subCategoryRepository = subCategoryRepository;
             this._signInManager = signInManager;
-            this._context = context;
             this._sellerProductRepo = sellerProductRepo;
         }
 
@@ -87,27 +83,39 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         //        return View(product);
         //    }
 
-        // GET: SellerPanel/Products/Create
         public IActionResult Create()
         {
-            ViewData["BrandId"] = new SelectList(_brandRepository.GetAll(), "Id", "Name");
-            ViewData["SubCategoryId"] = new SelectList(_categoryRepository.GetAll(), "Id", "Name");
-            return View();
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole(Roles.Seller.ToString()))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var viewModel = new AddProductViewModel
+            {
+                Brands = new SelectList(_brandRepository.GetAll(), "Id", "Name"),
+                SubCategories = new SelectList(_subCategoryRepository.GetAll(), "Id", "Name"),
+                SellerID = userId
+            };
+
+            return View(viewModel);
         }
 
-        // POST: SellerPanel/Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,SerialNumber,Name,Description,SubCategoryId,BrandId")] Product product, IFormFile file, string SellerID, int Price, int Count)
+        public async Task<IActionResult> Create(AddProductViewModel viewModel)
         {
-            var productExist = _productRepository.Filter(p => p.SerialNumber == product.SerialNumber).FirstOrDefault();
+            var productExist = _productRepository.Filter(p => p.SerialNumber == viewModel.SerialNumber).FirstOrDefault();
 
             if (productExist is not null)
             {
-                var SellerHaveProduct = _sellerProductRepo.Filter(sp => sp.ProductId == productExist.Id && sp.SellerId == SellerID).FirstOrDefault();
-                if (SellerHaveProduct is not null)
+                var sellerHaveProduct = _sellerProductRepo.Filter(sp => sp.ProductId == productExist.Id && sp.SellerId == viewModel.SellerID).FirstOrDefault();
+                if (sellerHaveProduct is not null)
                 {
                     ModelState.AddModelError("Already Exist", "Sorry you already have this product for sale");
                 }
@@ -115,16 +123,22 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
             if (ModelState.IsValid)
             {
-                if (file is not null && file.Length > 0)
+                var product = new Product
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        file.CopyTo(ms);
-                        product.ProductImage = ms.ToArray();
-                    }
+                    SerialNumber = viewModel.SerialNumber,
+                    Name = viewModel.ProductName,
+                    Description = viewModel.ProductDescription,
+                    SubCategoryId = viewModel.SubCategoryId,
+                    BrandId = viewModel.BrandId
+                };
+
+                if (viewModel.formFile is not null && viewModel.formFile.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    await viewModel.formFile.CopyToAsync(ms);
+                    product.ProductImage = ms.ToArray();
                 }
 
-                // If other seller added the same product, don't create new one
                 if (productExist is null)
                 {
                     try
@@ -135,31 +149,37 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                     {
                         throw new Exception("Can't Add new Product");
                     }
+
                     productExist = product;
                 }
 
-                SellerProduct newItem = new()
-                { 
-                    SellerId = SellerID, ProductId = productExist.Id, Count = Count, Price = Price
+                var newItem = new SellerProduct
+                {
+                    SellerId = viewModel.SellerID,
+                    ProductId = productExist.Id,
+                    Count = viewModel.Count,
+                    Price = viewModel.Price
                 };
 
                 try
                 {
                     _sellerProductRepo.Insert(newItem);
-                    await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
                     throw new Exception("You Already have this product in sale");
                 }
-                
+
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
-            ViewData["SubCategoryId"] = new SelectList(_context.SubCategories, "Id", "Name", product.SubCategoryId);
-            return View(product);
+            viewModel.Brands = new SelectList(_brandRepository.GetAll(), "Id", "Name");
+            viewModel.SubCategories = new SelectList(_subCategoryRepository.GetAll(), "Id", "Name");
+            return View(viewModel);
         }
+
+        //
+
 
         //    // GET: SellerPanel/Products/Edit/5
         //    public async Task<IActionResult> Edit(int? id)
