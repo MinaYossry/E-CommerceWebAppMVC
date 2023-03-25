@@ -286,8 +286,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 return RedirectToAction("Index");
             }
 
-            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id);
-            if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
+            var sellerProduct = (await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.SellerId == User.GetUserId())).FirstOrDefault();
+            if (sellerProduct == null)
             {
                 return RedirectToAction("Index");
             }

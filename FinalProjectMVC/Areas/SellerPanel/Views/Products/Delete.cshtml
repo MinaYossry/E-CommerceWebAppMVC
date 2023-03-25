@@ -1,4 +1,4 @@
-﻿@model FinalProjectMVC.Areas.SellerPanel.ViewModel.DisplaySellerProductDetailesViewModel
+﻿@model FinalProjectMVC.Areas.SellerPanel.ViewModel.DeleteSellerProductViewModel
 
 @{
     ViewData["Title"] = $"Details of {Model.Name}";
@@ -21,7 +21,6 @@
                     <h4 class="fw-bold mb-3">Count: @Model.Count</h4>
                 </div>
                 <div class="card-footer d-flex justify-content-end">
-                    <a href="@Url.Action("Edit", new {  id = Model.SellerProductId })" class="btn btn-primary me-2">Edit</a>
                     <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
                     <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
                 </div>
