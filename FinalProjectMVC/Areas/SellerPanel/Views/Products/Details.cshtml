@@ -1,54 +1,54 @@
-﻿@model FinalProjectMVC.Areas.SellerPanel.Models.Product
+﻿@model FinalProjectMVC.Areas.SellerPanel.ViewModel.DisplaySellerProductDetailesViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = $"Details of {Model.Name}";
 }
 
-<h1>Details</h1>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(Model.ProductImage))" alt="@Model.Name">
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0 rounded-lg h-100">
+                <div class="card-body">
+                    <h2 class="fw-bold mb-4">@Model.Name</h2>
+                    <hr>
+                    <p class="mb-3">@Model.Description</p>
+                    <h4 class="fw-bold mb-3">Price: $@Model.Price</h4>
+                    <h4 class="fw-bold mb-3">Count: @Model.Count</h4>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                    <a href="@Url.Action("Edit", new {  id = Model.SellerProductId })" class="btn btn-primary me-2">Edit</a>
+                    <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SerialNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SerialNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProductImage)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProductImage)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SubCategory)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SubCategory.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand.Name)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+<!-- Delete Confirmation Modal -->
+<form asp-action="Delete" asp-route-id="@Model.SellerProductId" method="post">
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete @Model.Name?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete @Model.Name?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

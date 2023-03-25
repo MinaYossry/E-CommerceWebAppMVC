@@ -52,5 +52,46 @@ namespace FinalProjectMVC.RepositoryPattern
         {
             return _context.Set<T>().Where(filterPredicate).ToList();
         }
+
+        public async virtual Task<List<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+
+        public async virtual Task<T?> GetDetailsAsync<PType>(PType id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
+
+        public async virtual Task InsertAsync(T Entity)
+        {
+            await _context.Set<T>().AddAsync(Entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async virtual Task UpdateAsync<PType>(PType id, T Entity)
+        {
+            var existingEntity = await _context.Set<T>().FindAsync(id);
+            if (existingEntity is not null)
+            {
+                _context.Entry(existingEntity).CurrentValues.SetValues(Entity);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async virtual Task DeleteAsync<PType>(PType id)
+        {
+            var existingEntity = await _context.Set<T>().FindAsync(id);
+            if (existingEntity is not null)
+            {
+                _context.Set<T>().Remove(existingEntity);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async virtual Task<List<T>> FilterAsync(Func<T, bool> filterPredicate)
+        {
+            return await Task.FromResult(_context.Set<T>().Where(filterPredicate).ToList());
+        }
     }
 }

@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FinalProjectMVC.Areas.AdminPanel.Models;
+using FinalProjectMVC.Areas.Identity.Data;
+using FinalProjectMVC.Areas.SellerPanel.Models;
+using FinalProjectMVC.Areas.SellerPanel.ViewModel;
+using FinalProjectMVC.Constants;
+using FinalProjectMVC.Models;
+using FinalProjectMVC.RepositoryPattern;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.SellerPanel.Models;
-using FinalProjectMVC.Models;
-using Microsoft.AspNetCore.Authorization;
-using FinalProjectMVC.Areas.Identity.Data;
-using FinalProjectMVC.RepositoryPattern;
-using FinalProjectMVC.Areas.AdminPanel.Models;
-using Microsoft.AspNetCore.Identity;
-using FinalProjectMVC.Constants;
 using System.Security.Claims;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Controllers
@@ -26,8 +23,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         private readonly IRepository<Seller> _sellerRepository;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<Brand> _brandRepository;
+        private readonly IRepository<SubCategory> _subCategoryRepository;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ApplicationDbContext _context;
         private readonly IRepository<SellerProduct> _sellerProductRepo;
 
         public ProductsController(
@@ -35,8 +32,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             IRepository<Seller> sellerRepository,
             IRepository<Category> categoryRepository,
             IRepository<Brand> brandRepository,
+            IRepository<SubCategory> subCategoryRepository,
             SignInManager<ApplicationUser> signInManager,
-            ApplicationDbContext context,
             IRepository<SellerProduct> sellerProductRepo
             )
 
@@ -45,19 +42,19 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             this._sellerRepository = sellerRepository;
             this._categoryRepository = categoryRepository;
             this._brandRepository = brandRepository;
+            this._subCategoryRepository = subCategoryRepository;
             this._signInManager = signInManager;
-            this._context = context;
             this._sellerProductRepo = sellerProductRepo;
         }
 
         // GET: SellerPanel/Products
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             if (User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Seller.ToString()))
             {
-                var UserID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var UserID = User.GetUserId();
 
-                var ProductList = _sellerProductRepo.Filter(p => p.SellerId == UserID);
+                var ProductList = await _sellerProductRepo.FilterAsync(p => p.SellerId == UserID);
 
                 return View(ProductList);
             }
@@ -68,46 +65,78 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         }
 
         // GET: SellerPanel/Products/Details/5
-        //    public async Task<IActionResult> Details(int? id)
-        //    {
-        //        if (id == null || _context.Products == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        var product = await _context.Products
-        //            .Include(p => p.Brand)
-        //            .Include(p => p.SubCategory)
-        //            .FirstOrDefaultAsync(m => m.Id == id);
-        //        if (product == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        return View(product);
-        //    }
-
-        // GET: SellerPanel/Products/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Details(int? id)
         {
-            ViewData["BrandId"] = new SelectList(_brandRepository.GetAll(), "Id", "Name");
-            ViewData["SubCategoryId"] = new SelectList(_categoryRepository.GetAll(), "Id", "Name");
-            return View();
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole(Roles.Seller.ToString()))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var userId = User.GetUserId();
+            if (userId is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var currentProduct = await _productRepository.GetDetailsAsync(id);
+            if (currentProduct is null)
+            {
+                return NotFound();
+            }
+
+            var sellerProduct = (await _sellerProductRepo.FilterAsync(sp => sp.SellerId == userId && sp.ProductId == currentProduct.Id)).FirstOrDefault();
+            if (sellerProduct is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var viewModel = new DisplaySellerProductDetailesViewModel()
+            {
+                SellerProductId = sellerProduct.Id,
+                SerialNumber = currentProduct.SerialNumber,
+                Name = currentProduct.Name,
+                Description = currentProduct.Description,
+                ProductImage = currentProduct.ProductImage,
+                Count = sellerProduct.Count,
+                Price = sellerProduct.Price
+            };
+
+            return View(viewModel);
         }
 
-        // POST: SellerPanel/Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        public async Task<IActionResult> Create()
+        {
+            if (User.Identity?.IsAuthenticated != true || !User.IsInRole(Roles.Seller.ToString()))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var userId = User.GetUserId();
+            if (userId is null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var viewModel = new AddProductViewModel
+            {
+                Brands = new SelectList(await _brandRepository.GetAllAsync(), "Id", "Name"),
+                SubCategories = new SelectList(await _subCategoryRepository.GetAllAsync(), "Id", "Name"),
+                SellerID = userId
+            };
+
+            return View(viewModel);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,SerialNumber,Name,Description,SubCategoryId,BrandId")] Product product, IFormFile file, string SellerID, int Price, int Count)
+        public async Task<IActionResult> Create(AddProductViewModel viewModel)
         {
-            var productExist = _productRepository.Filter(p => p.SerialNumber == product.SerialNumber).FirstOrDefault();
+            var productExist = (await _productRepository.FilterAsync(p => p.SerialNumber == viewModel.SerialNumber)).FirstOrDefault();
 
             if (productExist is not null)
             {
-                var SellerHaveProduct = _sellerProductRepo.Filter(sp => sp.ProductId == productExist.Id && sp.SellerId == SellerID).FirstOrDefault();
-                if (SellerHaveProduct is not null)
+                var sellerHaveProduct = (await _sellerProductRepo.FilterAsync(sp => sp.ProductId == productExist.Id && sp.SellerId == viewModel.SellerID)).FirstOrDefault();
+                if (sellerHaveProduct is not null)
                 {
                     ModelState.AddModelError("Already Exist", "Sorry you already have this product for sale");
                 }
@@ -115,151 +144,205 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
             if (ModelState.IsValid)
             {
-                if (file is not null && file.Length > 0)
+                var product = new Product
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        file.CopyTo(ms);
-                        product.ProductImage = ms.ToArray();
-                    }
+                    SerialNumber = viewModel.SerialNumber,
+                    Name = viewModel.ProductName,
+                    Description = viewModel.ProductDescription,
+                    SubCategoryId = viewModel.SubCategoryId,
+                    BrandId = viewModel.BrandId
+                };
+
+                if (viewModel.formFile is not null && viewModel.formFile.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    await viewModel.formFile.CopyToAsync(ms);
+                    product.ProductImage = ms.ToArray();
                 }
 
-                // If other seller added the same product, don't create new one
                 if (productExist is null)
                 {
                     try
                     {
-                        _productRepository.Insert(product);
+                       await _productRepository.InsertAsync(product);
                     }
                     catch
                     {
                         throw new Exception("Can't Add new Product");
                     }
+
                     productExist = product;
                 }
 
-                SellerProduct newItem = new()
-                { 
-                    SellerId = SellerID, ProductId = productExist.Id, Count = Count, Price = Price
+                var newItem = new SellerProduct
+                {
+                    SellerId = viewModel.SellerID,
+                    ProductId = productExist.Id,
+                    Count = viewModel.Count,
+                    Price = viewModel.Price
                 };
 
                 try
                 {
-                    _sellerProductRepo.Insert(newItem);
-                    await _context.SaveChangesAsync();
+                   await _sellerProductRepo.InsertAsync(newItem);
                 }
-                catch (Exception ex)
+                catch 
                 {
                     throw new Exception("You Already have this product in sale");
                 }
-                
+
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
-            ViewData["SubCategoryId"] = new SelectList(_context.SubCategories, "Id", "Name", product.SubCategoryId);
-            return View(product);
+            viewModel.Brands = new SelectList(await _brandRepository.GetAllAsync(), "Id", "Name");
+            viewModel.SubCategories = new SelectList(await _subCategoryRepository.GetAllAsync(), "Id", "Name");
+            return View(viewModel);
         }
 
-        //    // GET: SellerPanel/Products/Edit/5
-        //    public async Task<IActionResult> Edit(int? id)
-        //    {
-        //        if (id == null || _context.Products == null)
-        //        {
-        //            return NotFound();
-        //        }
 
-        //        var product = await _context.Products.FindAsync(id);
-        //        if (product == null)
-        //        {
-        //            return NotFound();
-        //        }
-        //        ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
-        //        ViewData["SubCategoryId"] = new SelectList(_context.SubCategories, "Id", "Name", product.SubCategoryId);
-        //        return View(product);
-        //    }
+        // GET: SellerPanel/Products/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (!User.IsSeller())
+            {
+                return RedirectToAction("Index");
+            }
 
-        //    // POST: SellerPanel/Products/Edit/5
-        //    // To protect from overposting attacks, enable the specific properties you want to bind to.
-        //    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //    [HttpPost]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> Edit(int id, [Bind("Id,SerialNumber,Name,Description,ProductImage,SubCategoryId,BrandId")] Product product)
-        //    {
-        //        if (id != product.Id)
-        //        {
-        //            return NotFound();
-        //        }
+            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id);
+            if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
+            {
+                return RedirectToAction("Index");
+            }
 
-        //        if (ModelState.IsValid)
-        //        {
-        //            try
-        //            {
-        //                _context.Update(product);
-        //                await _context.SaveChangesAsync();
-        //            }
-        //            catch (DbUpdateConcurrencyException)
-        //            {
-        //                if (!ProductExists(product.Id))
-        //                {
-        //                    return NotFound();
-        //                }
-        //                else
-        //                {
-        //                    throw;
-        //                }
-        //            }
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
-        //        ViewData["SubCategoryId"] = new SelectList(_context.SubCategories, "Id", "Name", product.SubCategoryId);
-        //        return View(product);
-        //    }
+            if (sellerProduct.Product == null)
+            {
+                return NotFound();
+            }
 
-        //    // GET: SellerPanel/Products/Delete/5
-        //    public async Task<IActionResult> Delete(int? id)
-        //    {
-        //        if (id == null || _context.Products == null)
-        //        {
-        //            return NotFound();
-        //        }
+            var viewModel = new EditSellerProductViewModel()
+            {
+                SellerProductId = sellerProduct.Id,
+                SerialNumber = sellerProduct.Product.SerialNumber,
+                Name = sellerProduct.Product.Name,
+                Description = sellerProduct.Product.Description,
+                ProductImage = sellerProduct.Product.ProductImage,
+                Count = sellerProduct.Count,
+                Price = sellerProduct.Price
+            };
 
-        //        var product = await _context.Products
-        //            .Include(p => p.Brand)
-        //            .Include(p => p.SubCategory)
-        //            .FirstOrDefaultAsync(m => m.Id == id);
-        //        if (product == null)
-        //        {
-        //            return NotFound();
-        //        }
+            return View(viewModel);
+        }
 
-        //        return View(product);
-        //    }
+        // POST: SellerPanel/Products/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EditSellerProductViewModel viewModel)
+        {
+            if (!User.IsSeller())
+            {
+                return RedirectToAction("Index");
+            }
+
+            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id);
+            if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (ModelState.IsValid)
+            {
+                sellerProduct.Count = viewModel.Count;
+                sellerProduct.Price = viewModel.Price;
+
+                try
+                {
+                    await _sellerProductRepo.UpdateAsync(id, sellerProduct);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "An error occurred while updating the product.");
+                }
+            }
+
+            if (sellerProduct?.Product is not null)
+            {
+                viewModel.SerialNumber = sellerProduct.Product.SerialNumber;
+                viewModel.Name = sellerProduct.Product.Name;
+                viewModel.Description = sellerProduct.Product?.Description;
+                viewModel.ProductImage = sellerProduct.Product?.ProductImage;
+            }
+
+            return View(viewModel);
+        }
+
+        // GET: SellerPanel/Products/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (!User.IsSeller())
+            {
+                return RedirectToAction("Index");
+            }
+
+            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id);
+            if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (sellerProduct.Product == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new DeleteSellerProductViewModel()
+            {
+                SellerProductId = sellerProduct.Id,
+                SerialNumber = sellerProduct.Product.SerialNumber,
+                Name = sellerProduct.Product.Name,
+                Description = sellerProduct.Product.Description,
+                ProductImage = sellerProduct.Product.ProductImage,
+                Count = sellerProduct.Count,
+                Price = sellerProduct.Price
+            };
+
+            return View(viewModel);
+        }
 
         //    // POST: SellerPanel/Products/Delete/5
-        //    [HttpPost, ActionName("Delete")]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> DeleteConfirmed(int id)
-        //    {
-        //        if (_context.Products == null)
-        //        {
-        //            return Problem("Entity set 'ApplicationDbContext.Products'  is null.");
-        //        }
-        //        var product = await _context.Products.FindAsync(id);
-        //        if (product != null)
-        //        {
-        //            _context.Products.Remove(product);
-        //        }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (!User.IsSeller())
+            {
+                return RedirectToAction("Index");
+            }
 
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
+            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id);
+            if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
+            {
+                return RedirectToAction("Index");
+            }
 
-        //    private bool ProductExists(int id)
-        //    {
-        //      return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
-        //    }
+            try
+            {
+                await _sellerProductRepo.DeleteAsync(sellerProduct.Id);
+            }
+
+            catch
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
+        }
+
+        //private bool ProductExists(int id)
+        //{
+        //    return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
         //}
     }
-
 }
+
