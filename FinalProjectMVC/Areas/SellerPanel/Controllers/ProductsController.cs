@@ -64,7 +64,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         }
 
         // GET: SellerPanel/Products/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public IActionResult Details(int? id)
         {
             if (User.Identity?.IsAuthenticated != true || !User.IsInRole(Roles.Seller.ToString()))
             {
@@ -198,63 +198,84 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             return View(viewModel);
         }
 
-        //
 
+        // GET: SellerPanel/Products/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (!User.IsSeller())
+            {
+                return RedirectToAction("Index");
+            }
 
-        //    // GET: SellerPanel/Products/Edit/5
-        //    public async Task<IActionResult> Edit(int? id)
-        //    {
-        //        if (id == null || _context.Products == null)
-        //        {
-        //            return NotFound();
-        //        }
+            var sellerProduct = _sellerProductRepo.GetDetails(id);
+            if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
+            {
+                return RedirectToAction("Index");
+            }
 
-        //        var product = await _context.Products.FindAsync(id);
-        //        if (product == null)
-        //        {
-        //            return NotFound();
-        //        }
-        //        ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
-        //        ViewData["SubCategoryId"] = new SelectList(_context.SubCategories, "Id", "Name", product.SubCategoryId);
-        //        return View(product);
-        //    }
+            if (sellerProduct.Product == null)
+            {
+                return NotFound();
+            }
 
-        //    // POST: SellerPanel/Products/Edit/5
-        //    // To protect from overposting attacks, enable the specific properties you want to bind to.
-        //    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //    [HttpPost]
-        //    [ValidateAntiForgeryToken]
-        //    public async Task<IActionResult> Edit(int id, [Bind("Id,SerialNumber,Name,Description,ProductImage,SubCategoryId,BrandId")] Product product)
-        //    {
-        //        if (id != product.Id)
-        //        {
-        //            return NotFound();
-        //        }
+            var viewModel = new EditSellerProductViewModel()
+            {
+                SellerProductId = sellerProduct.Id,
+                SerialNumber = sellerProduct.Product.SerialNumber,
+                Name = sellerProduct.Product.Name,
+                Description = sellerProduct.Product.Description,
+                ProductImage = sellerProduct.Product.ProductImage,
+                Count = sellerProduct.Count,
+                Price = sellerProduct.Price
+            };
 
-        //        if (ModelState.IsValid)
-        //        {
-        //            try
-        //            {
-        //                _context.Update(product);
-        //                await _context.SaveChangesAsync();
-        //            }
-        //            catch (DbUpdateConcurrencyException)
-        //            {
-        //                if (!ProductExists(product.Id))
-        //                {
-        //                    return NotFound();
-        //                }
-        //                else
-        //                {
-        //                    throw;
-        //                }
-        //            }
-        //            return RedirectToAction(nameof(Index));
-        //        }
-        //        ViewData["BrandId"] = new SelectList(_context.Brands, "Id", "Name", product.BrandId);
-        //        ViewData["SubCategoryId"] = new SelectList(_context.SubCategories, "Id", "Name", product.SubCategoryId);
-        //        return View(product);
-        //    }
+            return View(viewModel);
+        }
+
+        // POST: SellerPanel/Products/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EditSellerProductViewModel viewModel)
+        {
+            if (!User.IsSeller())
+            {
+                return RedirectToAction("Index");
+            }
+
+            var sellerProduct = _sellerProductRepo.GetDetails(id);
+            if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
+            {
+                return RedirectToAction("Index");
+            }
+
+            if (ModelState.IsValid)
+            {
+                sellerProduct.Count = viewModel.Count;
+                sellerProduct.Price = viewModel.Price;
+
+                try
+                {
+                    _sellerProductRepo.Update(id, sellerProduct);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "An error occurred while updating the product.");
+                }
+            }
+
+            if (sellerProduct?.Product is not null)
+            {
+                viewModel.SerialNumber = sellerProduct.Product.SerialNumber;
+                viewModel.Name = sellerProduct.Product.Name;
+                viewModel.Description = sellerProduct.Product?.Description;
+                viewModel.ProductImage = sellerProduct.Product?.ProductImage;
+            }
+
+            return View(viewModel);
+        }
 
         //    // GET: SellerPanel/Products/Delete/5
         //    public async Task<IActionResult> Delete(int? id)
