@@ -45,11 +45,11 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .OnDelete(DeleteBehavior.Restrict); 
 
 
-            builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
-            //builder.Entity<SellerProduct>().Navigation(s => s.Product).AutoInclude();
-            //builder.Entity<SellerProduct>().Navigation(s => s.Seller).AutoInclude();
-            builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
-            builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
+            //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
+            ////builder.Entity<SellerProduct>().Navigation(s => s.Product).AutoInclude();
+            ////builder.Entity<SellerProduct>().Navigation(s => s.Seller).AutoInclude();
+            //builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
+            //builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
         }
 
         public virtual DbSet<Product> Products { get; set; }
