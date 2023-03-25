@@ -91,6 +91,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
             var viewModel = new DisplaySellerProductDetailesViewModel()
             {
+                SellerProductId = sellerProduct.Id,
                 SerialNumber = currentProduct.SerialNumber,
                 Name = currentProduct.Name,
                 Description = currentProduct.Description,

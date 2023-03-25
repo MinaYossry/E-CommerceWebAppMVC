@@ -5,6 +5,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
 {
     public class DisplaySellerProductDetailesViewModel
     {
+        public int SellerProductId { get; set; }
+
         public int SerialNumber { get; set; }
 
         public required string Name { get; set; }
