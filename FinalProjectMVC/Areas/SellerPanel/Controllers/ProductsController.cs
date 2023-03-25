@@ -48,13 +48,13 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         }
 
         // GET: SellerPanel/Products
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             if (User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Seller.ToString()))
             {
                 var UserID = User.GetUserId();
 
-                var ProductList = _sellerProductRepo.Filter(p => p.SellerId == UserID);
+                var ProductList = await _sellerProductRepo.FilterAsync(p => p.SellerId == UserID);
 
                 return View(ProductList);
             }
@@ -65,7 +65,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         }
 
         // GET: SellerPanel/Products/Details/5
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (User.Identity?.IsAuthenticated != true || !User.IsInRole(Roles.Seller.ToString()))
             {
@@ -78,13 +78,13 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var currentProduct = _productRepository.GetDetails(id);
+            var currentProduct = await _productRepository.GetDetailsAsync(id);
             if (currentProduct is null)
             {
                 return NotFound();
             }
 
-            var sellerProduct = _sellerProductRepo.Filter(sp => sp.SellerId == userId && sp.ProductId == currentProduct.Id).FirstOrDefault();
+            var sellerProduct = (await _sellerProductRepo.FilterAsync(sp => sp.SellerId == userId && sp.ProductId == currentProduct.Id)).FirstOrDefault();
             if (sellerProduct is null)
             {
                 return RedirectToAction(nameof(Index));
@@ -104,7 +104,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             if (User.Identity?.IsAuthenticated != true || !User.IsInRole(Roles.Seller.ToString()))
             {
@@ -119,8 +119,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
             var viewModel = new AddProductViewModel
             {
-                Brands = new SelectList(_brandRepository.GetAll(), "Id", "Name"),
-                SubCategories = new SelectList(_subCategoryRepository.GetAll(), "Id", "Name"),
+                Brands = new SelectList(await _brandRepository.GetAllAsync(), "Id", "Name"),
+                SubCategories = new SelectList(await _subCategoryRepository.GetAllAsync(), "Id", "Name"),
                 SellerID = userId
             };
 
@@ -131,11 +131,11 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AddProductViewModel viewModel)
         {
-            var productExist = _productRepository.Filter(p => p.SerialNumber == viewModel.SerialNumber).FirstOrDefault();
+            var productExist = (await _productRepository.FilterAsync(p => p.SerialNumber == viewModel.SerialNumber)).FirstOrDefault();
 
             if (productExist is not null)
             {
-                var sellerHaveProduct = _sellerProductRepo.Filter(sp => sp.ProductId == productExist.Id && sp.SellerId == viewModel.SellerID).FirstOrDefault();
+                var sellerHaveProduct = (await _sellerProductRepo.FilterAsync(sp => sp.ProductId == productExist.Id && sp.SellerId == viewModel.SellerID)).FirstOrDefault();
                 if (sellerHaveProduct is not null)
                 {
                     ModelState.AddModelError("Already Exist", "Sorry you already have this product for sale");
@@ -164,7 +164,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 {
                     try
                     {
-                        _productRepository.Insert(product);
+                       await _productRepository.InsertAsync(product);
                     }
                     catch
                     {
@@ -184,9 +184,9 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
                 try
                 {
-                    _sellerProductRepo.Insert(newItem);
+                   await _sellerProductRepo.InsertAsync(newItem);
                 }
-                catch (Exception ex)
+                catch 
                 {
                     throw new Exception("You Already have this product in sale");
                 }
@@ -194,8 +194,8 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            viewModel.Brands = new SelectList(_brandRepository.GetAll(), "Id", "Name");
-            viewModel.SubCategories = new SelectList(_subCategoryRepository.GetAll(), "Id", "Name");
+            viewModel.Brands = new SelectList(await _brandRepository.GetAllAsync(), "Id", "Name");
+            viewModel.SubCategories = new SelectList(await _subCategoryRepository.GetAllAsync(), "Id", "Name");
             return View(viewModel);
         }
 
@@ -208,7 +208,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 return RedirectToAction("Index");
             }
 
-            var sellerProduct = _sellerProductRepo.GetDetails(id);
+            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id);
             if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
             {
                 return RedirectToAction("Index");
@@ -245,7 +245,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 return RedirectToAction("Index");
             }
 
-            var sellerProduct = _sellerProductRepo.GetDetails(id);
+            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id);
             if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
             {
                 return RedirectToAction("Index");
@@ -258,7 +258,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
                 try
                 {
-                    _sellerProductRepo.Update(id, sellerProduct);
+                    await _sellerProductRepo.UpdateAsync(id, sellerProduct);
                     return RedirectToAction(nameof(Index));
                 }
                 catch
@@ -286,7 +286,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 return RedirectToAction("Index");
             }
 
-            var sellerProduct = _sellerProductRepo.GetDetails(id);
+            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id);
             if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
             {
                 return RedirectToAction("Index");
@@ -321,7 +321,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 return RedirectToAction("Index");
             }
 
-            var sellerProduct = _sellerProductRepo.GetDetails(id);
+            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id);
             if (sellerProduct == null || !(sellerProduct.SellerId == User.GetUserId()))
             {
                 return RedirectToAction("Index");
@@ -329,7 +329,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
             try
             {
-                _sellerProductRepo.Delete(sellerProduct.Id);
+                await _sellerProductRepo.DeleteAsync(sellerProduct.Id);
             }
 
             catch
