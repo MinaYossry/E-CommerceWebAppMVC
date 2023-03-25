@@ -10,7 +10,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
 {
     public class AddProductViewModel
     {
-        public int SerialNumber { get; set; }
+        public int SerialNumber { get; set; } 
 
         [StringLength(100, ErrorMessage = "Name can't be more that 100 letters")]
         public string ProductName { get; set; } = string.Empty;
@@ -26,6 +26,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
         [DisplayName("Brand")]
         public int BrandId { get; set; }
 
+        [DisplayName("Product Image")]
         public IFormFile formFile { get; set; }
 
         [HiddenInput]
