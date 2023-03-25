@@ -19,6 +19,6 @@ namespace FinalProjectMVC.Models
         [ForeignKey(nameof(Review))]
         public int ReviewId { get; set; }
 
-        public Review? Review { get; set; }
+        public virtual Review? Review { get; set; }
     }
 }
