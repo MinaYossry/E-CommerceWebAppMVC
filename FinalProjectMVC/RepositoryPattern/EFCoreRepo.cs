@@ -48,7 +48,7 @@ namespace FinalProjectMVC.RepositoryPattern
             return _context.Set<T>().ToList();
         }
 
-        public List<T> Filter(Func<T, bool> filterPredicate)
+        public virtual List<T> Filter(Func<T, bool> filterPredicate)
         {
             return _context.Set<T>().Where(filterPredicate).ToList();
         }
