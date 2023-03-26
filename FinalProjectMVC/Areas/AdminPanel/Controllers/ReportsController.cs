@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
+using FinalProjectMVC.Areas.AdminPanel.ViewModel;
+using Castle.Core.Resource;
+using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
@@ -26,8 +29,33 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         // GET: AdminPanel/Reports
         public async Task<IActionResult> Index()
         {
+
+            var viewMode = new List<AdminReportsReviewsViewModel>();
+
             var ReportsList = (await reportRepo.GetAllAsync()).OrderBy(x => x.IsSolved).ToList();
-            return View(ReportsList);
+
+            foreach (var Report in ReportsList)
+            {
+                viewMode.Add(new()
+                    {
+                        ReportId = Report.Id,
+                        Name = Report.Name,
+                        Description = Report.Description,
+                        IsSolved = Report.IsSolved,
+                        CreatedDate = Report.CreatedDate,
+                        ReviewId = Report.ReviewId,
+                        ReviewName = Report.Review?.Name ?? "",
+                        ReviewDescription = Report.Review?.Description ?? "",
+                        SellerId = Report.Review?.SellerId ?? "",
+                        SellerName = $"{Report.Review?.Seller?.ApplicationUser?.FirstName} {Report.Review?.Seller?.ApplicationUser?.LastName}",
+                        CustomerId = Report.Review?.CustomerId ?? "",
+                        CustomerName = $"{Report.Review?.Customer?.ApplicationUser?.FirstName} {Report.Review?.Customer?.ApplicationUser?.LastName}",
+                }
+                );
+            }
+
+
+            return View(viewMode);
         }
 
         // GET: AdminPanel/Reports/Details/5
