@@ -42,6 +42,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                         Name = Report.Name,
                         Description = Report.Description,
                         IsSolved = Report.IsSolved,
+                        SolveDate = Report.SolveDate,
                         CreatedDate = Report.CreatedDate,
                         ReviewId = Report.ReviewId,
                         ReviewName = Report.Review?.Name ?? "",
@@ -113,6 +114,42 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAsSolved(int id)
+        {
+            // Find the report with the given ID
+            var report = await reportRepo.GetDetailsAsync(id);
+            if (report is null)
+            {
+                return NotFound();
+            }
+
+            // If the report is already marked as solved, return an error
+            if (report.IsSolved)
+            {
+                ModelState.AddModelError("", "This report has already been marked as solved.");
+            }
+
+            // Update the "IsSolved" property of the report and save the changes to the database
+            else
+            {
+                report.IsSolved = true;
+                report.SolveDate = DateTime.Now;
+                try
+                {
+                    await reportRepo.UpdateAsync(id, report);
+                }
+                catch
+                {
+                    throw new Exception("Couldn't update report");
+                }
+            }
+
+            // Redirect to the report list page
+            return RedirectToAction("Index");
         }
 
         private bool ReportExists(int id)

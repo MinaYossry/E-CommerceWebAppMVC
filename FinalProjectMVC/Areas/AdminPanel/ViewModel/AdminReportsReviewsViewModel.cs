@@ -12,7 +12,9 @@ namespace FinalProjectMVC.Areas.AdminPanel.ViewModel
 
         public required string Description { get; set; }
 
-        public bool IsSolved { get; set; } = false;
+        public bool IsSolved { get; set; }
+
+        public DateTime? SolveDate { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
