@@ -48,42 +48,43 @@
                         @* Important NOTE: IsInAnyRole is an extension method we created
                                 based on .IsInRole()
                         *@
-                        @if (User.IsInAnyRole("Admin", "Seller"))
+@*                        @if (User.IsInAnyRole("Admin", "Seller"))
                         {
                         <li class="nav-item">
                             <a class="nav-link active" asp-area="SellerPanel" asp-controller="Products" asp-action="Index" aria-current="page">SellerProducts</a>
                         </li>
-                        }
+                        }*@
 
-                        @{
-                            var Categories = _context.Categories.Include(C => C.SubCategories).ToList();
+                      @*  @{
+                            //var Categories = _context.Categories.Include(C => C.SubCategories).ToList();
 
-                            foreach (var category in Categories)
-                            {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        @category.Name
-                                    </a>
+                            //foreach (var category in Categories)
+                            //{
+                            //    <li class="nav-item dropdown">
+                            //        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            //            @category.Name
+                            //        </a>
 
-                                    @if (category.SubCategories is not null)
-                                    {
-                                        <ul class="dropdown-menu">
-                                            @foreach (var item in category.SubCategories)
-                                            {
-                                                <li><a class="dropdown-item" href="#">@item.Name</a></li>
-                                            }
-                                        </ul>
-                                    }
-                                </li>
-                            }
-                        }
+                            //        //@if (category.SubCategories is not null)
+                            //        //{
+                            //        //    <ul class="dropdown-menu">
+                            //        //        @foreach (var item in category.SubCategories)
+                            //        //        {
+                            //        //            <li><a class="dropdown-item" href="#">@item.Name</a></li>
+                            //        //        }
+                            //        //    </ul>
+                            //        //}
+                            //    </li>
+                            //}
+                       // }
+                       *@
                     </ul>
                     <form class="d-flex" role="search">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
 
-                    @if (SignInManager.IsSignedIn(User))
+@*                    @if (SignInManager.IsSignedIn(User))
                     {
                         <form    class="m-1 d-flex">
                             <button class="btn btn-outline-dark" type="submit">
@@ -92,7 +93,7 @@
                                 <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
                             </button>
                         </form>
-                    }
+                    }*@
 
                     <partial name="_LoginPartial" />
                 </div>
