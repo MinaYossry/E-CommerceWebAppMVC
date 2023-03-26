@@ -12,11 +12,11 @@ using FinalProjectMVC.Areas.Identity.Data;
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
-    public class SubCategoriesController : BaseController
+    public class SubCategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public SubCategoriesController(ApplicationDbContext context):base(context)
+        public SubCategoriesController(ApplicationDbContext context)
         {
             _context = context;
         }

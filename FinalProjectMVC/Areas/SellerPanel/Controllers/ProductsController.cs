@@ -53,7 +53,6 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             if (User.Identity?.IsAuthenticated == true && User.IsInRole(Roles.Seller.ToString()))
             {
                 var UserID = User.GetUserId();
-
                 var ProductList = await _sellerProductRepo.FilterAsync(p => p.SellerId == UserID);
 
                 return View(ProductList);

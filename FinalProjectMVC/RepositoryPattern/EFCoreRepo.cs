@@ -2,7 +2,7 @@
 
 namespace FinalProjectMVC.RepositoryPattern
 {
-    public class EFCoreRepo<T> : IRepository<T>
+    public abstract class EFCoreRepo<T> : IRepository<T>
         where T : class
     {
         protected readonly DbContext _context;

@@ -7,24 +7,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
+using FinalProjectMVC.RepositoryPattern;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
-    public class ReportsController : BaseController
+    public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IRepository<Report> reportRepo;
 
-        public ReportsController(ApplicationDbContext context):base(context)
+        public ReportsController(ApplicationDbContext context, IRepository<Report> reportRepo)
         {
             _context = context;
+            this.reportRepo = reportRepo;
         }
 
         // GET: AdminPanel/Reports
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reports.Include(r => r.Review);
-            return View(await applicationDbContext.ToListAsync());
+            var ReportsList = (await reportRepo.GetAllAsync()).OrderBy(x => x.IsSolved).ToList();
+            return View(ReportsList);
         }
 
         // GET: AdminPanel/Reports/Details/5

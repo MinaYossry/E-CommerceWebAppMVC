@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using FinalProjectMVC.RepositoryPattern;
+@inject IRepository<Report> _reportRepo;
+
+@{
+    var Reports = _reportRepo.Filter(r => !r.IsSolved);
+    var DiplayedReports = Reports.Take(3);
+}
+
+<!DOCTYPE html>
 <html>
 <head>
 
@@ -71,47 +79,27 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-bell"></i>
-                        <span class="badge badge-warning navbar-badge">@ViewBag.ReportsCount</span>
+                        <span class="badge badge-warning navbar-badge">@Reports.Count</span>
                     </a>
 
+                        
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <span class="dropdown-item dropdown-header">@ViewBag.ReportsCount Reports</span>
+                        <span class="dropdown-item dropdown-header">@Reports.Count Reports</span>
 
-                        @*Handle Report Area*@
-                        @if (ViewBag.ReportsCount > 0)
+
+                        @foreach (Report item in DiplayedReports)
                         {
                             <div class="dropdown-divider"></div>
                             <a href="#" class="dropdown-item">
-                                <i class="fas fa-file mr-2"></i>  @ViewBag.Report1ProductName
-                                <span class="float-right text-muted text-sm"> @ViewBag.Report1CreatedDate</span>
+                                <i class="fas fa-file mr-2"></i>  @item.Name
+                                <span class="float-right text-muted text-sm"> @item.CreatedDate</span>
                             </a>
+                        }
 
-                            @if (ViewBag.ReportsCount > 1)
-                            {
-                                <div class="dropdown-divider"></div>
-                                <a href="#" class="dropdown-item">
-                                    <i class="fas fa-file mr-2"></i>  @ViewBag.Report2ProductName
-                                    <span class="float-right text-muted text-sm"> @ViewBag.Report2CreatedDate</span>
-                                </a>
-
-
-                                @if (ViewBag.ReportsCount > 2)
-                                {
-
-
-                                    <div class="dropdown-divider"></div>
-                                    <a href="#" class="dropdown-item">
-                                        <i class="fas fa-file mr-2"></i>  @ViewBag.Report3ProductName
-                                        <span class="float-right text-muted text-sm"> @ViewBag.Report3CreatedDate</span>
-                                    </a>
-
-                                }
-                            }
-                            @if (ViewBag.ReportsCount > 3)
-                            {
-                                <div class="dropdown-divider"></div>
-                                <a asp-area="AdminPanel" asp-controller="Reports" asp-action="Index" class="dropdown-item dropdown-footer">See All Reports</a>
-                            }
+                        @if (Reports.Count > 3)
+                        {
+                            <div class="dropdown-divider"></div>
+                            <a asp-area="AdminPanel" asp-controller="Reports" asp-action="Index" class="dropdown-item dropdown-footer">See All Reports</a>
                         }
 
                     </div>
@@ -281,149 +269,13 @@
                     </div>
 
 
-                    <div class="row">
-
-                        @*<section class="col-lg-7 connectedSortable">
-
-
-
-                        <div class="card">
-                        <div class="card-header">
-                        <h3 class="card-title">
-                        <i class="ion ion-clipboard mr-1"></i>
-                        To Do List
-                        </h3>
-                        <div class="card-tools">
-                        <ul class="pagination pagination-sm">
-                        <li class="page-item"><a href="#" class="page-link">&laquo;</a></li>
-                        <li class="page-item"><a href="#" class="page-link">1</a></li>
-                        <li class="page-item"><a href="#" class="page-link">2</a></li>
-                        <li class="page-item"><a href="#" class="page-link">3</a></li>
-                        <li class="page-item"><a href="#" class="page-link">&raquo;</a></li>
-                        </ul>
-                        </div>
-                        </div>
-
-                        <div class="card-body">
-                        <ul class="todo-list" data-widget="todo-list">
-                        <li>
-
-                        <span class="handle">
-                        <i class="fas fa-ellipsis-v"></i>
-                        <i class="fas fa-ellipsis-v"></i>
-                        </span>
-
-                        <div class="icheck-primary d-inline ml-2">
-                        <input type="checkbox" value="" name="todo1" id="todoCheck1">
-                        <label for="todoCheck1"></label>
-                        </div>
-
-                        <span class="text">Design a nice theme</span>
-
-                        <small class="badge badge-danger"><i class="far fa-clock"></i> 2 mins</small>
-
-                        <div class="tools">
-                        <i class="fas fa-edit"></i>
-                        <i class="fas fa-trash-o"></i>
-                        </div>
-                        </li>
-                        <li>
-                        <span class="handle">
-                        <i class="fas fa-ellipsis-v"></i>
-                        <i class="fas fa-ellipsis-v"></i>
-                        </span>
-                        <div class="icheck-primary d-inline ml-2">
-                        <input type="checkbox" value="" name="todo2" id="todoCheck2" checked>
-                        <label for="todoCheck2"></label>
-                        </div>
-                        <span class="text">Make the theme responsive</span>
-                        <small class="badge badge-info"><i class="far fa-clock"></i> 4 hours</small>
-                        <div class="tools">
-                        <i class="fas fa-edit"></i>
-                        <i class="fas fa-trash-o"></i>
-                        </div>
-                        </li>
-                        <li>
-                        <span class="handle">
-                        <i class="fas fa-ellipsis-v"></i>
-                        <i class="fas fa-ellipsis-v"></i>
-                        </span>
-                        <div class="icheck-primary d-inline ml-2">
-                        <input type="checkbox" value="" name="todo3" id="todoCheck3">
-                        <label for="todoCheck3"></label>
-                        </div>
-                        <span class="text">Let theme shine like a star</span>
-                        <small class="badge badge-warning"><i class="far fa-clock"></i> 1 day</small>
-                        <div class="tools">
-                        <i class="fas fa-edit"></i>
-                        <i class="fas fa-trash-o"></i>
-                        </div>
-                        </li>
-                        <li>
-                        <span class="handle">
-                        <i class="fas fa-ellipsis-v"></i>
-                        <i class="fas fa-ellipsis-v"></i>
-                        </span>
-                        <div class="icheck-primary d-inline ml-2">
-                        <input type="checkbox" value="" name="todo4" id="todoCheck4">
-                        <label for="todoCheck4"></label>
-                        </div>
-                        <span class="text">Let theme shine like a star</span>
-                        <small class="badge badge-success"><i class="far fa-clock"></i> 3 days</small>
-                        <div class="tools">
-                        <i class="fas fa-edit"></i>
-                        <i class="fas fa-trash-o"></i>
-                        </div>
-                        </li>
-                        <li>
-                        <span class="handle">
-                        <i class="fas fa-ellipsis-v"></i>
-                        <i class="fas fa-ellipsis-v"></i>
-                        </span>
-                        <div class="icheck-primary d-inline ml-2">
-                        <input type="checkbox" value="" name="todo5" id="todoCheck5">
-                        <label for="todoCheck5"></label>
-                        </div>
-                        <span class="text">Check your messages and notifications</span>
-                        <small class="badge badge-primary"><i class="far fa-clock"></i> 1 week</small>
-                        <div class="tools">
-                        <i class="fas fa-edit"></i>
-                        <i class="fas fa-trash-o"></i>
-                        </div>
-                        </li>
-                        <li>
-                        <span class="handle">
-                        <i class="fas fa-ellipsis-v"></i>
-                        <i class="fas fa-ellipsis-v"></i>
-                        </span>
-                        <div class="icheck-primary d-inline ml-2">
-                        <input type="checkbox" value="" name="todo6" id="todoCheck6">
-                        <label for="todoCheck6"></label>
-                        </div>
-                        <span class="text">Let theme shine like a star</span>
-                        <small class="badge badge-secondary"><i class="far fa-clock"></i> 1 month</small>
-                        <div class="tools">
-                        <i class="fas fa-edit"></i>
-                        <i class="fas fa-trash-o"></i>
-                        </div>
-                        </li>
-                        </ul>
-                        </div>
-
-                        <div class="card-footer clearfix">
-                        <button type="button" class="btn btn-primary float-right"><i class="fas fa-plus"></i> Add item</button>
-                        </div>
-                        </div>
-
-                        </section>*@
-                        <div>
-                            @RenderBody()
-                        </div>
-                    </div>
-
                 </div>
             </section>
 
+            <div>
+
+                @RenderBody()
+            </div>
         </div>
 
         <footer class="main-footer">

@@ -10,14 +10,14 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
 
-    public class AdminController : BaseController
+    public class AdminController : Controller
         {
             private readonly UserManager<ApplicationUser> _userManager;
             private readonly RoleManager<IdentityRole> _roleManager;
 
 
             public AdminController(UserManager<ApplicationUser> userManager,
-                RoleManager<IdentityRole> roleManager, ApplicationDbContext context):base(context)
+                RoleManager<IdentityRole> roleManager)
             {
                 _userManager = userManager;
                 _roleManager = roleManager;
