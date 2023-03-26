@@ -23,8 +23,7 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
             SignInManager<ApplicationUser> signInManager,
             ILogger<ResetAuthenticatorModel> logger)
         {
-            _
-                = userManager;
+            _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
         }

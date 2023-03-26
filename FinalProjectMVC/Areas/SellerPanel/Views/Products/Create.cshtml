@@ -1,72 +1,102 @@
-﻿@using System.Security.Claims;
-@model FinalProjectMVC.Areas.SellerPanel.Models.Product
-
+﻿@model FinalProjectMVC.Areas.SellerPanel.ViewModel.AddProductViewModel
 
 @{
-    ViewData["Title"] = "Create";
-    var UserID = User.FindFirstValue(ClaimTypes.NameIdentifier);
+ViewData["Title"] = "Add New Product";
 }
 
-<h1>Create</h1>
-
-<h4>Product</h4>
+<h1>Add New Product</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <form class="row" asp-action="Create" enctype="multipart/form-data">
+        <div class="col-md-6">
 
-            <input name="SellerID" id="SellerID" hidden class="form-control" aria-required="true" value="@UserID" />
+            <input hidden asp-for="SellerID" class="form-control" />
 
             <div class="form-group">
                 <label asp-for="SerialNumber" class="control-label"></label>
                 <input asp-for="SerialNumber" class="form-control" />
                 <span asp-validation-for="SerialNumber" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
+                <label asp-for="ProductName" class="control-label"></label>
+                <input asp-for="ProductName" class="form-control" />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label class="control-label">Price</label>
-                <input name="Price" id="Price" required type="number" class="form-control" />
+                <label asp-for="ProductDescription" class="control-label"></label>
+                <input asp-for="ProductDescription" class="form-control" />
+                <span asp-validation-for="ProductDescription" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label class="control-label">Count</label>
-                <input name="Count" id="Count" required type="number" class="form-control" />
-            </div>
-
-
-            @Html.LabelFor(model => model.ProductImage)
-            <input type="file" name="file" id="file" class="form-control" />
-            
             <div class="form-group">
                 <label asp-for="SubCategoryId" class="control-label"></label>
-                <select asp-for="SubCategoryId" class ="form-control" asp-items="ViewBag.SubCategoryId"></select>
+                <select asp-for="SubCategoryId" class="form-control" asp-items="Model.SubCategories"></select>
             </div>
+
             <div class="form-group">
                 <label asp-for="BrandId" class="control-label"></label>
-                <select asp-for="BrandId" class ="form-control" asp-items="ViewBag.BrandId"></select>
+                <select asp-items="Model.Brands" asp-for="BrandId" class="form-control"></select>
             </div>
-            <div class="form-group">
+
+            <div class="form-group mt-2">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
-        </form>
-    </div>
+
+            <div>
+                <a asp-action="Index" class="btn btn-secondary mt-2">Back to List</a>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" min="0" step="0.01" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Count" class="control-label"></label>
+                <input asp-for="Count" min="0" step="1" class="form-control" />
+                <span asp-validation-for="Count" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="formFile" class="control-label"></label>
+                <input asp-for="formFile" class="form-control" onchange="previewImage(this)" accept="image/*" />
+                <span asp-validation-for="formFile" class="text-danger"></span>
+                <br />
+                <img id="preview" src="#" alt="Image Preview" style="display:none;width:200px;" />
+            </div>
+
+            
+        </div>
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+        
+    </form>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#preview').attr('src', e.target.result);
+                $('#preview').show();
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

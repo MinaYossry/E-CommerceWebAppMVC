@@ -4,6 +4,7 @@ using FinalProjectMVC.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinalProjectMVC.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230326120152_FixReportsAndReviews55")]
+    partial class FixReportsAndReviews55
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,7 +35,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admins", (string)null);
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.AdminPanel.Models.Category", b =>
@@ -50,7 +53,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.AdminPanel.Models.SubCategory", b =>
@@ -73,7 +76,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("SubCategories", (string)null);
+                    b.ToTable("SubCategories");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.Identity.Data.ApplicationUser", b =>
@@ -188,7 +191,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("SubCategoryId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Seller", b =>
@@ -205,7 +208,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sellers", (string)null);
+                    b.ToTable("Sellers");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.SellerProduct", b =>
@@ -236,7 +239,7 @@ namespace FinalProjectMVC.Data.Migrations
                     b.HasIndex("SellerId", "ProductId")
                         .IsUnique();
 
-                    b.ToTable("SellerProducts", (string)null);
+                    b.ToTable("SellerProducts");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Address", b =>
@@ -281,7 +284,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Brand", b =>
@@ -299,7 +302,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands", (string)null);
+                    b.ToTable("Brands");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.CartItem", b =>
@@ -339,7 +342,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Order", b =>
@@ -369,7 +372,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.OrderItem", b =>
@@ -430,7 +433,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("ReviewId");
 
-                    b.ToTable("Reports", (string)null);
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Review", b =>

@@ -1,5 +1,7 @@
-﻿@using FinalProjectMVC.Areas.Identity.Data;
+﻿@using FinalProjectMVC.Areas.AdminPanel.Models;
+@using FinalProjectMVC.Areas.Identity.Data;
 @using FinalProjectMVC.ExtensionMethods;
+@using FinalProjectMVC.RepositoryPattern;
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +9,7 @@
 
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
-@inject ApplicationDbContext _context
+@inject IRepository<Category> _categoryRepo
 
 <!DOCTYPE html>
 
@@ -32,13 +34,13 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                         @*  @if (User.Identity.IsAuthenticated)
-                                { }
+                        { }
                         *@
-                       
+
                         <li class="nav-item">
                             <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index" aria-current="page">Home</a>
                         </li>
-                        
+
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
@@ -46,17 +48,17 @@
                             </li>
                         }
                         @* Important NOTE: IsInAnyRole is an extension method we created
-                                based on .IsInRole()
+                        based on .IsInRole()
                         *@
-                        @if (User.IsInAnyRole("Admin", "Seller"))
+                        @if (User.IsInRole("Seller"))
                         {
-                        <li class="nav-item">
-                            <a class="nav-link active" asp-area="SellerPanel" asp-controller="Products" asp-action="Index" aria-current="page">SellerProducts</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" asp-area="SellerPanel" asp-controller="Products" asp-action="Index" aria-current="page">SellerProducts</a>
+                            </li>
                         }
 
                         @{
-                            var Categories = _context.Categories.Include(C => C.SubCategories).ToList();
+                            var Categories = _categoryRepo.GetAll();
 
                             foreach (var category in Categories)
                             {
@@ -77,22 +79,23 @@
                                 </li>
                             }
                         }
+
                     </ul>
                     <form class="d-flex" role="search">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
 
-                    @if (SignInManager.IsSignedIn(User))
+                    @*                    @if (SignInManager.IsSignedIn(User))
                     {
-                        <form    class="m-1 d-flex">
-                            <button class="btn btn-outline-dark" type="submit">
-                                <i class="bi-cart-fill me-1"></i>
-                                Cart
-                                <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-                            </button>
-                        </form>
-                    }
+                    <form    class="m-1 d-flex">
+                    <button class="btn btn-outline-dark" type="submit">
+                    <i class="bi-cart-fill me-1"></i>
+                    Cart
+                    <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                    </button>
+                    </form>
+                    }*@
 
                     <partial name="_LoginPartial" />
                 </div>
@@ -111,6 +114,6 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)   
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

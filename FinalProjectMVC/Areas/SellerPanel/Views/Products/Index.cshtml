@@ -18,121 +18,50 @@
     </div>
 }*@
 
-<div class="row my-5">
-  @*  <div class="container col-2 col-lg-2 border border-secondary border-2 rounded-2 p-2">
-        @foreach (var Category in Categories)
+@*<div class="container">
+    <h1>Product List</h1>
+    <div class="row">
+        @foreach (var product in Model)
         {
-            <h6>@Category.Name</h6>
-            <ul>
-                @if (Category.SubCategories is not null)
-                {
-                    foreach(var Sub in Category.SubCategories)
-                    {
-                        <li>@Sub.Name</li>
-                    }
-                }
-            </ul>
-        }
-        <hr/>
-        <h5>Brands</h5>
-        <ul>
-            @foreach (var Brand in Brands)
-            {
-                <li>@Brand.Name</li>
-            }
-        </ul>
-    </div>*@
-    <div class="container col-12">
-        <div class="row">
-            @foreach (var item in Model)
-            {
-                <div class="col-sm-4 mb-5">
+            <div class="col-md-4 mb-4">
                 <div class="card h-100">
-                    <!-- Product image-->
-                    @if (item.Product.ProductImage != null && item.Product.ProductImage.Length > 0)
-                    {
-                            <a asp-action="Details" asp-route-id="@item.Id"><img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(item.Product.ProductImage))" /></a>
-                    }
-                    <!-- Product details-->
-                    <div class="card-body p-4">
-                        <div class="text-center">
-                            <!-- Product name-->
-                                <p>@Html.DisplayFor(modelItem => item.Product.Brand.Name)</p>
-                                <h5 class="fw-bolder">@Html.DisplayFor(modelItem => item.Product.Name)</h5>
-                                <p class="">@Html.DisplayFor(modelItem => item.Product.Description)</p>
-                            
-                            <!-- Product price-->
-                                <p>Price: @Html.DisplayFor(modelItem => item.Price)</p>
-                                <p>Count: @Html.DisplayFor(modelItem => item.Count)</p>
-                        </div>
+                    <img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(product.Product.ProductImage ?? new byte[0]))" alt="Product Image">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Product.Name</h5>
+                        <p class="card-text">@product.Product.Description</p>
                     </div>
-                    <!-- Product actions-->
-                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                    <div class="card-footer">
+                        <small class="text-muted">@product.Product.SubCategory.Name - @product.Product.Brand.Name</small>
                     </div>
                 </div>
             </div>
-            }
-        </div>
+        }
     </div>
+</div>*@
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+    @foreach (var product in Model)
+    {
+        <div class="col mb-2">
+            <div class="card mt-2 h-100">
+                <div class="row g-0">
+                    <div class="col-4 d-flex align-items-center">
+                        <img class="card-img-top align-self-center" src="data:image;base64,@(Convert.ToBase64String(product.Product.ProductImage ?? new byte[0]))" alt="Product Image">
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Product.Name</h5>
+                            <p class="card-text">@product.Product.Description</p>
+                            <p class="card-text"><strong>Price:</strong> @product.Price</p>
+                            <p class="card-text"><strong>Count:</strong> @product.Count</p>
+                            <a asp-action="Details" asp-route-id="@product.Product.Id" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">@product.Product.SubCategory.Name - @product.Product.Brand.Name</small>
+                </div>
+            </div>
+        </div>
+    }
 </div>
-
-
-@*<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.SerialNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductImage)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubCategory)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SerialNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                    @if (item.ProductImage != null && item.ProductImage.Length > 0)
-                    {
-                        <img width="100" height="100" src="data:image;base64,@(Convert.ToBase64String(item.ProductImage))" />
-                    }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubCategory.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-*@
