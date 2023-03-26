@@ -8,37 +8,38 @@ using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.Areas.Identity.Data;
+using FinalProjectMVC.RepositoryPattern;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
     public class SubCategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        public IRepository<SubCategory> SubCategoryRepository { get; }
+        public IRepository<Category> CategoryRepository { get; }
 
-        public SubCategoriesController(ApplicationDbContext context)
+        public SubCategoriesController(IRepository<SubCategory> subCategoryRepository, IRepository<Category> categoryRepository)
         {
-            _context = context;
+            SubCategoryRepository = subCategoryRepository;
+            CategoryRepository = categoryRepository;
         }
 
         // GET: AdminPanel/SubCategories
         public async Task<IActionResult> Index()
         {
-            var ApplicationDbContext = _context.SubCategories.Include(s => s.Category);
-            return View(await ApplicationDbContext.ToListAsync());
+            var ApplicationDbContext = (await SubCategoryRepository.GetAllAsync());
+            return View(ApplicationDbContext);
         }
 
         // GET: AdminPanel/SubCategories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.SubCategories == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var subCategory = await _context.SubCategories
-                .Include(s => s.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var subCategory = (await SubCategoryRepository.GetDetailsAsync(id));
             if (subCategory == null)
             {
                 return NotFound();
@@ -48,9 +49,9 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         }
 
         // GET: AdminPanel/SubCategories/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(await CategoryRepository.GetAllAsync(), "Id", "Name");
             return View();
         }
 
@@ -63,28 +64,34 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(subCategory);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    await SubCategoryRepository.InsertAsync(subCategory);
+                }
+                catch
+                {
+                    throw new Exception("Couldn't insert new subCategory");
+                }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", subCategory.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await CategoryRepository.GetAllAsync(), "Id", "Name");
             return View(subCategory);
         }
 
         // GET: AdminPanel/SubCategories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.SubCategories == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var subCategory = await _context.SubCategories.FindAsync(id);
+            var subCategory = (await SubCategoryRepository.GetDetailsAsync(id));
             if (subCategory == null)
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", subCategory.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await CategoryRepository.GetAllAsync(), "Id", "Name", subCategory.CategoryId);
             return View(subCategory);
         }
 
@@ -104,8 +111,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             {
                 try
                 {
-                    _context.Update(subCategory);
-                    await _context.SaveChangesAsync();
+                    await SubCategoryRepository.UpdateAsync(id, subCategory);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -120,21 +126,19 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", subCategory.CategoryId);
+            ViewData["CategoryId"] = new SelectList(await CategoryRepository.GetAllAsync(), "Id", "Name", subCategory.CategoryId);
             return View(subCategory);
         }
 
         // GET: AdminPanel/SubCategories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.SubCategories == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var subCategory = await _context.SubCategories
-                .Include(s => s.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var subCategory = (await SubCategoryRepository.GetDetailsAsync(id));
             if (subCategory == null)
             {
                 return NotFound();
@@ -148,23 +152,26 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.SubCategories == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.SubCategories'  is null.");
-            }
-            var subCategory = await _context.SubCategories.FindAsync(id);
+            var subCategory = (await SubCategoryRepository.GetDetailsAsync(id));
             if (subCategory != null)
             {
-                _context.SubCategories.Remove(subCategory);
+                try
+                {
+
+                    await SubCategoryRepository.DeleteAsync(subCategory.Id);
+                }
+                catch
+                {
+                    throw new Exception("Sorry, Couldn't Delete Sub Category");
+                }
             }
             
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool SubCategoryExists(int id)
         {
-          return (_context.SubCategories?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (SubCategoryRepository.GetAll()?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
