@@ -12,7 +12,14 @@
             <div class="card-header" id="@($"heading{item.ReportId}")">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="@($"#collapse{item.ReportId}")" aria-expanded="false" aria-controls="@($"collapse{item.ReportId}")">
-                        Report: #@item.ReportId  |  @item.Name  |  @item.SellerName  |  @item.CreatedDate
+                        <span class="font-weight-bold">Report:</span> #@item.ReportId
+                        <span class="text-muted">|</span>
+                        <span class="font-weight-bold">@item.Name</span>
+                        <div class="ml-auto">
+                            <span class="font-weight-bold">@item.SellerName</span>
+                            <span class="text-muted">|</span>
+                            <span class="font-italic">@item.CreatedDate</span>
+                        </div>
                         <span class="badge badge-pill float-right @((item.IsSolved) ? "badge-success" : "badge-danger")">
                             @((item.IsSolved) ? "Solved" : "Unsolved")
                         </span>
@@ -29,9 +36,15 @@
                             <div class="card-header" id="@($"heading{item.ReportId}{item.ReviewId}{item.Name}")">
                                 <h2 class="mb-0">
                                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="@($"#collapse{item.ReportId}{item.ReviewId}{item.Name}")" aria-expanded="false" aria-controls="@($"collapse{item.ReportId}{item.ReviewId}{item.Name}")">
-                                        Review: #@item.ReviewId  |  @item.ReviewName  |  @item.CustomerName 
+                                        <span class="font-weight-bold">Review:</span> #@item.ReviewId
+                                        <span class="text-muted">|</span>
+                                        <span class="font-weight-bold">@item.ReviewName</span>
+                                        <div class="ml-auto">
+                                            <span class="font-weight-bold">@item.CustomerName</span>
+                                        </div>
                                     </button>
                                 </h2>
+
                             </div>
 
                             <div id="@($"collapse{item.ReportId}{item.ReviewId}{item.Name}")" class="collapse" aria-labelledby="@($"heading{item.ReportId}{item.ReviewId}{item.Name}")" data-parent="#innerAccordion">
