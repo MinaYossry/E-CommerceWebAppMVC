@@ -42,7 +42,15 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .HasOne(p => p.Review)
                 .WithMany(s => s.Reports)
                 .HasForeignKey(p => p.ReviewId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Report>()
+                .Property(r => r.CreatedDate)
+                .HasDefaultValueSql("getdate()");
+
+            builder.Entity<Review>()
+                .Property(r => r.CreatedDate)
+                .HasDefaultValueSql("getdate()");
 
 
             //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();

@@ -8,37 +8,35 @@ using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.Areas.Identity.Data;
+using FinalProjectMVC.RepositoryPattern;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
     public class CategoriesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        public IRepository<Category> CategoryRepository { get; }
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(IRepository<Category> categoryRepository)
         {
-            _context = context;
+            CategoryRepository = categoryRepository;
         }
 
         // GET: AdminPanel/Categories
         public async Task<IActionResult> Index()
         {
-              return _context.Categories != null ? 
-                          View(await _context.Categories.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
+            return View(await CategoryRepository.GetAllAsync());
         }
 
         // GET: AdminPanel/Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await CategoryRepository.GetDetailsAsync(id);
             if (category == null)
             {
                 return NotFound();
@@ -62,8 +60,14 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
+                try
+                {
+                    await CategoryRepository.InsertAsync(category);
+                }
+                catch
+                {
+                    throw new Exception("Sorry, Couldn't add category");
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -72,12 +76,12 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         // GET: AdminPanel/Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
+            var category = await CategoryRepository.GetDetailsAsync(id);
             if (category == null)
             {
                 return NotFound();
@@ -101,8 +105,15 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             {
                 try
                 {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    try
+                    {
+                        await CategoryRepository.UpdateAsync(id, category);
+                    }
+                    catch
+                    {
+                        throw new Exception("Sorry, Couldn't update category");
+                    }
+                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -123,13 +134,12 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         // GET: AdminPanel/Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await CategoryRepository.GetDetailsAsync(id);
             if (category == null)
             {
                 return NotFound();
@@ -143,23 +153,25 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Categories == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
-            }
-            var category = await _context.Categories.FindAsync(id);
+            var category = await CategoryRepository.GetDetailsAsync(id);
             if (category != null)
             {
-                _context.Categories.Remove(category);
+                try
+                {
+                    await CategoryRepository.DeleteAsync(id);
+                }
+                catch
+                {
+                    throw new Exception("Sorry, Couldn't Delete category");
+                }
+
             }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CategoryExists(int id)
         {
-          return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (CategoryRepository.GetAll()?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
