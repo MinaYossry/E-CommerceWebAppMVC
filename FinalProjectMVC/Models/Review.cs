@@ -17,6 +17,7 @@ namespace FinalProjectMVC.Models
         public int Rating { get; set; }
 
         [ReadOnly(true)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         [ForeignKey(nameof(Customer))]
