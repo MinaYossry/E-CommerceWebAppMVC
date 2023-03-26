@@ -1,10 +1,6 @@
 ﻿using FinalProjectMVC.Areas.AdminPanel.Models;
-using FinalProjectMVC.Areas.AdminPanel.ViewModel;
 using FinalProjectMVC.Areas.Identity.Data;
-using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Constants;
-using FinalProjectMVC.Models;
-using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,77 +9,38 @@ using Microsoft.EntityFrameworkCore;
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
-    [Authorize(Roles = "Admin")]
+
     public class AdminController : Controller
-    {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IRepository<Order> orderRepo;
-        private readonly IRepository<Product> productRepo;
-        private readonly IRepository<Seller> sellerRepo;
-        private readonly IRepository<Customer> customerRepo;
-
-        public AdminController(
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            IRepository<Order> orderRepo,
-            IRepository<Product> productRepo,
-            IRepository<Seller> sellerRepo,
-            IRepository<Customer> customerRepo
-            )
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
-            this.orderRepo = orderRepo;
-            this.productRepo = productRepo;
-            this.sellerRepo = sellerRepo;
-            this.customerRepo = customerRepo;
-        }
+            private readonly UserManager<ApplicationUser> _userManager;
+            private readonly RoleManager<IdentityRole> _roleManager;
 
-        public async Task<ActionResult> Index()
-        {
-            var ViewModel = new AdminStatsViewModel()
+
+            public AdminController(UserManager<ApplicationUser> userManager,
+                RoleManager<IdentityRole> roleManager)
             {
-                NewOrders = (await orderRepo.GetAllAsync()).Count,
-                NewProducts = (await productRepo.GetAllAsync()).Count,
-                Sellers = (await sellerRepo.GetAllAsync()).Count,
-                Customers = (await customerRepo.GetAllAsync()).Count
-            };
+                _userManager = userManager;
+                _roleManager = roleManager;
+            }
 
-            //var OrdersCount = Context.Orders.Count();
-            //ViewBag.NewOrders = OrdersCount;
-
-            //var ProductsCount = Context.Products.Count();
-            //ViewBag.NewProducts = ProductsCount;
-
-            //var SellersCount = Context.Sellers.Count();
-            //ViewBag.Sellers = SellersCount;
-
-            //var CustomersCount = Context.Customers.Count();
-            //ViewBag.Customers = CustomersCount;
-
-            //var Reports = Context.Reports.Count();
-            //ViewBag.ReportsCount = Reports;
-            return View(ViewModel);
-        }
-
-
+            [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ManageUserRoles()
-        {
-            var users = await _userManager.Users.ToListAsync();
-            var roles = await _roleManager.Roles.ToListAsync();
-
-            var viewModel = new ManageUserRolesViewModel
             {
-                Users = users,
-                Roles = roles
-            };
+                var users = await _userManager.Users.ToListAsync();
+                var roles = await _roleManager.Roles.ToListAsync();
 
-            return View(viewModel);
-        }
+                var viewModel = new ManageUserRolesViewModel
+                {
+                    Users = users,
+                    Roles = roles
+                };
+
+                return View(viewModel);
+            }
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> SetUserRole(string SelectedUserId, string SelectedRoleId)
         {
             var user = await _userManager.FindByIdAsync(SelectedUserId);
@@ -119,5 +76,5 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 
 
     }
-
+    
 }

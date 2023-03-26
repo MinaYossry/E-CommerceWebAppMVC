@@ -44,7 +44,7 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link active" asp-area="AdminPanel" asp-controller="Admin" aria-current="page">Admin Dashboard</a>
+                                <a class="nav-link active" asp-area="AdminPanel" asp-controller="Admin" asp-action="ManageUserRoles" aria-current="page">AdminPage</a>
                             </li>
                         }
                         @* Important NOTE: IsInAnyRole is an extension method we created
