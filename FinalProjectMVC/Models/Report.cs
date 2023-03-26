@@ -19,6 +19,8 @@ namespace FinalProjectMVC.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
+        public DateTime? SolveDate { get; set; }
+
         [ForeignKey(nameof(Review))]
         public int ReviewId { get; set; }
 

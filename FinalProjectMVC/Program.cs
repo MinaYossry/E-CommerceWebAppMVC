@@ -72,6 +72,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #region Services using => Repository pattern scopes 
 
 builder.Services.AddScoped<IRepository<Admin>, AdminRepoService>();
+builder.Services.AddScoped<IRepository<Order>, OrderRepoService>();
 builder.Services.AddScoped<IRepository<Brand>, BrandRepoService>();
 builder.Services.AddScoped<IRepository<CartItem>, CartItemsRepoService>();
 builder.Services.AddScoped<IRepository<Category>, CategoryRepoService>();
