@@ -2,6 +2,7 @@
 using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace FinalProjectMVC.Controllers
@@ -19,7 +20,7 @@ namespace FinalProjectMVC.Controllers
 
         public IActionResult Index()
         {
-            ViewBag.Categories = _context.Categories.ToList();
+            ViewBag.Categories = _context.Categories.Include(c => c.SubCategories).ToList();
             ViewBag.Brands = _context.Brands.ToList();
             return View();
         }
@@ -27,6 +28,12 @@ namespace FinalProjectMVC.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public IActionResult showdata(int id)
+        {
+            var products = _context.Products.Where(p=>p.SubCategoryId== id).ToList();
+            return View(products);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
