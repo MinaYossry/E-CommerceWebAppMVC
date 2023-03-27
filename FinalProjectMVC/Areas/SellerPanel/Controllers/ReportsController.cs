@@ -100,7 +100,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
         private bool ReportExists(int id)
         {
-          return (_context.Reports?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Reports?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -1,0 +1,45 @@
+﻿@model FinalProjectMVC.Areas.SellerPanel.ViewModel.EditSellerProductViewModel
+
+@{
+    ViewData["Title"] = $"Edit {Model.Name}";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <div class="card shadow-lg border-0 rounded-lg">
+                @if(Model.ProductImage is not null )
+                {
+                    <img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(Model.ProductImage))" alt="@Model.Name">
+                }
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0 rounded-lg h-100">
+                <div class="card-body">
+                    <h2 class="fw-bold mb-4">@Model.Name</h2>
+                    <hr>
+                    <p class="mb-3">@Model.Description</p>
+                    <form asp-action="Edit" asp-route-SellerProductId="@Model.SellerProductId">
+                        <input type="text" hidden class="form-control" id="Name" name="Name" value="@Model.Name" />
+                        <div class="form-group">
+                            <label for="Count" class="form-label fw-bold mb-2">Count:</label>
+                            <input asp-for="Count" min="0" step="1" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Price" class="form-label fw-bold mb-2">Price:</label>
+                            <input asp-for="Price" min="0" step="0.01" class="form-control" />
+                        </div>
+
+                        <div asp-validation-summary="All" class="text-danger"></div>
+
+
+                        <br />
+                        <button type="submit" class="btn btn-primary me-2">Save Changes</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
