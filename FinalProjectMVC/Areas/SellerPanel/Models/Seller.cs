@@ -7,7 +7,6 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
 {
     public class Seller
     {
-
         [ForeignKey("ApplicationUser")]
         public required string Id { get; set; }
 

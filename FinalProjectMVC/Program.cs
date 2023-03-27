@@ -17,17 +17,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Main DB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
- 
+
 // Identity Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
-//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
-// Store Context
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    options.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
 #endregion
 
@@ -70,9 +63,16 @@ builder.Services.AddSingleton<IFileProvider>(new PhysicalFileProvider(
 
 
 
+//builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+// Store Context
+
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+
 #region Services using => Repository pattern scopes 
 
 builder.Services.AddScoped<IRepository<Admin>, AdminRepoService>();
+builder.Services.AddScoped<IRepository<Order>, OrderRepoService>();
 builder.Services.AddScoped<IRepository<Brand>, BrandRepoService>();
 builder.Services.AddScoped<IRepository<CartItem>, CartItemsRepoService>();
 builder.Services.AddScoped<IRepository<Category>, CategoryRepoService>();

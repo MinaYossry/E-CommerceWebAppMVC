@@ -21,6 +21,11 @@
 }
 else
 {
+        @* asp-route-x => creates a `query string parameter`called x 
+            It gets added to the `url` and helps us gain more info about the in-coming GET request.
+            In the case of `POST`, we would add the parameters in the `request body` as we 
+            normally do. 
+        *@
     <li class="nav-item">
         <a class="nav-link text-dark" asp-route-Customer="True" asp-area="Identity" asp-page="/Account/Register">Register</a>
     </li>

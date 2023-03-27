@@ -42,14 +42,22 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .HasOne(p => p.Review)
                 .WithMany(s => s.Reports)
                 .HasForeignKey(p => p.ReviewId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Report>()
+                .Property(r => r.CreatedDate)
+                .HasDefaultValueSql("getdate()");
+
+            builder.Entity<Review>()
+                .Property(r => r.CreatedDate)
+                .HasDefaultValueSql("getdate()");
 
 
-            builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
-            //builder.Entity<SellerProduct>().Navigation(s => s.Product).AutoInclude();
-            //builder.Entity<SellerProduct>().Navigation(s => s.Seller).AutoInclude();
-            builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
-            builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
+            //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
+            ////builder.Entity<SellerProduct>().Navigation(s => s.Product).AutoInclude();
+            ////builder.Entity<SellerProduct>().Navigation(s => s.Seller).AutoInclude();
+            //builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
+            //builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
         }
 
         public virtual DbSet<Product> Products { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using FinalProjectMVC.Areas.SellerPanel.Models;
 
@@ -15,7 +16,9 @@ namespace FinalProjectMVC.Models
         [Range(1,5)]
         public int Rating { get; set; }
 
-        public DateTime CreatedDate { get; } = DateTime.Now;
+        [ReadOnly(true)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         [ForeignKey(nameof(Customer))]
         public required string CustomerId { get; set; }
