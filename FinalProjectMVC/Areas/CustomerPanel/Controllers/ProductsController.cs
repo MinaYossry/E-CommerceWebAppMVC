@@ -58,39 +58,23 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         }
 
         // GET: SellerPanel/Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(List<Product> filtered_products)
         {
             /* We have to use Any instead of where, as FilterAsync expects a `boolen`
              * While `Where` returns a List.
              * 
              * We can repeat this query but use X.Count == 0 , to return out
              */
-            //var ProductList = await _productRepository
-            //    .FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0 ) ?? false);
-
-
-
-            //var productList = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
-
-            //foreach (var product in productList)
-            //{
-            //    var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
-            //    if (sellerProducts != null)
-            //    {
-            //        var lowestPrice = sellerProducts.Min(sp => sp.Price);
-            //        //product.LowestPrice = lowestPrice;
-            //        product.SellerWithLowestPrice = sellerProducts.FirstOrDefault(sp => sp.Price == lowestPrice)?.Seller?.Name;
-            //    }
-            //}
-
-            //return View(productList);
-
+            
 
             var products = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
+
+            //var filterdProducts = filtered_products.Where(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false).ToList();
             var viewModelList = new List<DisplayInStockProductsViewModel>();
 
             foreach (var product in products)
             {
+                // Gets all the sellers that sell the same product from the `SellerProduct` Table.
                 var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
 
                 if (sellerProducts != null)
