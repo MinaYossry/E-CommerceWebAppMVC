@@ -1,9 +1,172 @@
-﻿@model FinalProjectMVC.Areas.SellerPanel.ViewModel.DisplaySellerProductDetailesViewModel
+﻿
+@model FinalProjectMVC.Areas.CustomerPanel.ViewModel.DisplayInStockProductsViewModel
 
 @{
     ViewData["Title"] = $"Details of {Model.Name}";
 }
 
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(Model.ProductImage))" alt="@Model.Name">
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0 rounded-lg h-100">
+                <div class="card-body">
+                    <h2 class="fw-bold mb-4">@Model.Name</h2>
+                    <hr>
+                    <p class="mb-3">@Model.Description</p>
+                    <h4 class="fw-bold mb-3">Price: $@Model.Price</h4>
+                    <h4 class="fw-bold mb-3">Count: @Model.Count</h4>
+                    <!-- Choosing a seller section -->
+                    <div class="mb-3">
+                        <label for="sellerSelect" class="form-label">Choose a seller:</label>
+                        <select id="sellerSelect" class="form-select" onchange="updatePriceAndCount()">
+
+                            <option value="1">tamer</option>
+                            <option value="2">shady</option>
+
+
+                           @* @foreach (var seller in Model.Sellers)
+                            {
+                                
+                            }*@
+                        </select>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                    <!-- Add to cart button -->
+                    <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#cartModal">Add to Cart</button>
+
+
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+                </div>
+
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add to cart modal -->
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Add to Cart</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Quantity selection -->
+                <div class="mb-3">
+                    <label for="quantitySelect" class="form-label">Choose a quantity:</label>
+                    <select id="quantitySelect" class="form-select">
+                        @for (int i = 1; i <= Model.Count; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                </div>
+                <!-- Other stuff here -->
+            </div>
+            <div class="modal-footer">
+                <!-- Confirm button -->
+                <button type="button" class="btn btn-primary">Confirm</button>
+                <!-- Cancel button -->
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<form asp-action="Delete" asp-route-id="@Model.sellerProductWithLowestPrice.Id" method="post">
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal content here -->
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<!-- Reviews Section -->
+<div class="container py-5">
+    <h3 class="fw-bold mb-4">Reviews</h3>
+    <div class="row">
+        <div class="col-lg-12 mb-3">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-body">
+                    <h5 class="card-title">mohamed</h5>
+                    <p class="card-text">the product was soooo bad </p>
+                    <p class="card-text"><small class="text-muted">20/2/2020</small></p>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reportModal" data-review-id="5">Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Review Modal -->
+<form asp-action="ReportReview" method="post">
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Report Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="reviewId" name="reviewId" value="">
+                    <label for="reason" class="form-label">Reason for reporting</label>
+                    <textarea id="reason" name="reason" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*
 <div class="container py-5">
     <div class="row">
         <div class="col-lg-5 mb-4 mb-lg-0">
@@ -21,7 +184,7 @@
                     <h4 class="fw-bold mb-3">Count: @Model.Count</h4>
                 </div>
                 <div class="card-footer d-flex justify-content-end">
-                    <a href="@Url.Action("Edit", new {  id = Model.SellerProductId })" class="btn btn-primary me-2">Edit</a>
+                    <a href="@Url.Action("Edit", new {  id = Model.sellerProductWithLowestPrice.Id })" class="btn btn-primary me-2">Edit</a>
                     <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
                     <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
                 </div>
@@ -33,7 +196,7 @@
 
 
 <!-- Delete Confirmation Modal -->
-<form asp-action="Delete" asp-route-id="@Model.SellerProductId" method="post">
+<form asp-action="Delete" asp-route-id="@Model.sellerProductWithLowestPrice.Id" method="post">
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -52,3 +215,209 @@
         </div>
     </div>
 </form>
+
+
+
+<!-- Add select list for sellers -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="fw-bold mb-3">Choose a seller:</h4>
+            <!-- Use a form to submit the selected seller -->
+            <form asp-action="Details" asp-route-id="@Model.Id" method="get">
+                <!-- Use a select list to display the sellers' names -->
+                <select asp-for="" asp-items="@Model.Sellers" class="form-select me-2"></select>
+                <!-- Use a submit button to update the data -->
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add add to cart button and quantity selector -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Use a form to submit the quantity and add to cart -->
+            <form asp-action="AddToCart" asp-route-id="@Model.Id" method="post">
+                <!-- Use a number input to select the quantity -->
+                <label for="quantity" class="fw-bold me-2">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="@Model.Count" value="1" class="form-control me-2">
+                <!-- Use a button to add to cart -->
+                <button type="button" class="btn btn-success">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Reviews Section -->
+<div class="container py-5">
+    <h3 class="fw-bold mb-4">Reviews</h3>
+    <div class="row">
+        <div class="col-lg-12 mb-3">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-body">
+                    <h5 class="card-title">mohamed</h5>
+                    <p class="card-text">the product was soooo bad </p>
+                    <p class="card-text"><small class="text-muted">20/2/2020</small></p>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reportModal" data-review-id="5">Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Review Modal -->
+<form asp-action="ReportReview" method="post">
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Report Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="reviewId" name="reviewId" value="">
+                    <label for="reason" class="form-label">Reason for reporting</label>
+                    <textarea id="reason" name="reason" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+*@
+
+
+
+@******************** below we should add functionality************************@
+
+
+
+@*
+<!-- Add select list for sellers -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="fw-bold mb-3">Choose a seller:</h4>
+            <!-- Use a form to submit the selected seller -->
+            <form asp-action="Details" asp-route-id="@Model.Id" method="get">
+                <!-- Use a select list to display the sellers' names -->
+                <select asp-for="" asp-items="@Model.Sellers" class="form-select me-2"></select>
+                <!-- Use a submit button to update the data -->
+                <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add add to cart button and quantity selector -->
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Use a form to submit the quantity and add to cart -->
+            <form asp-action="AddToCart" asp-route-id="@Model.Id" method="post">
+                <!-- Use a number input to select the quantity -->
+                <label for="quantity" class="fw-bold me-2">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" max="@Model.Count" value="1" class="form-control me-2">
+                <!-- Use a button to add to cart -->
+                <button type="button" class="btn btn-success">Add to Cart</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Reviews Section -->
+<div class="container py-5">
+    <h3 class="fw-bold mb-4">Reviews</h3>
+    <div class="row">
+        @foreach (var review in Model.Reviews)
+        {
+            <div class="col-lg-12 mb-3">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-body">
+                        <h5 class="card-title">@review.CustomerName</h5>
+                        <p class="card-text">@review.Comment</p>
+                        <p class="card-text"><small class="text-muted">Posted on @review.Date</small></p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end">
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reportModal" data-review-id="@review.Id">Report</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Report Review Modal -->
+<form asp-action="ReportReview" method="post">
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Report Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="reviewId" name="reviewId" value="">
+                    <label for="reason" class="form-label">Reason for reporting</label>
+                    <textarea id="reason" name="reason" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+*@
+
+
+
+
+
+@*
+<!-- Add the following code to the card-body div of the product details card -->
+<!-- Sellers SelectList -->
+<div class="mb-3">
+    <label for="sellerId" class="form-label">Choose a seller</label>
+    <select id="sellerId" name="sellerId" class="form-select" onchange="updateProductDetails()">
+        @foreach (var seller in Model.Sellers)
+        {
+            if (seller.Id == Model.sellerProductWithLowestPrice.Id)
+            {
+                <option value="@seller.Id" selected>@seller.Name</option>
+            }
+            else
+            {
+                <option value="@seller.Id">@seller.Name</option>
+            }
+        }
+    </select>
+</div>
+
+<!-- Add to Cart Button and Quantity Input -->
+<div class="d-flex align-items-center mb-3">
+    <label for="quantity" class="form-label me-2">Quantity</label>
+    <input type="number" id="quantity" name="quantity" min="1" max="@Model.Count" value="1" class="form-control w-25 me-2">
+    <button type="button" id="addToCartBtn" name="addToCartBtn" onclick="addToCart()" class="btn btn-success">Add to Cart</button>
+</div>
+
+<!-- Add the following script tag to the end of the file -->
+
+<script src="~/js/productDetails.js"></script>
+
+
+*@

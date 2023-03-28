@@ -7,37 +7,7 @@
     List<Brand> Brands = ViewBag.Brands;
 }
 
-@*@section Header {
-    <div class="bg-dark py-5">
-        <div class="container px-4 px-lg-5 my-5">
-            <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Shop in style</h1>
-                <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
-            </div>
-        </div>
-    </div>
-}*@
 
-@*<div class="container">
-    <h1>Product List</h1>
-    <div class="row">
-        @foreach (var product in Model)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(product.Product.ProductImage ?? new byte[0]))" alt="Product Image">
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Product.Name</h5>
-                        <p class="card-text">@product.Product.Description</p>
-                    </div>
-                    <div class="card-footer">
-                        <small class="text-muted">@product.Product.SubCategory.Name - @product.Product.Brand.Name</small>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-</div>*@
 
 
 
@@ -85,8 +55,12 @@ else
 
 
 
+                                @* note that: product.Id here is the the real id for the product *@
+                                @*<a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary">View Details</a>*@
 
-                                <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary">View Details</a>
+                               @* now this is the `record` in the `sellerProduct` table where the cheapest is sold.*@
+                                <a asp-action="Details" asp-route-id="@product.sellerProductWithLowestPrice.Id" class="btn btn-primary">View Details</a>
+
                             </div>
                         </div>
                     </div>

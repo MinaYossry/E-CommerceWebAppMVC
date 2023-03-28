@@ -1,5 +1,7 @@
 ﻿
 
+using FinalProjectMVC.Areas.SellerPanel.Models;
+
 namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
 {
     public class DisplayInStockProductsViewModel
@@ -17,5 +19,8 @@ namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
         public string? Brand { get; set;  }
 
         public int Count { get; set; }
+
+
+        public SellerProduct? sellerProductWithLowestPrice { get; set; }
     }
 }
