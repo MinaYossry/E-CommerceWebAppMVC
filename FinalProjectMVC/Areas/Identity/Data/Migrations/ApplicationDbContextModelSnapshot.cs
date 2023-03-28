@@ -32,7 +32,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Admins");
+                    b.ToTable("Admins", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.AdminPanel.Models.Category", b =>
@@ -50,7 +50,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.AdminPanel.Models.SubCategory", b =>
@@ -73,7 +73,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("SubCategories");
+                    b.ToTable("SubCategories", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.Identity.Data.ApplicationUser", b =>
@@ -188,7 +188,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("SubCategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Seller", b =>
@@ -205,7 +205,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sellers");
+                    b.ToTable("Sellers", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.SellerProduct", b =>
@@ -236,7 +236,7 @@ namespace FinalProjectMVC.Data.Migrations
                     b.HasIndex("SellerId", "ProductId")
                         .IsUnique();
 
-                    b.ToTable("SellerProducts");
+                    b.ToTable("SellerProducts", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Address", b =>
@@ -281,7 +281,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Brand", b =>
@@ -299,7 +299,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.CartItem", b =>
@@ -339,7 +339,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Order", b =>
@@ -369,7 +369,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.OrderItem", b =>
@@ -435,7 +435,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("ReviewId");
 
-                    b.ToTable("Reports");
+                    b.ToTable("Reports", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Review", b =>

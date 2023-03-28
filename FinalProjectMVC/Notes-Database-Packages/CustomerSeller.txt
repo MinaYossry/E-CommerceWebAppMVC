@@ -1,0 +1,8 @@
+Reports => is used for reporting wrong Reviews. 
+
+
+1- Categories are missing when creating a new product from seller. ,
+
+the Product table needs to be edited to add Category column 
+
+```we cannot depend on that we have a relation between subcategory and category. 
