@@ -326,7 +326,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("SellerProductId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Customer", b =>
@@ -398,7 +398,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("SellerProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Report", b =>
@@ -481,7 +481,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
