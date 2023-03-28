@@ -136,14 +136,16 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
         
         // GET: SellerPanel/Products/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [Route("Product/{id:int}/{SellerId}")]
+        public async Task<IActionResult> Details(int? id, string? SellerId)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id.Value);
+            //var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id.Value);
+            var sellerProduct = (await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.SellerId == SellerId)).FirstOrDefault();
             if (sellerProduct == null)
             {
                 return NotFound();
@@ -151,7 +153,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
             var viewModel = new DisplayInStockProductsViewModel
             {
-                 Id = sellerProduct.ProductId,
+                Id = sellerProduct.ProductId,
                 Name = sellerProduct.Product.Name,
                 Price = sellerProduct.Price,
                 Description = sellerProduct.Product.Description,

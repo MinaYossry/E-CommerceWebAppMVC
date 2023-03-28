@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FinalProjectMVC.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace FinalProjectMVC.Areas.Identity.Data
 {
@@ -13,5 +14,7 @@ namespace FinalProjectMVC.Areas.Identity.Data
         public string? LastName { get; set; }
 
         public string? ProfilePicture { get; set; }
+
+        public virtual List<Address>? Addresses { get; set; }
     }
 }

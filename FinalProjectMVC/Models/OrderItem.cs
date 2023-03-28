@@ -11,7 +11,8 @@ namespace FinalProjectMVC.Models
         Pending,
         Proccessing,
         OutForDelivery,
-        Delivered
+        Delivered,
+        Cancelled
     }
     public class OrderItem
     {
