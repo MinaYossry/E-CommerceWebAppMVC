@@ -1,14 +1,26 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Net.Http.Headers;
 using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Models
 {
+    public enum OrderStatus
+    {
+        Pending,
+        Proccessing,
+        OutForDelivery,
+        Delivered
+    }
     public class OrderItem
     {
         [Key]
         public int Id { get; set; }
+
+        [DefaultValue(OrderStatus.Pending)]
+        [EnumDataType(enumType:  typeof(OrderStatus))]
+        public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
         [ForeignKey("Order")]
         public int OrderId { get; set; }
