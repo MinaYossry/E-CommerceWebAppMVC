@@ -1,13 +1,13 @@
 ﻿@using FinalProjectMVC.Areas.Identity.Data;
 @using FinalProjectMVC.RepositoryPattern;
 @using Microsoft.AspNetCore.Identity;
-@inject IRepository<Report> _reportRepo;
+@inject IRepository<OrderItem> _orderItemRepo;
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
 @{
-    var Reports = _reportRepo.Filter(r => !r.IsSolved);
-    var DiplayedReports = Reports.Take(3);
+    var OrderItems = _orderItemRepo.Filter(r => r.Status == OrderStatus.Pending && (r.SellerProduct?.SellerId ?? "") == User.GetUserId());
+    var DiplayedOrderItems = OrderItems.Take(3);
     var CurrentUser = UserManager.Users.Where(u => u.Id == User.GetUserId()).FirstOrDefault();
 }
 
@@ -92,27 +92,27 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-bell"></i>
-                        <span class="badge badge-warning navbar-badge">@Reports.Count</span>
+                        <span class="badge badge-warning navbar-badge">@OrderItems.Count</span>
                     </a>
 
 
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <span class="dropdown-item dropdown-header">@Reports.Count Reports</span>
+                        <span class="dropdown-item dropdown-header">@OrderItems.Count Orders</span>
 
 
-                        @foreach (Report item in DiplayedReports)
+                        @foreach (OrderItem item in DiplayedOrderItems)
                         {
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-file mr-2"></i>  @item.Name
-                                <span class="float-right text-muted text-sm"> @item.CreatedDate</span>
+                            <a asp-fragment="@($"heading{item.Id}{item.SellerProduct?.Product?.Id}{item.Order?.Customer?.Id}")" asp-action="Index" asp-controller="OrderItems" class="dropdown-item">
+                                <i class="fas fa-file mr-2"></i>  @item.SellerProduct?.Product?.Name
+                                <span class="float-right text-muted text-sm"> @item.Order?.OrderDate</span>
                             </a>
                         }
 
-                        @if (Reports.Count > 3)
+                        @if (OrderItems.Count > 3)
                         {
                             <div class="dropdown-divider"></div>
-                            <a asp-area="AdminPanel" asp-controller="Reports" asp-action="Index" class="dropdown-item dropdown-footer">See All Reports</a>
+                            <a asp-area="AdminPanel" asp-controller="Reports" asp-action="Index" class="dropdown-item dropdown-footer">See All Orders</a>
                         }
 
                     </div>

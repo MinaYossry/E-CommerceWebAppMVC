@@ -10,6 +10,7 @@ using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using FinalProjectMVC.RepositoryPattern;
 using FinalProjectMVC.Areas.SellerPanel.ViewModel;
+using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 {
@@ -18,10 +19,12 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
     public class OrderItemsController : Controller
     {
         private readonly IRepository<OrderItem> orderItemsRepo;
+        private readonly IRepository<SellerProduct> sellerProductRepo;
 
-        public OrderItemsController( IRepository<OrderItem> orderItemsRepo)
+        public OrderItemsController( IRepository<OrderItem> orderItemsRepo, IRepository<SellerProduct> sellerProductRepo)
         {
             this.orderItemsRepo = orderItemsRepo;
+            this.sellerProductRepo = sellerProductRepo;
         }
 
         // GET: SellerPanel/OrderItems
@@ -60,6 +63,27 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
             if (orderItem is null)
                 return NotFound();
+
+            if (orderItem.Status == OrderStatus.Pending)
+            {
+                if (orderItem.Count > orderItem.SellerProduct.Count)
+                {
+                    ModelState.AddModelError("", "You don't have enough In stock");
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    orderItem.SellerProduct.Count -= orderItem.Count;
+                    try
+                    {
+                        await sellerProductRepo.UpdateAsync(orderItem.SellerProductId, orderItem.SellerProduct);
+                    }
+                    catch
+                    {
+                        throw new Exception("Sorry Couldn't update information");
+                    }
+                }
+            }
 
             if (orderItem.Status == OrderStatus.Delivered)
                 ModelState.AddModelError("", "Sorry order has already been delivered");

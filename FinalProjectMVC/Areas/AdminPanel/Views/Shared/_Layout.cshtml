@@ -99,7 +99,7 @@
                         @foreach (Report item in DiplayedReports)
                         {
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
+                            <a asp-fragment="@($"heading{item.Id}")" asp-controller="Reports" asp-action="Index" class="dropdown-item">
                                 <i class="fas fa-file mr-2"></i>  @item.Name
                                 <span class="float-right text-muted text-sm"> @item.CreatedDate</span>
                             </a>
