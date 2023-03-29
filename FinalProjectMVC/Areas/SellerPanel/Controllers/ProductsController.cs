@@ -131,7 +131,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 };
                 try
                 {
-                    _sellerProductRepo.Insert(newItem);
+                     _sellerProductRepo.Insert(newItem);
                     await _context.SaveChangesAsync();
                 }
                 catch (Exception ex)
