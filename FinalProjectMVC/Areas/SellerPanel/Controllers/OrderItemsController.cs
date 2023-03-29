@@ -44,7 +44,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                     Id = orderItem.Id,
                     Status = orderItem.Status,
                     Count = orderItem.Count,
-                    Price = orderItem.Price,
+                    Price = orderItem.SellerProduct.Price,
                     OrderDate = orderItem.Order.OrderDate,
                     Customer = orderItem.Order.Customer,
                     Address = orderItem.Order.Address,
@@ -66,7 +66,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
             if (orderItem.Status == OrderStatus.Pending)
             {
-                if (orderItem.Count > orderItem.SellerProduct.Count)
+                if (orderItem.Count > (orderItem.SellerProduct?.Count ?? 0))
                 {
                     ModelState.AddModelError("", "You don't have enough In stock");
                     return RedirectToAction(nameof(Index));
