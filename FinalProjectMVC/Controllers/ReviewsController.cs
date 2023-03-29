@@ -27,24 +27,24 @@ namespace FinalProjectMVC.Controllers
         }
 
         // GET: Reviews/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    //  Get Product With Reviews
-        //    if (id == null || _context.Reviews == null || _context.Reviews.FirstOrDefaultAsync(x => x.ProductId == id) == null)
-        //    {
-        //        return NotFound();
-        //    }
+        public async Task<IActionResult> Details(int? id)
+        {
+            //  Get Product With Reviews
+            if (id == null || _context.Reviews == null || _context.Reviews.FirstOrDefaultAsync(x => x.ProductId == id) == null)
+            {
+                return NotFound();
+            }
 
-        //    var review = await _context.Reviews
-        //        .Include(r => r.Product)
-        //        .FirstOrDefaultAsync(m => m.ProductId == id);
-        //    if (review == null)
-        //    {
-        //        return NotFound();
-        //    }
+            var review = await _context.Reviews
+                .Include(r => r.Product)
+                .FirstOrDefaultAsync(m => m.ProductId == id);
+            if (review == null)
+            {
+                return NotFound();
+            }
 
-        //    return View(review);
-        //}
+            return View(review);
+        }
 
         // GET: Reviews/Create
         public IActionResult Create()
