@@ -18,6 +18,9 @@ namespace FinalProjectMVC.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -252,15 +255,9 @@ namespace FinalProjectMVC.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CustomerId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Region")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SellerId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("StreetName")
                         .IsRequired()
@@ -271,10 +268,6 @@ namespace FinalProjectMVC.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("SellerId");
 
                     b.HasIndex("UserId");
 
@@ -389,6 +382,9 @@ namespace FinalProjectMVC.Data.Migrations
                     b.Property<int>("SellerProductId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
@@ -406,6 +402,11 @@ namespace FinalProjectMVC.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -419,6 +420,9 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.Property<int>("ReviewId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("SolveDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -434,6 +438,11 @@ namespace FinalProjectMVC.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("CustomerId")
                         .IsRequired()
@@ -674,16 +683,8 @@ namespace FinalProjectMVC.Data.Migrations
 
             modelBuilder.Entity("FinalProjectMVC.Models.Address", b =>
                 {
-                    b.HasOne("FinalProjectMVC.Models.Customer", null)
-                        .WithMany("Addresses")
-                        .HasForeignKey("CustomerId");
-
-                    b.HasOne("FinalProjectMVC.Areas.SellerPanel.Models.Seller", null)
-                        .WithMany("Addresses")
-                        .HasForeignKey("SellerId");
-
                     b.HasOne("FinalProjectMVC.Areas.Identity.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("Addresses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -856,6 +857,11 @@ namespace FinalProjectMVC.Data.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("FinalProjectMVC.Areas.Identity.Data.ApplicationUser", b =>
+                {
+                    b.Navigation("Addresses");
+                });
+
             modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Product", b =>
                 {
                     b.Navigation("Reviews");
@@ -865,8 +871,6 @@ namespace FinalProjectMVC.Data.Migrations
 
             modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Seller", b =>
                 {
-                    b.Navigation("Addresses");
-
                     b.Navigation("SellerProducts");
                 });
 
@@ -884,8 +888,6 @@ namespace FinalProjectMVC.Data.Migrations
 
             modelBuilder.Entity("FinalProjectMVC.Models.Customer", b =>
                 {
-                    b.Navigation("Addresses");
-
                     b.Navigation("CartItems");
 
                     b.Navigation("Orders");

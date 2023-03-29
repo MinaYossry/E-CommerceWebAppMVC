@@ -1,59 +1,45 @@
-﻿@model FinalProjectMVC.Areas.SellerPanel.Models.Product
+﻿@model FinalProjectMVC.Areas.SellerPanel.ViewModel.EditSellerProductViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = $"Edit {Model.Name}";
 }
 
-<h1>Edit</h1>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <div class="card shadow-lg border-0 rounded-lg">
+                @if(Model.ProductImage is not null )
+                {
+                    <img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(Model.ProductImage))" alt="@Model.Name">
+                }
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0 rounded-lg h-100">
+                <div class="card-body">
+                    <h2 class="fw-bold mb-4">@Model.Name</h2>
+                    <hr>
+                    <p class="mb-3">@Model.Description</p>
+                    <form asp-action="Edit" asp-route-SellerProductId="@Model.SellerProductId">
+                        <input type="text" hidden class="form-control" id="Name" name="Name" value="@Model.Name" />
+                        <div class="form-group">
+                            <label for="Count" class="form-label fw-bold mb-2">Count:</label>
+                            <input asp-for="Count" min="0" step="1" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Price" class="form-label fw-bold mb-2">Price:</label>
+                            <input asp-for="Price" min="0" step="0.01" class="form-control" />
+                        </div>
 
-<h4>Product</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="SerialNumber" class="control-label"></label>
-                <input asp-for="SerialNumber" class="form-control" />
-                <span asp-validation-for="SerialNumber" class="text-danger"></span>
+                        <div asp-validation-summary="All" class="text-danger"></div>
+
+
+                        <br />
+                        <button type="submit" class="btn btn-primary me-2">Save Changes</button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProductImage" class="control-label"></label>
-                <input asp-for="ProductImage" class="form-control" />
-                <span asp-validation-for="ProductImage" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SubCategoryId" class="control-label"></label>
-                <select asp-for="SubCategoryId" class="form-control" asp-items="ViewBag.SubCategoryId"></select>
-                <span asp-validation-for="SubCategoryId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BrandId" class="control-label"></label>
-                <select asp-for="BrandId" class="form-control" asp-items="ViewBag.BrandId"></select>
-                <span asp-validation-for="BrandId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

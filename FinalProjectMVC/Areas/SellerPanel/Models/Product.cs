@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Models;
+using System.ComponentModel;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Models
 {
-    //[Table("Product")] => This prevents forces a name on the table.
     public class Product
     {
         public int Id { get; set; }
@@ -22,17 +22,10 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
 
         public byte[]? ProductImage { get; set; }
 
-        //public double Weight { get; set; }
-
-        //public double Height { get; set; }
-
-        //public double Width { get; set; }
-
-        //[Range(0, 5)]
-        //public int Rating { get; set; } = 0;
 
         [Required]
         [ForeignKey(nameof(SubCategory))]
+        [DisplayName("Sub Category")]
         public int SubCategoryId { get; set; }
 
         // Navigation property for Category
@@ -41,6 +34,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
 
         [Required]
         [ForeignKey("Brand")]
+        [DisplayName("Brand")]
         public int BrandId { get; set; }
 
         // Navigation property for Brand

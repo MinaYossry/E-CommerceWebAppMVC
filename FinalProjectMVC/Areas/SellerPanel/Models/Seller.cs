@@ -7,7 +7,6 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
 {
     public class Seller
     {
-
         [ForeignKey("ApplicationUser")]
         public required string Id { get; set; }
 
@@ -20,6 +19,5 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         public virtual ApplicationUser? ApplicationUser { get; set; }
 
         public virtual ICollection<SellerProduct>? SellerProducts { get; set; }
-        public virtual List<Address>? Addresses { get; set; }
     }
 }
