@@ -9,7 +9,7 @@ namespace FinalProjectMVC.Models
     public enum OrderStatus
     {
         Pending,
-        Proccessing,
+        Processing,
         OutForDelivery,
         Delivered,
         Cancelled

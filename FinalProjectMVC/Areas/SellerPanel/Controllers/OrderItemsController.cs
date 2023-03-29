@@ -17,12 +17,10 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
     [Authorize(Roles = "Seller")]
     public class OrderItemsController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly IRepository<OrderItem> orderItemsRepo;
 
-        public OrderItemsController(ApplicationDbContext context, IRepository<OrderItem> orderItemsRepo)
+        public OrderItemsController( IRepository<OrderItem> orderItemsRepo)
         {
-            _context = context;
             this.orderItemsRepo = orderItemsRepo;
         }
 
@@ -35,6 +33,9 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
             foreach (var orderItem in SellerOrders)
             {
+                if (orderItem.Order?.Customer is not null &&
+                    orderItem.Order?.Address is not null &&
+                    orderItem.SellerProduct?.Product is not null)
                 viewModel.Add(new()
                 {
                     Id = orderItem.Id,
@@ -49,92 +50,30 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             }
 
             
-
             return View(viewModel);
         }
 
-        // GET: SellerPanel/OrderItems/Details/5
-        public async Task<IActionResult> Details(int? id)
+
+        public async Task<IActionResult> UpdateOrderStatus(int? Id, OrderStatus orderStatus)
         {
-            if (id == null || _context.OrderItems == null)
-            {
+            var orderItem = await orderItemsRepo.GetDetailsAsync(Id);
+
+            if (orderItem is null)
                 return NotFound();
-            }
 
-            var orderItem = await _context.OrderItems
-                .Include(o => o.Order)
-                .Include(o => o.SellerProduct)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (orderItem == null)
-            {
-                return NotFound();
-            }
+            if (orderItem.Status == OrderStatus.Delivered)
+                ModelState.AddModelError("", "Sorry order has already been delivered");
 
-            return View(orderItem);
-        }
-
-        // GET: SellerPanel/OrderItems/Create
-        public IActionResult Create()
-        {
-            ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "CustomerId");
-            ViewData["SellerProductId"] = new SelectList(_context.SellerProducts, "Id", "Id");
-            return View();
-        }
-
-        // POST: SellerPanel/OrderItems/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Status,OrderId,SellerProductId,Count,Price")] OrderItem orderItem)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(orderItem);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "CustomerId", orderItem.OrderId);
-            ViewData["SellerProductId"] = new SelectList(_context.SellerProducts, "Id", "Id", orderItem.SellerProductId);
-            return View(orderItem);
-        }
-
-        // GET: SellerPanel/OrderItems/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.OrderItems == null)
-            {
-                return NotFound();
-            }
-
-            var orderItem = await _context.OrderItems.FindAsync(id);
-            if (orderItem == null)
-            {
-                return NotFound();
-            }
-            ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "CustomerId", orderItem.OrderId);
-            ViewData["SellerProductId"] = new SelectList(_context.SellerProducts, "Id", "Id", orderItem.SellerProductId);
-            return View(orderItem);
-        }
-
-        // POST: SellerPanel/OrderItems/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Status,OrderId,SellerProductId,Count,Price")] OrderItem orderItem)
-        {
-            if (id != orderItem.Id)
-            {
-                return NotFound();
-            }
+            if (orderItem.Status >= orderStatus)
+                ModelState.AddModelError("", "Sorry Can't modify the status to previous step");
+            else
+                orderItem.Status = orderStatus;
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(orderItem);
-                    await _context.SaveChangesAsync();
+                    await orderItemsRepo.UpdateAsync(Id, orderItem);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -147,55 +86,21 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["OrderId"] = new SelectList(_context.Orders, "OrderId", "CustomerId", orderItem.OrderId);
-            ViewData["SellerProductId"] = new SelectList(_context.SellerProducts, "Id", "Id", orderItem.SellerProductId);
-            return View(orderItem);
-        }
-
-        // GET: SellerPanel/OrderItems/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.OrderItems == null)
-            {
-                return NotFound();
             }
 
-            var orderItem = await _context.OrderItems
-                .Include(o => o.Order)
-                .Include(o => o.SellerProduct)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (orderItem == null)
-            {
-                return NotFound();
-            }
-
-            return View(orderItem);
-        }
-
-        // POST: SellerPanel/OrderItems/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.OrderItems == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.OrderItems'  is null.");
-            }
-            var orderItem = await _context.OrderItems.FindAsync(id);
-            if (orderItem != null)
-            {
-                _context.OrderItems.Remove(orderItem);
-            }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
+        public IActionResult CancelOrder(int? id)
+        {
+            return  RedirectToAction( nameof(UpdateOrderStatus), new { Id = id, orderStatus = OrderStatus.Cancelled });
+        }
+
+       
+
         private bool OrderItemExists(int id)
         {
-          return (_context.OrderItems?.Any(e => e.Id == id)).GetValueOrDefault();
+            return orderItemsRepo.GetDetails(id) is not null;
         }
     }
 }

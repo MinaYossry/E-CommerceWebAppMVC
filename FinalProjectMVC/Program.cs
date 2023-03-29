@@ -120,6 +120,11 @@ app.MapControllerRoute(
     );
 
 app.MapControllerRoute(
+      name: "DeleteReview",
+      pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}/{reportId?}"
+    );
+
+app.MapControllerRoute(
     name: "SellerProduct",
     pattern: "{controller=Home}/{action=Index}/{id?}/{SellerId?}");
 

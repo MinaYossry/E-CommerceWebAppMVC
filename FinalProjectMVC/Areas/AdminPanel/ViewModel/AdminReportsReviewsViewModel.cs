@@ -8,6 +8,8 @@ namespace FinalProjectMVC.Areas.AdminPanel.ViewModel
     {
         public int ReportId { get; set; }
 
+        public bool IsReviewDeleted { get; set; }
+
         public required string Name { get; set; }
 
         public required string Description { get; set; }
