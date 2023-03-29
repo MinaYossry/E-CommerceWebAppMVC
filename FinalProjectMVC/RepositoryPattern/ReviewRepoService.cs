@@ -8,6 +8,7 @@ namespace FinalProjectMVC.RepositoryPattern
     {
         public ReviewRepoService(ApplicationDbContext context) : base(context)
         {
+
         }
     }
 }

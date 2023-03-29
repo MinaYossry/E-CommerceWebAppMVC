@@ -1,0 +1,56 @@
+﻿@model IEnumerable<FinalProjectMVC.Models.Review>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a class="btn btn-outline-dark mt-auto" asp-action="Create">Add Review</a>
+</p>
+<div>
+    @foreach (var item in Model)
+    {
+        <div class="card h-30 w-50 m-auto mb-4">
+
+            @*<img class="card-img-top" src="https://dummyimage.com/450x250/dee2e6/6c757d.jpg" alt="..." />*@
+  
+            <div class="card-body p-4">
+                <div class="text-start">
+      
+                    <h5 class="fw-bolder">@Html.DisplayFor(modelItem => item.Product.Name)</h5>
+
+                    <div>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </div>
+                    <div>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </div>
+
+                    <div>
+                        @Html.DisplayFor(modelItem => item.Rating)
+                    </div>
+                   
+                     <div>
+                           @Html.DisplayFor(modelItem => item.Product.Name)
+                    </div>
+                </div>
+            </div>
+            <!-- Product actions-->
+            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                <div class="text-center">
+                    <a class="btn btn-outline-dark mt-auto" asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                    <a class="btn btn-outline-dark mt-auto" asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                    <a class="btn btn-outline-dark mt-auto" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                 
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+
