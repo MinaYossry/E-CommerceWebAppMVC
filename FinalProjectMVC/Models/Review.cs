@@ -10,6 +10,9 @@ namespace FinalProjectMVC.Models
     {
         public int Id { get; set; }
 
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; } = false;
+
         public required string Name { get; set; }
 
         public required string Description { get; set; }

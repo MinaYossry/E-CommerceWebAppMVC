@@ -14,7 +14,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+    <title>@ViewBag.Title</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 
     <link rel="stylesheet" href="~/AdminPanel/plugins/fontawesome-free/css/all.min.css">
@@ -99,7 +99,7 @@
                         @foreach (Report item in DiplayedReports)
                         {
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item">
+                            <a asp-fragment="@($"heading{item.Id}")" asp-controller="Reports" asp-action="Index" class="dropdown-item">
                                 <i class="fas fa-file mr-2"></i>  @item.Name
                                 <span class="float-right text-muted text-sm"> @item.CreatedDate</span>
                             </a>
@@ -113,6 +113,8 @@
 
                     </div>
                 </li>
+
+
                 <li class="nav-item">
                     <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                         <i class="fas fa-expand-arrows-alt"></i>
