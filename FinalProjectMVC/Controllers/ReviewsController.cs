@@ -13,6 +13,7 @@ using FinalProjectMVC.RepositoryPattern;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using FinalProjectMVC.ViewModels;
+using Microsoft.CodeAnalysis;
 
 namespace FinalProjectMVC.Controllers
 {
@@ -43,14 +44,20 @@ namespace FinalProjectMVC.Controllers
         }
 
         // GET: Reviews
-        public async Task<IActionResult> Index()
+    
+        public async Task<IActionResult> Index(int? ProductId , int? ratingFilter)
         {
+            var reviews = await _reviewtRepository.FilterAsync(r => r.ProductId == ProductId);
+            //var reviews = _productRepository.GetReviews(ProductId);
+            // pass the product's ProductId to the GetReviews method
+            if (ratingFilter.HasValue)
+            {
+                reviews = reviews.Where(r => r.Rating == ratingFilter.Value).ToList();
+            }
             var applicationDbContext = _context.Reviews.Include(r => r.Customer).Include(r => r.Product).Include(r => r.Seller);
-
-         
-            return View(await applicationDbContext.ToListAsync());
+            return View(reviews);
         }
-
+    
         // GET: Reviews/Details/5
         public async Task<IActionResult> Details(int? id)
         {

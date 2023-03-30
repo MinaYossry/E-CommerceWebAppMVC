@@ -9,12 +9,26 @@
 <p>
     <a class="btn btn-outline-dark mt-auto" asp-action="Create">Add Review</a>
 </p>
+
+<form method="get" asp-action="Index">
+    <label for="ProductId">Product:</label>
+
+    <select asp-for="ProductId" class="form-control" asp-items="@ViewBag.ProductList">
+        <option disabled="disabled" selected="selected">Select Product</option>
+    </select>
+
+
+    <button type="submit">Filter</button>
+</form>
+
 <div>
     @foreach (var item in Model)
+
     {
+
         <div class="card h-30 w-50 m-auto mb-4">
 
-            @*<img class="card-img-top" src="https://dummyimage.com/450x250/dee2e6/6c757d.jpg" alt="..." />*@
+           
   
             <div class="card-body p-4">
                 <div class="text-start">
@@ -29,7 +43,8 @@
                     </div>
 
                     <div>
-                        @Html.DisplayFor(modelItem => item.Rating)
+                        @Html.Raw(ConvertToStars(item.Rating))
+                      @*  @Html.DisplayFor(modelItem => item.Rating)*@
                     </div>
                    
                      <div>
@@ -51,6 +66,23 @@
 </div>
 
 
-
+@{
+    string ConvertToStars(int rating, int totalStars = 5)
+    {
+        string stars = "";
+        for (int i = 0; i < totalStars; i++)
+        {
+            if (i < rating)
+            {
+                stars += "<span style='color:yellow;font-size:25px;'>&#9733;</span>";
+            }
+            else
+            {
+                stars += "<span style='color:gray;font-size:25px;'>&#9733;</span>";
+            }
+        }
+        return stars;
+    }
+}
 
 
