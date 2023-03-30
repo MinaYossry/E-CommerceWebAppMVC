@@ -45,9 +45,10 @@ namespace FinalProjectMVC.Controllers
 
         // GET: Reviews
     
-        public async Task<IActionResult> Index(int? ProductId , int? ratingFilter)
+        public async Task<IActionResult> Index(int? productId , int? ratingFilter)
         {
-            var reviews = await _reviewtRepository.FilterAsync(r => r.ProductId == ProductId);
+            ViewBag.ProductList = new SelectList(new[] { _context.Products }, "ProductId", "ProductName");
+            var reviews = await _reviewtRepository.FilterAsync(r => r.ProductId == productId);
             //var reviews = _productRepository.GetReviews(ProductId);
             // pass the product's ProductId to the GetReviews method
             if (ratingFilter.HasValue)
