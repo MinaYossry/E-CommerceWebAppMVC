@@ -185,6 +185,14 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             return View(DetailedProductviewModel);
         }
 
+
+
+
+
+
+
+
+
         //public async Task<IActionResult> Create()
         //{
         //    if (User.Identity?.IsAuthenticated != true || !User.IsInRole(Roles.Seller.ToString()))
