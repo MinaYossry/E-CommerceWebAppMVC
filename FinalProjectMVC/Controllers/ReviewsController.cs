@@ -47,7 +47,7 @@ namespace FinalProjectMVC.Controllers
         {
             var applicationDbContext = _context.Reviews.Include(r => r.Customer).Include(r => r.Product).Include(r => r.Seller);
 
-         
+            
             return View(await applicationDbContext.ToListAsync());
         }
 
