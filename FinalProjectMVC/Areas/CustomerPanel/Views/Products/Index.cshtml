@@ -39,8 +39,8 @@ else
                         </div>
                         <div class="col-8">
                             <div class="card-body">
-                                <h5 class="card-title">@product.Name</h5>
-                                <p class="card-text">@product.Description</p>
+                                <h5 class="card-title">@product.ProductName</h5>
+                                <p class="card-text">@product.ProductDescription</p>
 
                                 @* Show a specific price based on seller,
                         get a list of all the sellers selling this product
@@ -50,7 +50,7 @@ else
 
 
                                 <p class="card-text"><strong> Sold by :</strong> @product.SellerNameWithLowestPrice</p>
-                                <p class="card-text"><strong> Price:</strong> @product.Price</p>
+                                <p class="card-text"><strong> Price:</strong> @product.ProductPrice</p>
                                 <p class="card-text"><strong> Items inStock:</strong> @product.Count</p>
 
 
@@ -59,7 +59,7 @@ else
                                 @*<a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary">View Details</a>*@
 
                                @* now this is the `record` in the `sellerProduct` table where the cheapest is sold.*@
-                                <a asp-action="Details" asp-route-id="@product.Id" asp-route-SellerId = "@product.sellerProductWithLowestPrice.SellerId" class="btn btn-primary">View Details</a>
+                                <a asp-action="Details" asp-route-id="@product.ProductId" asp-route-SellerId="@product.SellerId" class="btn btn-primary">View Details</a>
 
                             </div>
                         </div>

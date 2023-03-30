@@ -21,6 +21,7 @@ using FinalProjectMVC.Constants;
 using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
@@ -103,26 +104,23 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
                     var productViewModel = new DisplayInStockProductsViewModel
                     {
-                        Id = product.Id,
-                        Name = product.Name,
-                        Price = lowestPrice,
-                        Description = product.Description,
+                        ProductId = product.Id,
+                        ProductName = product.Name,
+                        ProductPrice= lowestPrice,
+                        ProductDescription = product.Description,
                         ProductImage = product.ProductImage,
 
+                        SellerId = sellerProductWithLowestPrice?.SellerId,
                         SellerNameWithLowestPrice = sellerProductWithLowestPrice?.Seller?.ApplicationUser?.FirstName,
                         Count = sellerProductWithLowestPrice.Count,
-
-                        // this helps us access that exact record for details views.
-                        sellerProductWithLowestPrice = sellerProductWithLowestPrice,
-
 
                         Brand =  product?.Brand?.Name,
                     SubCategory = product?.SubCategory?.Name
 
-
                     };
 
                     viewModelList.Add(productViewModel);
+
                 }
             }
 
@@ -145,30 +143,46 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             }
 
             //var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id.Value);
-            var sellerProduct = (await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.SellerId == SellerId)).FirstOrDefault();
-            if (sellerProduct == null)
+
+            // We recived the Current seller from Index and here we get the sellerProduct record for it.
+            var sellerProductRow = (await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.SellerId == SellerId)).FirstOrDefault();
+            if (sellerProductRow == null)
             {
                 return NotFound();
             }
 
-            var viewModel = new DisplayInStockProductsViewModel
+            var availableSellers = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.Count > 0);
+
+            ViewData["SellerName"] = new SelectList(availableSellers, "SellerId", "Seller.ApplicationUser.FirstName",SellerId);
+
+
+            var DetailedProductviewModel = new DetailedProductViewModel
             {
-                Id = sellerProduct.ProductId,
-                Name = sellerProduct.Product.Name,
-                Price = sellerProduct.Price,
-                Description = sellerProduct.Product.Description,
-                ProductImage = sellerProduct.Product.ProductImage,
+                ProductId = sellerProductRow.ProductId,
+                ProductName = sellerProductRow.Product?.Name,
+                ProductPrice = sellerProductRow.Price,
+                ProductDescription = sellerProductRow.Product?.Description,
+                ProductImage = sellerProductRow.Product?.ProductImage,
 
-                SellerNameWithLowestPrice = sellerProduct?.Seller?.ApplicationUser?.FirstName,
-                Count = sellerProduct.Count,
+                SellerName = sellerProductRow.Seller?.ApplicationUser?.FirstName,
+                SellerId = sellerProductRow.SellerId,
+                Count = sellerProductRow.Count,
 
-                sellerProductWithLowestPrice = sellerProduct,
+                CurrentSellerProduct = sellerProductRow,
 
-                Brand = sellerProduct.Product?.Brand?.Name,
-                SubCategory = sellerProduct.Product?.SubCategory?.Name
+                Brand = sellerProductRow.Product?.Brand?.Name,
+                SubCategory = sellerProductRow.Product?.SubCategory?.Name,
+
+
+                //SellersList = availableSellers
+                //SellersList = new SelectList(availableSellers, "SellerId", "Seller?.ApplicationUser?.FirstName")
+
+
             };
 
-            return View(viewModel);
+            //ViewBag.SellingList = new SelectList(availableSellers, "SellerId", "Seller?.ApplicationUser?.FirstName");
+
+            return View(DetailedProductviewModel);
         }
 
         //public async Task<IActionResult> Create()
