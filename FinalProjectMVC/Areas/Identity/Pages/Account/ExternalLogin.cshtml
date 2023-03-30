@@ -2,8 +2,6 @@
 @model ExternalLoginModel
 @{
     ViewData["Title"] = "Register";
-    string role = string.Empty;
-    role = Request.Query["Role"][0];
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -21,7 +19,7 @@
         <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
-            <input hidden asp-for="Input.Role" class="form-control" aria-required="true" value="@role" />
+            <input hidden asp-for="Input.Role" class="form-control" aria-required="true" value="Input.Role" />
 
             <div class="form-floating mb-3">
                 <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email."/>
@@ -29,7 +27,8 @@
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
 
-            @if (role == "Seller")
+
+            @if (Model.Input.Role == "Seller")
             {
                 <div class="form-floating mb-3">
                     <input required asp-for="Input.TaxNumber" class="form-control" aria-required="true" placeholder="Tax Number" />

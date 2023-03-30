@@ -77,6 +77,6 @@ namespace FinalProjectMVC.Areas.Identity.Data
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
-        public DbSet<FinalProjectMVC.Areas.SellerPanel.ViewModel.SellerOrderItemViewModel> SellerOrderItemViewModel { get; set; } = default!;
+      //  public DbSet<FinalProjectMVC.Areas.SellerPanel.ViewModel.SellerOrderItemViewModel> SellerOrderItemViewModel { get; set; } = default!;
     }
 }
