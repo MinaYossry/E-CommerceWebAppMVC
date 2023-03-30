@@ -51,16 +51,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddScoped<IFileService, FileService>();
 
 builder.Services.AddAuthentication()
-   .AddGoogle(options =>
+   .AddGoogle(googleOptions =>
    {
-       IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
-       options.ClientId = googleAuthNSection["ClientId"];
-       options.ClientSecret = googleAuthNSection["ClientSecret"];
+       googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+       googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
    })
    .AddFacebook(options =>
    {
-       IConfigurationSection FBAuthNSection =
-       builder.Configuration.GetSection("Authentication:FB");
+       IConfigurationSection FBAuthNSection = builder.Configuration.GetSection("Authentication:FB");
        options.ClientId = FBAuthNSection["ClientId"];
        options.ClientSecret = FBAuthNSection["ClientSecret"];
    });
