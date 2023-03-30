@@ -48,8 +48,22 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // Service for manging profile picture.
-builder.Services.AddScoped<IFileService, FileService>();   
+builder.Services.AddScoped<IFileService, FileService>();
 
+builder.Services.AddAuthentication()
+   //.AddGoogle(options =>
+   //{
+   //    IConfigurationSection googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
+   //    options.ClientId = googleAuthNSection["ClientId"];
+   //    options.ClientSecret = googleAuthNSection["ClientSecret"];
+   //})
+   .AddFacebook(options =>
+   {
+       IConfigurationSection FBAuthNSection =
+       builder.Configuration.GetSection("Authentication:FB");
+       options.ClientId = FBAuthNSection["ClientId"];
+       options.ClientSecret = FBAuthNSection["ClientSecret"];
+   });
 
 
 #endregion
