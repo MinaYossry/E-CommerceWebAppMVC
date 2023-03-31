@@ -8,10 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\SellerPanel\Data\**" />
     <Compile Remove="ViewModel\**" />
+    <Content Remove="Areas\SellerPanel\Data\**" />
     <Content Remove="ViewModel\**" />
+    <EmbeddedResource Remove="Areas\SellerPanel\Data\**" />
     <EmbeddedResource Remove="ViewModel\**" />
+    <None Remove="Areas\SellerPanel\Data\**" />
     <None Remove="ViewModel\**" />
+    <TypeScriptCompile Remove="Areas\SellerPanel\Data\**" />
     <TypeScriptCompile Remove="ViewModel\**" />
   </ItemGroup>
 
@@ -368,7 +373,6 @@
     <Folder Include="Areas\AdminPanel\Data\" />
     <Folder Include="Areas\AdminPanel\Views\Shared\" />
     <Folder Include="Areas\CustomerPanel\Data\" />
-    <Folder Include="Areas\SellerPanel\Data\" />
     <Folder Include="Areas\SellerPanel\Models\" />
     <Folder Include="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\" />
     <Folder Include="wwwroot\1-LandingPage %28otherpages -about %29\" />
