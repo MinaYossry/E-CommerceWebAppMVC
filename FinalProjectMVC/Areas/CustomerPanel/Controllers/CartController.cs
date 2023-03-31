@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Security.Claims;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
@@ -72,18 +73,20 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> UpdateCartItem([FromBody] CartItemUpdateRequest request)
+        public async Task<ActionResult> UpdateCartItem([FromBody] CartItemUpdateRequest request)
         {
             // find the cart item with the given ID
             //var cartItem = _cartItemRepo. CartItems.SingleOrDefault(ci => ci.Id == request.CartItemId);
 
-            var cartItem = (await _cartItemRepo.FilterAsync(sp => sp.Id == request.CartItemId)).SingleOrDefault();
 
+            var cartItem = (await _cartItemRepo.FilterAsync(sp => sp.Id == request.CartItemId)).SingleOrDefault();
 
             if (cartItem == null)
             {
                 return NotFound();
             }
+            var oldCount = cartItem.Count;
+            var Price = cartItem.SellerProduct?.Price ?? 0;
 
             switch (request.Action)
             {
@@ -95,7 +98,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
                     break;
                 case "remove":
                     await _cartItemRepo.DeleteAsync(request.CartItemId);
-                    break;
+                    return Ok(new { oldCount, Price });
                 default:
                     return BadRequest();
             }
@@ -103,13 +106,12 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             await _cartItemRepo.UpdateAsync(request.CartItemId, cartItem);
 
 
-            return Ok();
+            return Ok(new { oldCount, cartItem.Count, Price });
         }
 
         public class CartItemUpdateRequest
         {
             public int CartItemId { get; set; }
-            public int Quantity { get; set; }
             public string? Action { get; set; }
         }
 
