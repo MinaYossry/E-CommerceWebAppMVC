@@ -1,0 +1,146 @@
+﻿@model FinalProjectMVC.Areas.CustomerPanel.ViewModel.CustomerOrdersViewModel
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<h1>Order Details</h1>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="card-title">Order Details - #@Model.OrderId</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-sm-4">
+                <strong>Order Date:</strong>
+            </div>
+            <div class="col-sm-8">
+                @Model.OrderDate.ToShortDateString()
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-4">
+                <strong>Order Total:</strong>
+            </div>
+            <div class="col-sm-8">
+                @Model.TotalPrice.ToString("C")
+            </div>
+        </div>@*
+        <div class="row mb-3">
+        <div class="col-sm-4">
+        <strong>Order Status:</strong>
+        </div>
+        <div class="col-sm-8">
+        @Model.Status
+        </div>
+        </div>*@
+        <div class="row mb-3">
+            <div class="col-sm-4">
+                <strong>Shipping Address:</strong>
+            </div>
+            <div class="col-sm-8">
+                @Model.Address.BuildingNumber, @Model.Address.StreetName, @Model.Address.City, @Model.Address.Region
+            </div>
+        </div>
+        <hr />
+        <h5 class="card-title">Order Items</h5>
+        <div class="row mb-3 justify-content-center align-content-center">
+            @if (Model.OrderItems != null && Model.OrderItems.Any())
+            {
+                foreach (var item in Model.OrderItems)
+                {
+                    <div class="col-md-4">
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                @{
+                                    string badgeClass;
+                                    string badgeText;
+                                    switch (item.Status)
+                                    {
+                                        case OrderStatus.Delivered:
+                                            badgeClass = "text-bg-success";
+                                            badgeText = "Delivered";
+                                            break;
+                                        case OrderStatus.Cancelled:
+                                            badgeClass = "text-bg-danger";
+                                            badgeText = "Cancelled";
+                                            break;
+                                        case OrderStatus.OutForDelivery:
+                                            badgeClass = "text-bg-warning";
+                                            badgeText = "Out for Delivery";
+                                            break;
+                                        case OrderStatus.Processing:
+                                            badgeClass = "text-bg-info";
+                                            badgeText = "Processing";
+                                            break;
+                                        default:
+                                            badgeClass = "text-bg-secondary";
+                                            badgeText = "Pending";
+                                            break;
+                                    }
+                                }
+                                <span class="badge rounded-pill float-end @badgeClass ms-2">@badgeText</span>
+                            </div>
+                            <div class="row g-0">
+                                <div class="col-md-4 d-flex align-items-center">
+                                    <img src="data:image;base64,@(Convert.ToBase64String(item.Product.ProductImage ?? new byte[0]))" class="img-fluid rounded-start card-img-top align-self-center" alt="Product Image" />
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@item.Product.Name</h5>
+                                        <p class="card-text"><strong>Price:</strong> @item.Price.ToString("C")</p>
+                                        <p class="card-text"><strong>Count:</strong> @item.Count</p>
+                                        <p class="card-text"><strong>Seller:</strong> @item.Seller.ApplicationUser.FirstName @item.Seller.ApplicationUser.LastName</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between">
+                                <small class="text-muted align-self-center">@item.Product.SubCategory.Name - @item.Product.Brand.Name</small>
+                                @if (item.Status == OrderStatus.Pending)
+                                {
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="@($"#CancelOrderModal{item.Id}")">
+                                        Cancel
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="@($"CancelOrderModal{item.Id}")" tabindex="-1" aria-labelledby="@($"CancelOrderModalLabel{item.Id}")" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="@($"CancelOrderModalLabel{item.Id}")">Cancel Order #@item.Id?</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to Cancel #@item.Id?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <form asp-action="CancelOrder" method="post">
+                                                        <input type="hidden" name="Id" value="@item.Id" />
+                                                        <button type="submit" class="btn btn-danger">Confirm Cancel</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+
+                }
+            }
+            else
+            {
+                <p>No order items found.</p>
+            }
+        </div>
+    </div>
+    <div class="card-footer">
+        <a asp-controller="Orders" asp-action="Index" class="btn btn-secondary">Back to Orders</a>
+    </div>
+</div>

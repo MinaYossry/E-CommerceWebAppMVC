@@ -1,0 +1,119 @@
+﻿@model IEnumerable<FinalProjectMVC.Areas.CustomerPanel.ViewModel.CustomerOrdersViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+    <div class="accordion mt-3" id="accordionExample">
+@foreach (var item in Model)
+{
+        <div class="accordion-item mt-2">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse{item.OrderId}")" aria-expanded="true" aria-controls="@($"collapse{item.OrderId}")">
+                    <span class="fw-bold me-1">Order: </span> <span class="me-1">#@item.OrderId</span>
+                    <span class="text-muted me-1"> | </span>
+                    <span class="fw-bold me-1">@item.OrderDate.ToShortDateString()</span>
+                    <span class="text-muted me-1"> | </span>
+                    <span class="text-success fw-bold me-1">@item.TotalPrice</span>
+                    <span class="text-muted me-1"> | </span>
+                    <span class="fw-bold me-1">@item.Address.BuildingNumber, @item.Address.StreetName, @item.Address.City, @item.Address.Region</span>
+                   
+                </button>
+            </h2>
+            <div id="@($"collapse{item.OrderId}")" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <ul class="list-group">
+                        @foreach (var orderItem in item.OrderItems)
+                        {
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h6>@orderItem.Product.Name | From: <span class="text-muted">@orderItem.Seller.ApplicationUser.FirstName @orderItem.Seller.ApplicationUser.LastName</span></h6>
+                                        <span>Count: @orderItem.Count</span>
+                                    </div>
+                                    <div class="col-6  d-flex justify-content-end align-items-center">
+                                        <h6 class="text-end">@orderItem.Price.ToString("C")</h6>
+                                        @{
+                                            string badgeClass;
+                                            string badgeText;
+                                            switch (orderItem.Status)
+                                            {
+                                                case OrderStatus.Delivered:
+                                                    badgeClass = "text-bg-success";
+                                                    badgeText = "Delivered";
+                                                    break;
+                                                case OrderStatus.Cancelled:
+                                                    badgeClass = "text-bg-danger";
+                                                    badgeText = "Cancelled";
+                                                    break;
+                                                case OrderStatus.OutForDelivery:
+                                                    badgeClass = "text-bg-warning";
+                                                    badgeText = "Out for Delivery";
+                                                    break;
+                                                case OrderStatus.Processing:
+                                                    badgeClass = "text-bg-info";
+                                                    badgeText = "Processing";
+                                                    break;
+                                                default:
+                                                    badgeClass = "text-bg-secondary";
+                                                    badgeText = "Pending";
+                                                    break;
+                                            }
+                                        }
+                                        <p class="badge rounded-pill @badgeClass ms-2">@badgeText</p>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <div class="accordion-footer">
+                    <a class="btn btn-primary m-3" asp-action="Details" asp-route-id="@item.OrderId" type="button">See All Details</a>
+                </div>
+            </div>
+        </div>
+}
+    </div>
+@*
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDate)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+*@

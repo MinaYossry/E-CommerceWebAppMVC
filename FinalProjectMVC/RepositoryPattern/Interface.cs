@@ -16,5 +16,8 @@
         public Task UpdateAsync<PType>(PType id, T Entity);
         public Task DeleteAsync<PType>(PType id);
         public Task<List<T>> FilterAsync(Func<T, bool> filterPredicate);
+       
+        public Task <List<T>> Where(Func<T, bool> lambda);
+      
     }
 }
