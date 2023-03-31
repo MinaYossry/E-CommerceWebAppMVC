@@ -105,7 +105,7 @@
          const response = await fetch('/CustomerPanel/Cart/GetCartCount');
         if (response.ok) {
 
-            console.log("on resposne event 👍 ");
+            //console.log("on resposne event 👍 ");
 
             const cartCount = await response.json();
             document.getElementById('cartCount').textContent = cartCount;
@@ -126,11 +126,16 @@
     if (cartForm) {
     document.getElementById('cartForm').addEventListener('submit', async (event) => {
 
-        console.log("QuerySelector event got activated");
+        //console.log("QuerySelector event got activated");
+        
+        // This line prevent the `Post` being done by the from , 
+        // So we are not moved to another page.
         event.preventDefault();
+
+        // The data filled in the form. 
         const formData = new FormData(event.target);
 
-        console.log(event.target.action);
+        //console.log(event.target.action);
         const response = await fetch(event.target.action, {
 
             
@@ -139,12 +144,12 @@
         });
         if (response.ok) {
 
-             console.log("QuerySelector event => response recived ");
+             //console.log("QuerySelector event => response recived ");
             const cartCount = await response.json();
             document.getElementById('cartCount').textContent = cartCount;
         }
 
-        // Close the modal window
+        // Close the modal window, as we stopped refresh and redirecting.
         const modalElement = document.getElementById('cartModal');
         const modal = bootstrap.Modal.getInstance(modalElement);
         modal.hide();
