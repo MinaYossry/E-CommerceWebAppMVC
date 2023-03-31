@@ -13,7 +13,6 @@ namespace FinalProjectMVC.Models
         [Column(TypeName = "money")]
         public decimal? Balance { get; set; }
 
-        public virtual List<Address>? Addresses { get; set; }
         public virtual ApplicationUser? ApplicationUser { get; set; }
         public virtual ICollection<Order>? Orders { get; set; }
         public virtual ICollection<Review>? Reviews { get; set; }

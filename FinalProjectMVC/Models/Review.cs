@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Models
@@ -9,11 +10,14 @@ namespace FinalProjectMVC.Models
     {
         public int Id { get; set; }
 
+        [DefaultValue(false)]
+        public bool IsDeleted { get; set; } = false;
+
         public required string Name { get; set; }
 
         public required string Description { get; set; }
 
-        [Range(1,5)]
+        [Range(1, 5)]
         public int Rating { get; set; }
 
         [ReadOnly(true)]

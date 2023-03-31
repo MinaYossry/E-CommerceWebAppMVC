@@ -12,7 +12,14 @@
             <div class="card-header" id="@($"heading{item.ReportId}")">
                 <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="@($"#collapse{item.ReportId}")" aria-expanded="false" aria-controls="@($"collapse{item.ReportId}")">
-                        Report: #@item.ReportId  |  @item.Name  |  @item.SellerName  |  @item.CreatedDate
+                        <span class="font-weight-bold">Report:</span> #@item.ReportId
+                        <span class="text-muted">|</span>
+                        <span class="font-weight-bold">@item.Name</span>
+                        <div class="ml-auto">
+                            <span class="font-weight-bold">@item.SellerName</span>
+                            <span class="text-muted">|</span>
+                            <span class="font-italic">@item.CreatedDate</span>
+                        </div>
                         <span class="badge badge-pill float-right @((item.IsSolved) ? "badge-success" : "badge-danger")">
                             @((item.IsSolved) ? "Solved" : "Unsolved")
                         </span>
@@ -29,9 +36,21 @@
                             <div class="card-header" id="@($"heading{item.ReportId}{item.ReviewId}{item.Name}")">
                                 <h2 class="mb-0">
                                     <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="@($"#collapse{item.ReportId}{item.ReviewId}{item.Name}")" aria-expanded="false" aria-controls="@($"collapse{item.ReportId}{item.ReviewId}{item.Name}")">
-                                        Review: #@item.ReviewId  |  @item.ReviewName  |  @item.CustomerName 
+                                        <span class="font-weight-bold">Review:</span> #@item.ReviewId
+                                        <span class="text-muted">|</span>
+                                        <span class="font-weight-bold">@item.ReviewName</span>
+                                        <div class="ml-auto">
+                                            <span class="font-weight-bold">@item.CustomerName</span>
+                                        </div>
+                                        @if (item.IsReviewDeleted)
+                                        {
+                                            <span class="badge badge-pill float-right badge-danger">
+                                                Deleted
+                                            </span>
+                                        }
                                     </button>
                                 </h2>
+
                             </div>
 
                             <div id="@($"collapse{item.ReportId}{item.ReviewId}{item.Name}")" class="collapse" aria-labelledby="@($"heading{item.ReportId}{item.ReviewId}{item.Name}")" data-parent="#innerAccordion">
@@ -53,8 +72,8 @@
                 else
                 {
                     <button class="btn btn-success mr-2" type="button" data-toggle="modal" data-target="@($"#markAsSolvedModal{item.ReportId}")">Mark as Solved</button>
-                    <button class="btn btn-warning mr-2" type="button" onclick="blockUser(@item.SellerId)">Block User</button>
-                    <button class="btn btn-danger" type="button" onclick="deleteReview(@item.ReviewId)">Delete Review</button>
+                 //   <button class="btn btn-warning mr-2" type="button" onclick="blockUser(@item.SellerId)">Block User</button>
+                    <button class="btn btn-danger mr-2" type="button" data-toggle="modal" data-target="@($"#DeleteReviewModal{item.ReportId}")">Delete Review</button>
                 }
             </div>
         </div>
@@ -82,5 +101,31 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- Delete Review -->
+        <div class="modal fade" id="@($"DeleteReviewModal{item.ReportId}")" tabindex="-1" role="dialog" aria-labelledby="@($"DeleteReviewModalLabel{item.ReportId}")" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="@($"DeleteReviewModalLabel{item.ReportId}")">Delete Review #@item.ReviewId?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete review #@item.ReviewId?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <form asp-action="DeleteReview" method="post">
+                            <input type="hidden" name="Id" value="@item.ReviewId" />
+                            <button type="submit" class="btn btn-danger">Delete Review</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     }
 </div>

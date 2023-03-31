@@ -16,10 +16,12 @@
 using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Areas.CustomerPanel.ViewModel;
 using FinalProjectMVC.Areas.SellerPanel.Models;
+using FinalProjectMVC.Areas.SellerPanel.ViewModel;
 using FinalProjectMVC.Constants;
 using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -59,7 +61,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         }
 
         // GET: SellerPanel/Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(List<Product> filtered_products)
         {
             string json = TempData["data"] as string;
             List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json);
@@ -71,10 +73,13 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
              * 
              * We can repeat this query but use X.Count == 0 , to return out
              */
-            //var ProductList = await _productRepository
-            //    .FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0 ) ?? false);
 
-
+            /* This LinQ (p => p.SellerProducts?.Any(x => x.Count > 0)
+             * is important to get all the products that have someone that can sell them
+              Which means ( not totally out of stock) 
+            
+                using navigational property (sellerProducts) helps be to access that table 
+                to filter based on it.
 
             //var productList = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
 
@@ -99,6 +104,14 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
             foreach (var product in products)
             {
+                 /*Now this linQ is also important to analyse the products we got, 
+                  * Here we filter the SellerProduct table to get only the records of the 
+                  * 1- sellers that sell that specific product, 
+                  * 2- and they have that product currently In-stock
+                  * 
+                  * That's why we needed to ge filtered list out of Product table 
+                    and a List out of `SellerProduct` Table. 
+                 */
                 var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
 
                 if (sellerProducts != null)
@@ -111,22 +124,23 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
                     var productViewModel = new DisplayInStockProductsViewModel
                     {
-                        Id = product.Id,
-                        Name = product.Name,
-                        Price = lowestPrice,
-                        Description = product.Description,
+                        ProductId = product.Id,
+                        ProductName = product.Name,
+                        ProductPrice= lowestPrice,
+                        ProductDescription = product.Description,
                         ProductImage = product.ProductImage,
 
+                        SellerId = sellerProductWithLowestPrice?.SellerId,
                         SellerNameWithLowestPrice = sellerProductWithLowestPrice?.Seller?.ApplicationUser?.FirstName,
                         Count = sellerProductWithLowestPrice.Count,
-                      
+
                         Brand =  product?.Brand?.Name,
                     SubCategory = product?.SubCategory?.Name
-
 
                     };
 
                     viewModelList.Add(productViewModel);
+
                 }
             }
 
@@ -138,45 +152,66 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
         }
 
-        //// GET: SellerPanel/Products/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (User.Identity?.IsAuthenticated != true || !User.IsInRole(Roles.Seller.ToString()))
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
+        
+        // GET: SellerPanel/Products/Details/5
+        [Route("Product/{id:int}/{SellerId}")]
+        public async Task<IActionResult> Details(int? id, string? SellerId)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        //    var userId = User.GetUserId();
-        //    if (userId is null)
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
+            //var sellerProduct = await _sellerProductRepo.GetDetailsAsync(id.Value);
 
-        //    var currentProduct = await _productRepository.GetDetailsAsync(id);
-        //    if (currentProduct is null)
-        //    {
-        //        return NotFound();
-        //    }
+            // We recived the Current seller from Index and here we get the sellerProduct record for it.
+            var sellerProductRow = (await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.SellerId == SellerId)).FirstOrDefault();
+            if (sellerProductRow == null)
+            {
+                return NotFound();
+            }
 
-        //    var sellerProduct = (await _sellerProductRepo.FilterAsync(sp => sp.SellerId == userId && sp.ProductId == currentProduct.Id)).FirstOrDefault();
-        //    if (sellerProduct is null)
-        //    {
-        //        return RedirectToAction(nameof(Index));
-        //    }
+            var availableSellers = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.Count > 0);
 
-        //    var viewModel = new DisplaySellerProductDetailesViewModel()
-        //    {
-        //        SellerProductId = sellerProduct.Id,
-        //        SerialNumber = currentProduct.SerialNumber,
-        //        Name = currentProduct.Name,
-        //        Description = currentProduct.Description,
-        //        ProductImage = currentProduct.ProductImage,
-        //        Count = sellerProduct.Count,
-        //        Price = sellerProduct.Price
-        //    };
+            ViewData["SellerName"] = new SelectList(availableSellers, "SellerId", "Seller.ApplicationUser.FirstName",SellerId);
 
-        //    return View(viewModel);
-        //}
+
+            var DetailedProductviewModel = new DetailedProductViewModel
+            {
+                ProductId = sellerProductRow.ProductId,
+                ProductName = sellerProductRow.Product?.Name,
+                ProductPrice = sellerProductRow.Price,
+                ProductDescription = sellerProductRow.Product?.Description,
+                ProductImage = sellerProductRow.Product?.ProductImage,
+
+                SellerName = sellerProductRow.Seller?.ApplicationUser?.FirstName,
+                SellerId = sellerProductRow.SellerId,
+                Count = sellerProductRow.Count,
+
+                CurrentSellerProduct = sellerProductRow,
+
+                Brand = sellerProductRow.Product?.Brand?.Name,
+                SubCategory = sellerProductRow.Product?.SubCategory?.Name,
+
+
+                //SellersList = availableSellers
+                //SellersList = new SelectList(availableSellers, "SellerId", "Seller?.ApplicationUser?.FirstName")
+
+
+            };
+
+            //ViewBag.SellingList = new SelectList(availableSellers, "SellerId", "Seller?.ApplicationUser?.FirstName");
+
+            return View(DetailedProductviewModel);
+        }
+
+
+
+
+
+
+
+
 
         //public async Task<IActionResult> Create()
         //{

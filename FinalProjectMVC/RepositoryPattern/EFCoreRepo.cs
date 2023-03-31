@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FinalProjectMVC.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.RepositoryPattern
 {
@@ -89,7 +90,29 @@ namespace FinalProjectMVC.RepositoryPattern
                 await _context.SaveChangesAsync();
             }
         }
+        public async virtual Task <List<T>>  Where(Func<T, bool> lambda)
+        {
+            return  _context.Set<T>().Where(lambda).ToList();
+        }
 
+        public async virtual Task<List<T>> FilterAsync(Func<T, bool> filterPredicate)
+        {
+            return await Task.FromResult(_context.Set<T>().Where(filterPredicate).ToList());
+        }
+
+        //public async Task<List<T>> GetReviews(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new List<T>();
+        //    }
+
+        //    var reviews = await _context.Set<T>().FilterAsync(r => r.ProductId == ProductId);
+        //    //var reviews = await _context.Set<T>().ToListAsync();
+
+        //    return reviews;
+        //}
+      
         /* The filter method is added so we don't have to add where and tolist() to everything
          * 
          1- Task => used to allowe tolist() to work Async 
@@ -103,9 +126,6 @@ namespace FinalProjectMVC.RepositoryPattern
 
 
         */
-        public async virtual Task<List<T>> FilterAsync(Func<T, bool> filterPredicate)
-        {
-            return await Task.FromResult(_context.Set<T>().Where(filterPredicate).ToList());
-        }
+
     }
 }

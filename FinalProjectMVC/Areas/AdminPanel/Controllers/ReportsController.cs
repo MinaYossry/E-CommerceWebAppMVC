@@ -19,14 +19,17 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
     {
        // private readonly ApplicationDbContext _context;
         private readonly IRepository<Report> reportRepo;
+        private readonly IRepository<Review> reviewRepo;
 
         public ReportsController(
             //ApplicationDbContext context,
-            IRepository<Report> reportRepo
+            IRepository<Report> reportRepo,
+            IRepository<Review> reviewRepo
             )
         {
         //    _context = context;
             this.reportRepo = reportRepo;
+            this.reviewRepo = reviewRepo;
         }
 
         // GET: AdminPanel/Reports
@@ -40,22 +43,23 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             foreach (var Report in ReportsList)
             {
                 viewMode.Add(new()
-                    {
-                        ReportId = Report.Id,
-                        Name = Report.Name,
-                        Description = Report.Description,
-                        IsSolved = Report.IsSolved,
-                        SolveDate = Report.SolveDate,
-                        CreatedDate = Report.CreatedDate,
-                        ReviewId = Report.ReviewId,
-                        ReviewName = Report.Review?.Name ?? "",
-                        ReviewDescription = Report.Review?.Description ?? "",
-                        SellerId = Report.Review?.SellerId ?? "",
-                        SellerName = $"{Report.Review?.Seller?.ApplicationUser?.FirstName} {Report.Review?.Seller?.ApplicationUser?.LastName}",
-                        CustomerId = Report.Review?.CustomerId ?? "",
-                        CustomerName = $"{Report.Review?.Customer?.ApplicationUser?.FirstName} {Report.Review?.Customer?.ApplicationUser?.LastName}",
+                {
+                    ReportId = Report.Id,
+                    IsReviewDeleted = Report.Review?.IsDeleted != false,
+                    Name = Report.Name,
+                    Description = Report.Description,
+                    IsSolved = Report.IsSolved,
+                    SolveDate = Report.SolveDate,
+                    CreatedDate = Report.CreatedDate,
+                    ReviewId = Report.ReviewId,
+                    ReviewName = Report.Review?.Name ?? "",
+                    ReviewDescription = Report.Review?.Description ?? "",
+                    SellerId = Report.Review?.SellerId ?? "",
+                    SellerName = $"{Report.Review?.Seller?.ApplicationUser?.FirstName} {Report.Review?.Seller?.ApplicationUser?.LastName}",
+                    CustomerId = Report.Review?.CustomerId ?? "",
+                    CustomerName = $"{Report.Review?.Customer?.ApplicationUser?.FirstName} {Report.Review?.Customer?.ApplicationUser?.LastName}",
                 }
-                );
+                ); ;
             }
 
 
@@ -64,10 +68,63 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> MarkAsSolved(int id)
+        public async Task<IActionResult> DeleteReview(int Id)
         {
             // Find the report with the given ID
-            var report = await reportRepo.GetDetailsAsync(id);
+            var report = await reportRepo.GetDetailsAsync(Id);
+            if (report is null)
+            {
+                return NotFound();
+            }
+
+            // If the report is already marked as solved, return an error
+            if (report.IsSolved)
+            {
+                ModelState.AddModelError("", "This report has already been marked as solved.");
+            }
+
+            if (report.Review?.IsDeleted == true)
+            {
+                report.IsSolved = true;
+                report.SolveDate = DateTime.Now;
+
+                try
+                {
+                    await reportRepo.UpdateAsync(Id, report);
+                }
+                catch
+                {
+                    throw new Exception("Couldn't update report");
+                }
+            }
+
+            else
+            {
+                report.IsSolved = true;
+                report.SolveDate = DateTime.Now;
+
+                report.Review.IsDeleted = true;
+                try
+                {
+                    await reportRepo.UpdateAsync(Id, report);
+                    await reviewRepo.UpdateAsync(report.ReviewId, report.Review);
+                }
+                catch
+                {
+                    throw new Exception("Couldn't update report or review");
+                }
+            }
+
+            // Redirect to the report list page
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAsSolved(int Id)
+        {
+            // Find the report with the given ID
+            var report = await reportRepo.GetDetailsAsync(Id);
             if (report is null)
             {
                 return NotFound();
@@ -86,7 +143,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                 report.SolveDate = DateTime.Now;
                 try
                 {
-                    await reportRepo.UpdateAsync(id, report);
+                    await reportRepo.UpdateAsync(Id, report);
                 }
                 catch
                 {
@@ -98,68 +155,6 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             return RedirectToAction("Index");
         }
 
-        //// GET: AdminPanel/Reports/Details/5
-        //public async Task<IActionResult> Details(int? id)
-        //{
-        //    if (id == null || _context.Reports == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var report = await _context.Reports
-        //        .Include(r => r.Review)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (report == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(report);
-        //}
-
-        //// GET: AdminPanel/Reports/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null || _context.Reports == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var report = await _context.Reports
-        //        .Include(r => r.Review)
-        //        .FirstOrDefaultAsync(m => m.Id == id);
-        //    if (report == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(report);
-        //}
-
-        //// POST: AdminPanel/Reports/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    if (_context.Reports == null)
-        //    {
-        //        return Problem("Entity set 'ApplicationDbContext.Reports'  is null.");
-        //    }
-        //    var report = await _context.Reports.FindAsync(id);
-        //    if (report != null)
-        //    {
-        //        _context.Reports.Remove(report);
-        //    }
-
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
-
-
-
-        //private bool ReportExists(int id)
-        //{
-        //  return (_context.Reports?.Any(e => e.Id == id)).GetValueOrDefault();
-        //}
+      
     }
 }

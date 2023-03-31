@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FinalProjectMVC.Models;
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 
 namespace FinalProjectMVC.Areas.Identity.Data
 {
@@ -13,5 +15,10 @@ namespace FinalProjectMVC.Areas.Identity.Data
         public string? LastName { get; set; }
 
         public string? ProfilePicture { get; set; }
+
+        public virtual List<Address>? Addresses { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsBlocked { get; set; } = false;
     }
 }

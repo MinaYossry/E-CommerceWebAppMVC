@@ -1,0 +1,200 @@
+﻿@model IEnumerable<CartItem>
+
+@{
+    ViewData["Title"] = "Index";
+    decimal ShippingCost = (decimal)10.0;
+}
+
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="mt-3" style="min-height: 60px" id="liveAlertPlaceholder"></div>
+        <h2>Your Cart</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="media">
+                                <img src="data:image;base64,@(Convert.ToBase64String(item.SellerProduct.Product.ProductImage ?? new byte[0]))" class="mr-3 align-self-center" style="width: 50px;">
+                                <div class="media-body">
+                                    <h5 class="mt-0">@item.SellerProduct.Product.Name</h5>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <button class="btn btn-outline-secondary" data-Id="@item.Id" data-Id="@item.Id" type="button" data-action="decrement">-</button>
+                                <input type="text" class="form-control" data-Id="@item.Id" style="width:25px" value="@item.Count" disabled>
+                                <button class="btn btn-outline-secondary" data-Id="@item.Id" type="button" data-action="increment">+</button>
+                            </div>
+                        </td>
+                        <td>$@item.SellerProduct.Price</td>
+                        <td>
+
+                            <button type="button" class="btn btn-danger" data-Id="@item.Id" data-action="remove">Remove</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-4 mt-8">
+        <h2>Summary</h2>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td>Subtotal</td>
+                    <td>$<span id="OrderSubTotal">@Model.Sum(p => p.Count * p.SellerProduct.Price)</span></td>
+                </tr>
+                <tr>
+                    <td>Shipping</td>
+                    <td>$<span id="ShippingCost">@ShippingCost</span></td>
+                </tr>
+                <tr>
+                    <td>Total</td>
+                    <td>$<span id="OrderTotalCost">@(Model.Sum(p => p.Count * p.SellerProduct.Price) + ShippingCost)</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="form-group">
+            <label for="inputAddress">Address</label>
+            <select class="form-control" id="inputAddress">
+                <option selected>Choose...</option>
+                <option>123 Main St</option>
+                <option>456 Maple Ave</option>
+                <option>789 Oak Blvd</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary btn-lg btn-block">Checkout</button>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+    
+        const alertPlaceholder = $('#liveAlertPlaceholder');
+
+        const alert = (message, type) => {
+
+            alertPlaceholder.empty();
+
+
+            const alertHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+              ${message}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          `;
+
+            alertPlaceholder.append(alertHTML);
+
+            const alertElement = alertPlaceholder.find('.alert').last();
+
+            setTimeout(() => {
+                alertElement.removeClass('show');
+                setTimeout(() => {
+                    alertElement.remove();
+                }, 500); // fade out duration + 100ms
+            }, 2500); // time before fade out
+        };
+
+
+        $('[data-action="increment"], [data-action="decrement"], [data-action="remove"]').click(function () {
+            var input = $(this).siblings('input[type="text"]');
+            var cartItemId = parseInt($(this).data('id'));
+            var action = $(this).data('action');
+            var quantity = parseInt(input.val());
+
+            if (action === 'increment') {
+                input.val(quantity + 1);
+            } else if (action === 'decrement' && quantity > 1) {
+                input.val(quantity - 1);
+            } else {
+                action = 'remove';
+                $(this).closest('tr').remove();
+            }
+
+            updateCartItem(cartItemId, action);
+        });
+
+        function updateCartItem(_cartItemId, _action) {
+            fetch('@Url.Action("UpdateCartItem", "Cart")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    CartItemId: _cartItemId,
+                    Action: _action
+                })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+
+                    const OrderSubTotalSpan = $('#OrderSubTotal');
+
+                    console.log(OrderSubTotalSpan);
+
+                    let oldValue = parseFloat(OrderSubTotalSpan.text());
+
+                    console.log(oldValue);
+
+
+                    let newValue = oldValue - (data.oldCount * data.price);
+                    if (_action == 'remove')
+                    {
+                        alert(`Item #${_cartItemId} has been removed from cart`, 'danger')
+                    }
+                    else
+                    {
+                        alert(`Item #${_cartItemId} has been updated`, "success");
+                        newValue += data.count * data.price;
+                    }
+                    OrderSubTotalSpan.text(newValue.toFixed(2))
+                    $('#OrderTotalCost').text((newValue + @ShippingCost).toFixed(2));
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+
+
+                //$(function () {
+                //    $('[data-action="increment"]').click(function () {
+                //        var input = $(this).siblings('input[type="text"]');
+                //        var quantity = parseInt(input.val());
+                //        input.val(quantity + 1);
+                //    });
+
+                //    $('[data-action="decrement"]').click(function () {
+                //        var input = $(this).siblings('input[type="text"]');
+                //        var quantity = parseInt(input.val());
+                //        if (quantity > 1) {
+                //            input.val(quantity - 1);
+                //        }
+                //    });
+
+                //    $('[data-action="remove"]').click(function () {
+                //        $(this).closest('tr').remove();
+                //    });
+                //});
+    </script>
+}

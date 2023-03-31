@@ -98,6 +98,9 @@ namespace FinalProjectMVC.Data.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
@@ -255,15 +258,9 @@ namespace FinalProjectMVC.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CustomerId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Region")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SellerId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("StreetName")
                         .IsRequired()
@@ -274,10 +271,6 @@ namespace FinalProjectMVC.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("SellerId");
 
                     b.HasIndex("UserId");
 
@@ -326,7 +319,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("SellerProductId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Customer", b =>
@@ -392,13 +385,16 @@ namespace FinalProjectMVC.Data.Migrations
                     b.Property<int>("SellerProductId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
                     b.HasIndex("SellerProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("FinalProjectMVC.Models.Report", b =>
@@ -459,6 +455,9 @@ namespace FinalProjectMVC.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -481,7 +480,7 @@ namespace FinalProjectMVC.Data.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -690,16 +689,8 @@ namespace FinalProjectMVC.Data.Migrations
 
             modelBuilder.Entity("FinalProjectMVC.Models.Address", b =>
                 {
-                    b.HasOne("FinalProjectMVC.Models.Customer", null)
-                        .WithMany("Addresses")
-                        .HasForeignKey("CustomerId");
-
-                    b.HasOne("FinalProjectMVC.Areas.SellerPanel.Models.Seller", null)
-                        .WithMany("Addresses")
-                        .HasForeignKey("SellerId");
-
                     b.HasOne("FinalProjectMVC.Areas.Identity.Data.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("Addresses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -872,6 +863,11 @@ namespace FinalProjectMVC.Data.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("FinalProjectMVC.Areas.Identity.Data.ApplicationUser", b =>
+                {
+                    b.Navigation("Addresses");
+                });
+
             modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Product", b =>
                 {
                     b.Navigation("Reviews");
@@ -881,8 +877,6 @@ namespace FinalProjectMVC.Data.Migrations
 
             modelBuilder.Entity("FinalProjectMVC.Areas.SellerPanel.Models.Seller", b =>
                 {
-                    b.Navigation("Addresses");
-
                     b.Navigation("SellerProducts");
                 });
 
@@ -900,8 +894,6 @@ namespace FinalProjectMVC.Data.Migrations
 
             modelBuilder.Entity("FinalProjectMVC.Models.Customer", b =>
                 {
-                    b.Navigation("Addresses");
-
                     b.Navigation("CartItems");
 
                     b.Navigation("Orders");

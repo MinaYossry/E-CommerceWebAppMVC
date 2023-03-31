@@ -19,6 +19,5 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         public virtual ApplicationUser? ApplicationUser { get; set; }
 
         public virtual ICollection<SellerProduct>? SellerProducts { get; set; }
-        public virtual List<Address>? Addresses { get; set; }
     }
 }
