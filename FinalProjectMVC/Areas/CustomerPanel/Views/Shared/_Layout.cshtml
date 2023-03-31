@@ -95,23 +95,67 @@
 
 
 <script>
-    loadCartCount();
-    async function loadCartCount() {
-        try {
-            var response = await fetch(`/CustomerPanel/Cart/GetTotalItemInCart`);
-            console.log(response)
-            if (response.status == 200) {
-                // Get value
-                var result = await response.json();
 
-                // Assign value to html
-                var cartCountEl = document.getElementById("cartCount");
-                cartCountEl.innerHTML = result;
+ 
+
+    loadCartCount();
+ async function loadCartCount() {
+
+     try{
+         const response = await fetch('/CustomerPanel/Cart/GetCartCount');
+        if (response.ok) {
+
+            console.log("on resposne event 👍 ");
+
+            const cartCount = await response.json();
+            document.getElementById('cartCount').textContent = cartCount;
             }
-        }
-        catch (err) {
-            console.log(err);
-        }
+
+         }
+        
+     catch (err) {
+           console.log(err);
+         }
+    
     }
+
+
+    // This checks the element because it's only used by one view of which the Layout serves.
+
+    const cartForm = document.getElementById('cartForm');
+    if (cartForm) {
+    document.getElementById('cartForm').addEventListener('submit', async (event) => {
+
+        console.log("QuerySelector event got activated");
+        event.preventDefault();
+        const formData = new FormData(event.target);
+
+        console.log(event.target.action);
+        const response = await fetch(event.target.action, {
+
+            
+            method: 'POST',
+            body: formData
+        });
+        if (response.ok) {
+
+             console.log("QuerySelector event => response recived ");
+            const cartCount = await response.json();
+            document.getElementById('cartCount').textContent = cartCount;
+        }
+
+        // Close the modal window
+        const modalElement = document.getElementById('cartModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+    });
+
+    }
+
+         
+   
+
+
+
 </script>
 </html>

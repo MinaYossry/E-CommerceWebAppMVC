@@ -48,11 +48,12 @@
     </div>
 </div>
 
+@* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
 <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
     <div class="modal-dialog">
 
 
-        <form asp-area="CustomerPanel" asp-controller="Cart" asp-action="AddToCart" method="post">
+        <form id="cartForm" asp-area="CustomerPanel" asp-controller="Cart" asp-action="AddToCart" method="post">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="cartModalLabel">Add to Cart</h5>
@@ -147,6 +148,11 @@
 
 
 <script>
+
+   
+
+
+
         function redirectToView(sellerId) {
         // Get the productId from the model
         var productId = @Model.ProductId;
@@ -157,6 +163,7 @@
         // Redirect to the URL
         window.location.href = url;
     }
+
 </script>
 
 

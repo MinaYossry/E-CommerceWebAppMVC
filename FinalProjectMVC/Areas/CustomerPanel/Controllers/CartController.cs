@@ -93,11 +93,15 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
             //return RedirectToAction("Index");
 
-            return View(model: userId);
+            // Count property of List, You have to () to include the await.
+            int cartItemCount = (await _cartItemRepo.FilterAsync(sp => sp.CustomerId == userId)).Count;
+            return Ok(cartItemCount);
+
+            //return View(model: userId);
         }
 
 
-        public async Task<IActionResult> GetTotalItemInCart()
+        public async Task<IActionResult> GetCartCount()
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

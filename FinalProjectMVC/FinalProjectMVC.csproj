@@ -363,6 +363,7 @@
     <Folder Include="ViewModel\" />
     <Folder Include="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\" />
     <Folder Include="wwwroot\1-LandingPage %28otherpages -about %29\" />
+    <Folder Include="wwwroot\CartPage\" />
     <Folder Include="wwwroot\Uploads\" />
   </ItemGroup>
 
