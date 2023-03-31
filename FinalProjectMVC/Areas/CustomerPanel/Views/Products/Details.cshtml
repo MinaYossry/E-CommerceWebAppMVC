@@ -150,13 +150,15 @@
                         <p class="card-text"><small class="text-muted">@item.CreatedDate</small></p>
                     </div>
                     <div class="card-footer d-flex justify-content-end">
-                        <button type="button" class="btn btn-warning me-3" data-bs-toggle="modal" data-bs-target="@($"#reportModal{item.Id}")" data-review-id="@item.Id">Report</button>
                         @if(item.CustomerId == User.GetUserId())
                         {
                             <form asp-action="Delete" asp-controller="Reviews" asp-area="">
                                 <input type="hidden" name="Id" value="@item.Id" />
                                 <input type="submit" value="Delete" class="btn btn-danger" />
                             </form>
+                        } else
+                        {
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="@($"#reportModal{item.Id}")" data-review-id="@item.Id">Report</button>
                         }
                     </div>
                 </div>
