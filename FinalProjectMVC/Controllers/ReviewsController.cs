@@ -30,9 +30,9 @@ namespace FinalProjectMVC.Controllers
         public ReviewsController(
             IRepository<Review> reviewtRepository ,
             IRepository<Product> productRepository,
-             IRepository<Seller> sellerRepository,
-              IRepository<Customer> customerRepository,
-              UserManager<ApplicationUser> userManager,
+            IRepository<Seller> sellerRepository,
+            IRepository<Customer> customerRepository,
+            UserManager<ApplicationUser> userManager,
             ApplicationDbContext context)
         {
             _context = context;
@@ -106,7 +106,6 @@ namespace FinalProjectMVC.Controllers
                 {
                     Name = model.Name,
                     Description = model.Description,
-                    Rating = model.Rating,
                     CustomerId = model.CustomerId,
                     SellerId = model.SellerId,
                     ProductId = model.ProductId
@@ -120,9 +119,9 @@ namespace FinalProjectMVC.Controllers
                     throw new Exception(" Please Try Again");
                 }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details","Products", new {area = "CustomerPanel", Id = model.ProductId, SellerId = model.SellerId});
             }
-            return View();
+            return RedirectToAction("Details", "Products", new { area = "CustomerPanel", Id = model.ProductId, SellerId = model.SellerId });
 
         }
         #region Create
@@ -313,7 +312,7 @@ namespace FinalProjectMVC.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Details", "Products", new { area = "CustomerPanel", Id = review.ProductId, SellerId = review.SellerId });
         }
 
         private bool ReviewExists(int id)

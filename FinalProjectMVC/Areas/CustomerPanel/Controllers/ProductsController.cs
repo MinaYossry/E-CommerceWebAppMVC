@@ -173,6 +173,8 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
                 Brand = sellerProductRow.Product?.Brand?.Name,
                 SubCategory = sellerProductRow.Product?.SubCategory?.Name,
 
+                ReviewsList = sellerProductRow.Product.Reviews.Where(r => !r.IsDeleted).OrderByDescending(r => r.CreatedDate).ToList()
+
 
                 //SellersList = availableSellers
                 //SellersList = new SelectList(availableSellers, "SellerId", "Seller?.ApplicationUser?.FirstName")

@@ -1,5 +1,12 @@
-﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+﻿@using FinalProjectMVC.Areas.Identity.Data;
+@using FinalProjectMVC.Constants;
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@using Microsoft.AspNetCore.Identity;
 @model FinalProjectMVC.Areas.CustomerPanel.ViewModel.DetailedProductViewModel
+
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = $"Details of {Model.ProductName}";
@@ -106,53 +113,86 @@
 <!-- Reviews Section -->
 <div class="container py-5">
     <h3 class="fw-bold mb-4">Reviews</h3>
-    <div class="row">
-        <div class="col-lg-12 mb-3">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-body">
-                    <h5 class="card-title">mohamed</h5>
-                    <p class="card-text">the product was soooo bad </p>
-                    <p class="card-text"><small class="text-muted">20/2/2020</small></p>
-                </div>
-                <div class="card-footer d-flex justify-content-end">
-                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reportModal" data-review-id="5">Report</button>
+    @if(User.IsInRole(Roles.Customer.ToString()))
+    {
+        <div class="row">
+            <div class="col-lg-12 mb-3">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-body">
+                        <h5 class="card-title">Create a New Review</h5>
+                        <form asp-action="Create" asp-controller="Reviews" asp-area="">
+                            <input type="text" hidden value="@Model.ProductId" name="ProductId" />
+                            <input type="text" hidden value="@Model.SellerId" name="SellerId" />
+                            <input type="text" hidden value="@User.GetUserId()" name="CustomerId" />
+                            <div class="mb-3">
+                                <label for="review-title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="review-title" name="Name" placeholder="Enter review title">
+                            </div>
+                            <div class="mb-3">
+                                <label for="review-description" class="form-label">Description</label>
+                                <textarea class="form-control" name="Description" id="review-description" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
+    @foreach (var item in Model.ReviewsList)
+    {
+        <div class="row">
+            <div class="col-lg-12 mb-3">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name | <small class="text-muted note-fontsize-10">@item.Customer.ApplicationUser.FirstName @item.Customer.ApplicationUser.LastName</small></h5>
+                        <p class="card-text">@item.Description</p>
+                        <p class="card-text"><small class="text-muted">@item.CreatedDate</small></p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end">
+                        <button type="button" class="btn btn-warning me-3" data-bs-toggle="modal" data-bs-target="@($"#reportModal{item.Id}")" data-review-id="@item.Id">Report</button>
+                        @if(item.CustomerId == User.GetUserId())
+                        {
+                            <form asp-action="Delete" asp-controller="Reviews" asp-area="">
+                                <input type="hidden" name="Id" value="@item.Id" />
+                                <input type="submit" value="Delete" class="btn btn-danger" />
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="ReportReview" method="post">
+            <div class="modal fade" id="@($"reportModal{item.Id}")" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reportModalLabel">Report Review</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="reviewId" name="ReviewId" value="@item.Id">
+                            <label for="Name" class="form-label">Reason for reporting</label>
+                            <input name="Name" type="text" class="form-control" />
+                            <textarea id="Description" name="Description" class="form-control mt-2" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
 </div>
 
 <!-- Report Review Modal -->
-<form asp-action="ReportReview" method="post">
-    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="reportModalLabel">Report Review</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="reviewId" name="reviewId" value="">
-                    <label for="reason" class="form-label">Reason for reporting</label>
-                    <textarea id="reason" name="reason" class="form-control" rows="3"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
 
 
 
 <script>
-
-   
-
-
-
         function redirectToView(sellerId) {
         // Get the productId from the model
         var productId = @Model.ProductId;
