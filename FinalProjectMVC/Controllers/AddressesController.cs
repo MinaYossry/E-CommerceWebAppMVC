@@ -7,39 +7,44 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
+using Microsoft.AspNetCore.Authorization;
+using FinalProjectMVC.RepositoryPattern;
 
 namespace FinalProjectMVC.Controllers
 {
+    [Authorize]
     public class AddressesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Address> addressRepo;
 
-        public AddressesController(ApplicationDbContext context)
+        public AddressesController(IRepository<Address> addressRepo)
         {
-            _context = context;
+            this.addressRepo = addressRepo;
         }
 
         // GET: Addresses
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Addresses.Include(a => a.ApplicationUser);
-            return View(await applicationDbContext.ToListAsync());
+            return View(await addressRepo.FilterAsync(a => a.UserId == User.GetUserId()));
         }
 
         // GET: Addresses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Addresses == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var address = await _context.Addresses
-                .Include(a => a.ApplicationUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var address = await addressRepo.GetDetailsAsync(id);
             if (address == null)
             {
                 return NotFound();
+            }
+
+            if (address.UserId != User.GetUserId())
+            {
+                return Unauthorized();
             }
 
             return View(address);
@@ -48,7 +53,6 @@ namespace FinalProjectMVC.Controllers
         // GET: Addresses/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -59,30 +63,37 @@ namespace FinalProjectMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,StreetName,BuildingNumber,City,Region,UserId")] Address address)
         {
+            if (address.UserId != User.GetUserId())
+                return Unauthorized();
+
             if (ModelState.IsValid)
             {
-                _context.Add(address);
-                await _context.SaveChangesAsync();
+                await addressRepo.InsertAsync(address);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", address.UserId);
             return View(address);
         }
 
         // GET: Addresses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Addresses == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var address = await _context.Addresses.FindAsync(id);
+            var address = await addressRepo.GetDetailsAsync(id);
             if (address == null)
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", address.UserId);
+
+            if (address.UserId != User.GetUserId())
+            {
+                return Unauthorized();
+            }
+
+
             return View(address);
         }
 
@@ -98,12 +109,14 @@ namespace FinalProjectMVC.Controllers
                 return NotFound();
             }
 
+            if (address.UserId != User.GetUserId())
+                return Unauthorized();
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(address);
-                    await _context.SaveChangesAsync();
+                    await addressRepo.UpdateAsync(id, address);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -113,30 +126,31 @@ namespace FinalProjectMVC.Controllers
                     }
                     else
                     {
-                        throw;
+                        return BadRequest();
                     }
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", address.UserId);
             return View(address);
         }
 
         // GET: Addresses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Addresses == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var address = await _context.Addresses
-                .Include(a => a.ApplicationUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var address = await addressRepo.GetDetailsAsync(id);
+
             if (address == null)
             {
                 return NotFound();
             }
+
+            if (address.UserId != User.GetUserId())
+                return Unauthorized();
 
             return View(address);
         }
@@ -146,23 +160,39 @@ namespace FinalProjectMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Addresses == null)
+            var address = await addressRepo.GetDetailsAsync(id);
+
+            if (address == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Addresses'  is null.");
+                return NotFound();
             }
-            var address = await _context.Addresses.FindAsync(id);
-            if (address != null)
+
+            if (address.UserId != User.GetUserId())
+                return Unauthorized();
+
+
+            try
             {
-                _context.Addresses.Remove(address);
+                await addressRepo.DeleteAsync(id);
             }
-            
-            await _context.SaveChangesAsync();
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!AddressExists(address.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
         private bool AddressExists(int id)
         {
-          return (_context.Addresses?.Any(e => e.Id == id)).GetValueOrDefault();
+            return addressRepo.GetDetails(id) is not null;
         }
     }
 }
