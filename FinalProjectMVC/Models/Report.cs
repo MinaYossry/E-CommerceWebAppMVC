@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using FinalProjectMVC.Areas.SellerPanel.Models;
 
@@ -14,7 +15,11 @@ namespace FinalProjectMVC.Models
 
         public bool IsSolved { get; set; } = false;
 
-        public DateTime CreatedDate { get; } = DateTime.Now;
+        [ReadOnly(true)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+        public DateTime? SolveDate { get; set; }
 
         [ForeignKey(nameof(Review))]
         public int ReviewId { get; set; }

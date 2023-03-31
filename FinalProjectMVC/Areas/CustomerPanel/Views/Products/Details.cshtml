@@ -1,0 +1,246 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+@model FinalProjectMVC.Areas.CustomerPanel.ViewModel.DetailedProductViewModel
+
+@{
+    ViewData["Title"] = $"Details of {Model.ProductName}";
+}
+
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-5 mb-4 mb-lg-0">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <img class="card-img-top" src="data:image;base64,@(Convert.ToBase64String(Model.ProductImage))" alt="@Model.ProductName">
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0 rounded-lg h-100">
+                <div class="card-body">
+                    <h2 class="fw-bold mb-4">@Model.ProductName</h2>
+                    <hr>
+                    <p class="mb-3">@Model.ProductDescription</p>
+                    <h4 class="fw-bold mb-3">Price: $@Model.ProductPrice</h4>
+                    <h4 class="fw-bold mb-3">Count: @Model.Count</h4>
+                    <!-- Choosing a seller section -->
+                    <div class="mb-3">
+
+                        <div class="form-group">
+                            <label asp-for="SellerId" class="control-label"> Choose a Seller: </label>
+                            <select class="form-control" asp-for="SellerId" asp-items="ViewBag.SellerName" onchange="redirectToView(this.value)" style="width: 200px;">
+                                <option value="" disabled>Select a seller</option>
+                            </select>
+                        </div>
+
+                   
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                    <!-- Add to cart button -->
+                    <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#cartModal">Add to Cart</button>
+
+
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+                </div>
+
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+@* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+
+
+        <form id="cartForm" asp-area="CustomerPanel" asp-controller="Cart" asp-action="AddToCart" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Add to Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Quantity selection -->
+                    <div class="mb-3">
+                        <label for="quantitySelect" class="form-label">Choose a quantity:</label>
+                        <select id="quantitySelect" name="count" class="form-select">
+                            @for (int i = 1; i <= Model.Count; i++)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        </select>
+                    </div>
+                    <!-- Other stuff here -->
+                </div>
+                <div class="modal-footer">
+                    <!-- Confirm button -->
+
+                    @* We are sending The `sellerId` in the form but while hidden.*@
+                    <input type="hidden" name="sellerProductId" value="@Model.CurrentSellerProduct?.Id" />
+
+
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <!-- Cancel button -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<form asp-action="Delete" asp-route-id="@Model?.CurrentSellerProduct?.Id" method="post">
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal content here -->
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<!-- Reviews Section -->
+<div class="container py-5">
+    <h3 class="fw-bold mb-4">Reviews</h3>
+    <div class="row">
+        <div class="col-lg-12 mb-3">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-body">
+                    <h5 class="card-title">mohamed</h5>
+                    <p class="card-text">the product was soooo bad </p>
+                    <p class="card-text"><small class="text-muted">20/2/2020</small></p>
+                </div>
+                <div class="card-footer d-flex justify-content-end">
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reportModal" data-review-id="5">Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Review Modal -->
+<form asp-action="ReportReview" method="post">
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Report Review</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="reviewId" name="reviewId" value="">
+                    <label for="reason" class="form-label">Reason for reporting</label>
+                    <textarea id="reason" name="reason" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<script>
+
+   
+
+
+
+        function redirectToView(sellerId) {
+        // Get the productId from the model
+        var productId = @Model.ProductId;
+        // Construct the URL for the view with query parameters
+        var url = "/Product/" + productId + "/" + sellerId;
+
+
+        // Redirect to the URL
+        window.location.href = url;
+    }
+
+</script>
+
+
+
+
+
+
+
+@*<select asp-for="SellerId" asp-items="Model.SellersList" asp-route-sellerId="@Model.SellerId" class="form-control" onchange="redirectToView(this.value)">
+    <option value="">Select a seller</option>
+</select>*@
+
+
+
+@*
+
+One possible way to show the select list in the view and handle the selection change is to use a form with a dropdown
+list and a submit button. The form can have an action attribute that points to
+the same controller action that generated the select list.
+The dropdown list can have a name attribute that matches the parameter name of the controller action.
+The submit button can be hidden with CSS and triggered by JavaScript when the dropdown list changes.
+For example:
+
+// In the controller
+public IActionResult Index(int? sellerId)
+{
+    // Get the available sellers from some source
+    var availableSellers = ...;
+
+    // Populate the select list with seller names and ids
+    ViewData["SellerName"] = new SelectList(availableSellers, "Seller.Id", "Seller?.ApplicationUser?.FirstName");
+
+    // Get the selected seller details from some source
+    var selectedSeller = ...;
+
+    // Return the view with the selected seller model
+    return View(selectedSeller);
+}
+
+// In the view
+@model Seller
+
+<form asp-action="Index">
+    <select asp-for="Id" asp-items="ViewData[\"SellerName\"] as SelectList" onchange="this.form.submit()">
+        <option value="">Select a seller</option>
+    </select>
+    <input type="submit" style="display: none;" />
+</form>
+
+// Display the selected seller details
+<h1>@Model.Name</h1>
+<p>@Model.Address</p>
+<p>@Model.Phone</p>
+
+
+One way to achieve your goal is to use the ViewData dictionary to pass 
+the select list from your controller to your view. You can use the following code in your controller:
+
+ViewData["SellerName"] = new SelectList(availableSellers, "Seller.Id", "Seller?.ApplicationUser?.FirstName");
+
+This will create a select list with the seller ID as the value and the seller first name as the text. You can then use the asp-for and asp-items attributes in your view to bind the select list to a model property and display it in a dropdown. For example:
+
+<select asp-for="SelectedSellerId" asp-items="ViewData[" SellerName"] as SelectList"></select>
+
+This will render a dropdown with the seller names and set the SelectedSellerId property of your model to the selected value. To redirect to your action when a seller is selected, you can use some JavaScript code to listen for the change event of the dropdown and submit the form. For example:
+
+<script>
+    $(document).ready(function() {
+        $("#SelectedSellerId").change(function() {
+            $("#formId").submit();
+        });
+    });
+</script>
+
+This will submit the form with
+the selected seller ID when the user changes the dropdown value. 
+You can then use this value in your action to update the seller details and return the view.
+
+*@
+

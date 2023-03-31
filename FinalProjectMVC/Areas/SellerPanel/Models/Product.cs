@@ -7,7 +7,6 @@ using System.ComponentModel;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Models
 {
-    //[Table("Product")] => This prevents forces a name on the table.
     public class Product
     {
         public int Id { get; set; }

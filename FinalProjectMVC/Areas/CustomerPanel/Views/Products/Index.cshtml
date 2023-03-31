@@ -1,0 +1,76 @@
+﻿@using FinalProjectMVC.Areas.AdminPanel.Models;
+@model IEnumerable<FinalProjectMVC.Areas.CustomerPanel.ViewModel.DisplayInStockProductsViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    List<Category> Categories = ViewBag.Categories;
+    List<Brand> Brands = ViewBag.Brands;
+}
+
+
+
+
+
+
+@*  Role is custom attribute that is used by blind users phone reader.*@
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-warning mt-4" role="alert">
+        No products found.
+    </div>
+}
+else
+{
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mt-4">
+        @foreach (var product in Model)
+        {
+
+            @*
+    I have to check if the product have any seller,
+    and if the count is not 0 for atleast one seller.
+
+    *@
+            <div class="col mb-2">
+                <div class="card mt-2 h-100">
+                    <div class="row g-0">
+                        <div class="col-4 d-flex align-items-center">
+                            <img class="card-img-top align-self-center" src="data:image;base64,@(Convert.ToBase64String(product.ProductImage ?? new byte[0]))" alt="Product Image">
+                        </div>
+                        <div class="col-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@product.ProductName</h5>
+                                <p class="card-text">@product.ProductDescription</p>
+
+                                @* Show a specific price based on seller,
+                        get a list of all the sellers selling this product
+                        choose a seller from drop down list to display a price.
+                        *@
+
+
+
+                                <p class="card-text"><strong> Sold by :</strong> @product.SellerNameWithLowestPrice</p>
+                                <p class="card-text"><strong> Price:</strong> @product.ProductPrice</p>
+                                <p class="card-text"><strong> Items inStock:</strong> @product.Count</p>
+
+
+
+                                @* note that: product.Id here is the the real id for the product *@
+                                @*<a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary">View Details</a>*@
+
+                               @* now this is the `record` in the `sellerProduct` table where the cheapest is sold.*@
+                                <a asp-action="Details" asp-route-id="@product.ProductId" asp-route-SellerId="@product.SellerId" class="btn btn-primary">View Details</a>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">@product?.SubCategory - @product?.Brand</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    
+}

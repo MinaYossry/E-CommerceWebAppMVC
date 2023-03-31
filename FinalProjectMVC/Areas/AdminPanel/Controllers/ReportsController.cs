@@ -7,86 +7,154 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
+using FinalProjectMVC.RepositoryPattern;
+using FinalProjectMVC.Areas.AdminPanel.ViewModel;
+using Castle.Core.Resource;
+using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
-    public class ReportsController : BaseController
+    public class ReportsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+       // private readonly ApplicationDbContext _context;
+        private readonly IRepository<Report> reportRepo;
+        private readonly IRepository<Review> reviewRepo;
 
-        public ReportsController(ApplicationDbContext context):base(context)
+        public ReportsController(
+            //ApplicationDbContext context,
+            IRepository<Report> reportRepo,
+            IRepository<Review> reviewRepo
+            )
         {
-            _context = context;
+        //    _context = context;
+            this.reportRepo = reportRepo;
+            this.reviewRepo = reviewRepo;
         }
 
         // GET: AdminPanel/Reports
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reports.Include(r => r.Review);
-            return View(await applicationDbContext.ToListAsync());
+
+            var viewMode = new List<AdminReportsReviewsViewModel>();
+
+            var ReportsList = (await reportRepo.GetAllAsync()).OrderBy(x => x.IsSolved).ToList();
+
+            foreach (var Report in ReportsList)
+            {
+                viewMode.Add(new()
+                {
+                    ReportId = Report.Id,
+                    IsReviewDeleted = Report.Review?.IsDeleted != false,
+                    Name = Report.Name,
+                    Description = Report.Description,
+                    IsSolved = Report.IsSolved,
+                    SolveDate = Report.SolveDate,
+                    CreatedDate = Report.CreatedDate,
+                    ReviewId = Report.ReviewId,
+                    ReviewName = Report.Review?.Name ?? "",
+                    ReviewDescription = Report.Review?.Description ?? "",
+                    SellerId = Report.Review?.SellerId ?? "",
+                    SellerName = $"{Report.Review?.Seller?.ApplicationUser?.FirstName} {Report.Review?.Seller?.ApplicationUser?.LastName}",
+                    CustomerId = Report.Review?.CustomerId ?? "",
+                    CustomerName = $"{Report.Review?.Customer?.ApplicationUser?.FirstName} {Report.Review?.Customer?.ApplicationUser?.LastName}",
+                }
+                ); ;
+            }
+
+
+            return View(viewMode);
         }
 
-        // GET: AdminPanel/Reports/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Reports == null)
-            {
-                return NotFound();
-            }
-
-            var report = await _context.Reports
-                .Include(r => r.Review)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (report == null)
-            {
-                return NotFound();
-            }
-
-            return View(report);
-        }
-
-        // GET: AdminPanel/Reports/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Reports == null)
-            {
-                return NotFound();
-            }
-
-            var report = await _context.Reports
-                .Include(r => r.Review)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (report == null)
-            {
-                return NotFound();
-            }
-
-            return View(report);
-        }
-
-        // POST: AdminPanel/Reports/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteReview(int Id)
         {
-            if (_context.Reports == null)
+            // Find the report with the given ID
+            var report = await reportRepo.GetDetailsAsync(Id);
+            if (report is null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Reports'  is null.");
+                return NotFound();
             }
-            var report = await _context.Reports.FindAsync(id);
-            if (report != null)
+
+            // If the report is already marked as solved, return an error
+            if (report.IsSolved)
             {
-                _context.Reports.Remove(report);
+                ModelState.AddModelError("", "This report has already been marked as solved.");
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            if (report.Review?.IsDeleted == true)
+            {
+                report.IsSolved = true;
+                report.SolveDate = DateTime.Now;
+
+                try
+                {
+                    await reportRepo.UpdateAsync(Id, report);
+                }
+                catch
+                {
+                    throw new Exception("Couldn't update report");
+                }
+            }
+
+            else
+            {
+                report.IsSolved = true;
+                report.SolveDate = DateTime.Now;
+
+                report.Review.IsDeleted = true;
+                try
+                {
+                    await reportRepo.UpdateAsync(Id, report);
+                    await reviewRepo.UpdateAsync(report.ReviewId, report.Review);
+                }
+                catch
+                {
+                    throw new Exception("Couldn't update report or review");
+                }
+            }
+
+            // Redirect to the report list page
+            return RedirectToAction("Index");
         }
 
-        private bool ReportExists(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAsSolved(int Id)
         {
-          return (_context.Reports?.Any(e => e.Id == id)).GetValueOrDefault();
+            // Find the report with the given ID
+            var report = await reportRepo.GetDetailsAsync(Id);
+            if (report is null)
+            {
+                return NotFound();
+            }
+
+            // If the report is already marked as solved, return an error
+            if (report.IsSolved)
+            {
+                ModelState.AddModelError("", "This report has already been marked as solved.");
+            }
+
+            // Update the "IsSolved" property of the report and save the changes to the database
+            else
+            {
+                report.IsSolved = true;
+                report.SolveDate = DateTime.Now;
+                try
+                {
+                    await reportRepo.UpdateAsync(Id, report);
+                }
+                catch
+                {
+                    throw new Exception("Couldn't update report");
+                }
+            }
+
+            // Redirect to the report list page
+            return RedirectToAction("Index");
         }
+
+      
     }
 }

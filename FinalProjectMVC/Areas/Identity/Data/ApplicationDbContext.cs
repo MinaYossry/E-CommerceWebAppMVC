@@ -4,6 +4,7 @@ using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using FinalProjectMVC.Areas.SellerPanel.ViewModel;
 
 namespace FinalProjectMVC.Areas.Identity.Data
 {
@@ -42,7 +43,15 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .HasOne(p => p.Review)
                 .WithMany(s => s.Reports)
                 .HasForeignKey(p => p.ReviewId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Report>()
+                .Property(r => r.CreatedDate)
+                .HasDefaultValueSql("getdate()");
+
+            builder.Entity<Review>()
+                .Property(r => r.CreatedDate)
+                .HasDefaultValueSql("getdate()");
 
 
             //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
@@ -68,5 +77,6 @@ namespace FinalProjectMVC.Areas.Identity.Data
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
+      //  public DbSet<FinalProjectMVC.Areas.SellerPanel.ViewModel.SellerOrderItemViewModel> SellerOrderItemViewModel { get; set; } = default!;
     }
 }

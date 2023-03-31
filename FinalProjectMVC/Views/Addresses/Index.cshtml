@@ -1,0 +1,30 @@
+﻿@model IEnumerable<FinalProjectMVC.Models.Address>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="container">
+    <h1 class="mb-4">Address Book</h1>
+    <div class="d-flex justify-content-end mb-4">
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
+</div>
+
+<div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.StreetName @item.BuildingNumber</h5>
+                        <p class="card-text">@item.City, @item.Region</p>
+                        <div class="d-flex justify-content-end">
+                            <a class="btn btn-primary me-2" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="btn btn-secondary me-2" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+</div>

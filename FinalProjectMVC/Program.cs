@@ -48,8 +48,20 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 // Service for manging profile picture.
-builder.Services.AddScoped<IFileService, FileService>();   
+builder.Services.AddScoped<IFileService, FileService>();
 
+builder.Services.AddAuthentication()
+   .AddGoogle(googleOptions =>
+   {
+       googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+       googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+   })
+   .AddFacebook(options =>
+   {
+       IConfigurationSection FBAuthNSection = builder.Configuration.GetSection("Authentication:FB");
+       options.ClientId = FBAuthNSection["ClientId"];
+       options.ClientSecret = FBAuthNSection["ClientSecret"];
+   });
 
 
 #endregion
@@ -72,6 +84,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #region Services using => Repository pattern scopes 
 
 builder.Services.AddScoped<IRepository<Admin>, AdminRepoService>();
+builder.Services.AddScoped<IRepository<Address>, AddressRepService>();
+builder.Services.AddScoped<IRepository<Order>, OrderRepoService>();
 builder.Services.AddScoped<IRepository<Brand>, BrandRepoService>();
 builder.Services.AddScoped<IRepository<CartItem>, CartItemsRepoService>();
 builder.Services.AddScoped<IRepository<Category>, CategoryRepoService>();
@@ -115,8 +129,17 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
       name: "areas",
-      pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+      pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}/{SellerId?}"
     );
+
+app.MapControllerRoute(
+      name: "DeleteReview",
+      pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}/{reportId?}"
+    );
+
+app.MapControllerRoute(
+    name: "SellerProduct",
+    pattern: "{controller=Home}/{action=Index}/{id?}/{SellerId?}");
 
 app.MapControllerRoute(
     name: "default",

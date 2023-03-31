@@ -1,0 +1,140 @@
+﻿@model IEnumerable<FinalProjectMVC.Areas.SellerPanel.ViewModel.SellerOrderItemViewModel>
+
+@{
+    ViewData["Title"] = "Seller Products";
+}
+
+@section Style 
+{
+    <style>
+        .dropdown-menu {
+            z-index: 1001;
+        }
+
+        .btn-group {
+            overflow: visible;
+        }
+    </style>
+}
+
+<div class="container">
+    <h1>Seller Orders</h1>
+    <div class="accordion" id="accordionExample">
+    @foreach (var item in Model)
+    {
+        <div class="card">
+            <div class="card-header" id="@($"heading{item.Id}{item.Product.Id}{item.Customer.Id}")">
+                <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="@($"#collapse{item.Id}{item.Product.Id}{item.Customer.Id}")" aria-expanded="false" aria-controls="@($"collapse{item.Id}{item.Product.Id}{item.Customer.Id}")">
+                        <span class="font-weight-bold">Order:</span> #@item.Id
+                        <span class="text-muted">|</span>
+                        <span class="font-weight-bold"></span>
+                            <span class="font-weight-bold">@item.Product.Name</span>
+                            <span class="text-muted">|</span>
+                            <span class="font-italic">@item.OrderDate.ToShortDateString()</span>
+                            @{
+                                string badgeClass;
+                                string badgeText;
+                                switch (item.Status)
+                                {
+                                    case OrderStatus.Delivered:
+                                        badgeClass = "badge-success";
+                                        badgeText = "Delivered";
+                                        break;
+                                    case OrderStatus.Cancelled:
+                                        badgeClass = "badge-danger";
+                                        badgeText = "Cancelled";
+                                        break;
+                                    case OrderStatus.OutForDelivery:
+                                        badgeClass = "badge-warning";
+                                        badgeText = "Out for Delivery";
+                                        break;
+                                    case OrderStatus.Processing:
+                                        badgeClass = "badge-info";
+                                        badgeText = "Processing";
+                                        break;
+                                    default:
+                                        badgeClass = "badge-secondary";
+                                        badgeText = "Pending";
+                                        break;
+                                }
+                            }
+                            <span class="badge badge-pill float-right @badgeClass">@badgeText</span>
+                    </button>
+                </h2>
+            </div>
+
+                <div id="@($"collapse{item.Id}{item.Product.Id}{item.Customer.Id}")" class="collapse" aria-labelledby="@($"heading{item.Id}{item.Product.Id}{item.Customer.Id}")" data-parent="#accordionExample">
+                <div class="card-body">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.Product.Name</h5>
+                                <p class="card-text">Order Count: @item.Count</p>
+                                <p class="card-text">Price: @item.Price.ToString("C")</p>
+                                <p class="card-text">Total Price: $@(item.Count * @item.Price)</p>
+                                <p class="card-text">Order Date: @item.OrderDate.ToShortDateString()</p>
+                                <p class="card-text">Customer: @item.Customer.ApplicationUser.FirstName @item.Customer.ApplicationUser.LastName</p>
+                                <p class="card-text">Address: @item.Address.BuildingNumber, @item.Address.StreetName, @item.Address.City, @item.Address.Region</p>
+                            </div>
+                        </div>
+                </div>
+            </div>
+
+                <div class="card-footer">
+                    @if (item.Status == OrderStatus.Delivered)
+                    {
+                        <p class="text-success">This Order is Deliverd</p>
+                    }
+                    else if (item.Status == OrderStatus.Cancelled)
+                    {
+                        <p class="text-danger">This Order is Cancelled</p>
+                    }
+                    else
+                    {
+                        @if (item.Status < @OrderStatus.Processing)
+                        {
+                            <a class="btn btn-info mr-2" type="button" asp-action="UpdateOrderStatus" asp-route-id="@item.Id" asp-route-OrderStatus="@OrderStatus.Processing">Mark as Processing</a>
+                        }
+                        @if (item.Status < @OrderStatus.OutForDelivery)
+                        {
+                            <a class="btn btn-warning mr-2" type="button" asp-action="UpdateOrderStatus" asp-route-id="@item.Id" asp-route-OrderStatus="@OrderStatus.OutForDelivery">Mark as Out for Delivery</a>
+                        }
+                        @if (item.Status < @OrderStatus.Delivered)
+                        {
+                            <a class="btn btn-success mr-2" asp-action="UpdateOrderStatus" asp-route-id="@item.Id" asp-route-OrderStatus="@OrderStatus.Delivered">Mark as Delivered</a>
+                        }
+                        @if (item.Status < @OrderStatus.Cancelled)
+                        {
+                            <button class="btn btn-danger mr-2" type="button" data-toggle="modal" data-target="@($"#CancelOrderModal{item.Id}")">Cancel Order</button>
+                        }
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                    }
+                </div>
+        </div>
+
+        <!-- CancelModel Modal -->
+            <div class="modal fade" id="@($"CancelOrderModal{item.Id}")" tabindex="-1" role="dialog" aria-labelledby="@($"CancelOrderModalLabel{item.Id}")" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                            <h5 class="modal-title" id="@($"CancelOrderModalLabel{item.Id}")">Cancel Order #@item.Id?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to Cancel #@item.Id?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Dismiss</button>
+                         <form asp-action="CancelOrder" method="post">
+                            <input type="hidden" name="Id" value="@item.Id" />
+                            <button type="submit" class="btn btn-danger">Confirm Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+</div>
