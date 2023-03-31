@@ -25,10 +25,30 @@
     <link rel="shortcut icon" type="image/x-icon" href="@Url.Content("~/favicon.ico")">
 
 
+    @* This Link must be added for the icons to work. *@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+    <style>
+        .cart-icon {
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.5rem;
+            padding: 2px 4px;
+        }
+    </style>
     
 </head>
 <body>
     <header>
+        
+
+       
+        
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index" aria-current="page">
@@ -111,6 +131,8 @@
                         <button class="btn btn-outline-success" type="submit">Search</button>
                     </form>
 
+                  
+
                     @*                    @if (SignInManager.IsSignedIn(User))
                     {
                     <form    class="m-1 d-flex">
@@ -139,6 +161,78 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
+
+<script>
+
+
+
+    loadCartCount();
+    async function loadCartCount() {
+
+        try {
+            const response = await fetch('/CustomerPanel/Cart/GetCartCount');
+            if (response.ok) {
+
+                //console.log("on resposne event 👍 ");
+
+                const cartCount = await response.json();
+                document.getElementById('cartCount').textContent = cartCount;
+            }
+
+        }
+
+        catch (err) {
+            console.log(err);
+        }
+
+    }
+
+
+    // This checks the element because it's only used by one view of which the Layout serves.
+
+    const cartForm = document.getElementById('cartForm');
+    if (cartForm) {
+        document.getElementById('cartForm').addEventListener('submit', async (event) => {
+
+            //console.log("QuerySelector event got activated");
+
+            // This line prevent the `Post` being done by the from ,
+            // So we are not moved to another page.
+            event.preventDefault();
+
+            // The data filled in the form.
+            const formData = new FormData(event.target);
+
+            //console.log(event.target.action);
+            const response = await fetch(event.target.action, {
+
+
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+
+                //console.log("QuerySelector event => response recived ");
+                const cartCount = await response.json();
+                document.getElementById('cartCount').textContent = cartCount;
+            }
+
+            // Close the modal window, as we stopped refresh and redirecting.
+            const modalElement = document.getElementById('cartModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+        });
+
+    }
+
+
+
+
+</script>
+
+
 </html>

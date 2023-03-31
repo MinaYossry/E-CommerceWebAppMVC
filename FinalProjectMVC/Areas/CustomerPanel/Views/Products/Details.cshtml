@@ -24,13 +24,6 @@
                     <!-- Choosing a seller section -->
                     <div class="mb-3">
 
-
-                       @* <select asp-for="SellerId" asp-items="@new SelectList(Model.SellersList,"SellerId",'Seller.ApplicationUser.FirstName"")" asp-route-sellerId="@Model.SellerId" class="form-control" onchange="redirectToView(this.value)">
-                            <option value="">Select a seller</option>
-                        </select>*@
-
-                       
-
                         <div class="form-group">
                             <label asp-for="SellerId" class="control-label"> Choose a Seller: </label>
                             <select class="form-control" asp-for="SellerId" asp-items="ViewBag.SellerName" onchange="redirectToView(this.value)" style="width: 200px;">
@@ -38,12 +31,7 @@
                             </select>
                         </div>
 
-                       @* <form asp-action="Details" asp-controller="Products">
-                           
-                            <input type="submit" style="display: none;" />
-                        </form>
-                        *@
-
+                   
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-end">
@@ -60,34 +48,45 @@
     </div>
 </div>
 
-<!-- Add to cart modal -->
+@* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
 <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cartModalLabel">Add to Cart</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Quantity selection -->
-                <div class="mb-3">
-                    <label for="quantitySelect" class="form-label">Choose a quantity:</label>
-                    <select id="quantitySelect" class="form-select">
-                        @for (int i = 1; i <= Model.Count; i++)
-                        {
-                            <option value="@i">@i</option>
-                        }
-                    </select>
+
+
+        <form id="cartForm" asp-area="CustomerPanel" asp-controller="Cart" asp-action="AddToCart" method="post">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Add to Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <!-- Other stuff here -->
+                <div class="modal-body">
+                    <!-- Quantity selection -->
+                    <div class="mb-3">
+                        <label for="quantitySelect" class="form-label">Choose a quantity:</label>
+                        <select id="quantitySelect" name="count" class="form-select">
+                            @for (int i = 1; i <= Model.Count; i++)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        </select>
+                    </div>
+                    <!-- Other stuff here -->
+                </div>
+                <div class="modal-footer">
+                    <!-- Confirm button -->
+
+                    @* We are sending The `sellerId` in the form but while hidden.*@
+                    <input type="hidden" name="sellerProductId" value="@Model.CurrentSellerProduct?.Id" />
+
+
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <!-- Cancel button -->
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <!-- Confirm button -->
-                <button type="button" class="btn btn-primary">Confirm</button>
-                <!-- Cancel button -->
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </div>
+        </form>
+
+
     </div>
 </div>
 
@@ -149,6 +148,11 @@
 
 
 <script>
+
+   
+
+
+
         function redirectToView(sellerId) {
         // Get the productId from the model
         var productId = @Model.ProductId;
@@ -159,6 +163,7 @@
         // Redirect to the URL
         window.location.href = url;
     }
+
 </script>
 
 
