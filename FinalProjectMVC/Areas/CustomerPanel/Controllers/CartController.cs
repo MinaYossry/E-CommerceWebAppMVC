@@ -5,6 +5,7 @@ using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
@@ -58,6 +59,59 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         }
 
 
+
+
+        public async Task<IActionResult> Index()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var cartItemCount = (await _cartItemRepo.FilterAsync(sp => sp.CustomerId == userId));
+
+            return View(cartItemCount);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCartItem([FromBody] CartItemUpdateRequest request)
+        {
+            // find the cart item with the given ID
+            //var cartItem = _cartItemRepo. CartItems.SingleOrDefault(ci => ci.Id == request.CartItemId);
+
+            var cartItem = (await _cartItemRepo.FilterAsync(sp => sp.Id == request.CartItemId)).SingleOrDefault();
+
+
+            if (cartItem == null)
+            {
+                return NotFound();
+            }
+
+            switch (request.Action)
+            {
+                case "increment":
+                    cartItem.Count += 1;
+                    break;
+                case "decrement":
+                    cartItem.Count -= 1;
+                    break;
+                case "remove":
+                    await _cartItemRepo.DeleteAsync(request.CartItemId);
+                    break;
+                default:
+                    return BadRequest();
+            }
+
+            await _cartItemRepo.UpdateAsync(request.CartItemId, cartItem);
+
+
+            return Ok();
+        }
+
+        public class CartItemUpdateRequest
+        {
+            public int CartItemId { get; set; }
+            public int Quantity { get; set; }
+            public string? Action { get; set; }
+        }
 
 
 
