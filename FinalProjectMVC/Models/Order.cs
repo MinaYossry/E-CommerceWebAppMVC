@@ -26,7 +26,7 @@ namespace FinalProjectMVC.Models
         [Required, DataType(DataType.DateTime)]
         public DateTime OrderDate { get; set; }
 
-        public virtual ICollection<OrderItem>? OrderItems { get; set; }
         public virtual Address? Address { get; set; }
+        public virtual ICollection<OrderItem>? OrderItems { get; set; }
     }
 }
