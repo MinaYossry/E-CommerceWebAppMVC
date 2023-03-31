@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ViewModel\**" />
+    <Content Remove="ViewModel\**" />
+    <EmbeddedResource Remove="ViewModel\**" />
+    <None Remove="ViewModel\**" />
+    <TypeScriptCompile Remove="ViewModel\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="wwwroot\AdminPanel\bower_components\bootstrap\.bower.json" />
     <Content Include="wwwroot\AdminPanel\bower_components\bootstrap\.bundlewatch.config.json" />
     <Content Include="wwwroot\AdminPanel\bower_components\bootstrap\.cspell.json" />
@@ -362,7 +370,6 @@
     <Folder Include="Areas\CustomerPanel\Data\" />
     <Folder Include="Areas\SellerPanel\Data\" />
     <Folder Include="Areas\SellerPanel\Models\" />
-    <Folder Include="ViewModel\" />
     <Folder Include="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\" />
     <Folder Include="wwwroot\1-LandingPage %28otherpages -about %29\" />
     <Folder Include="wwwroot\Uploads\" />
