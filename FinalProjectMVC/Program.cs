@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using FinalProjectMVC.Services;
 using System.Text.Json.Serialization;
+using Microsoft.CodeAnalysis.Scripting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 #endregion
 
+#region Stripe
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+#endregion
 
 #region Identity customization
 // Adjusted after adding new Identity class
@@ -109,6 +113,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:Secretkey").Get<String>();
 
 app.UseAuthorization();
 

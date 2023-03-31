@@ -3,6 +3,7 @@ using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace FinalProjectMVC.Controllers
@@ -33,7 +34,21 @@ namespace FinalProjectMVC.Controllers
         public IActionResult showdata(int id)
         {
             var products = _context.Products.Where(p=>p.SubCategoryId== id).ToList();
-            return View(products);
+            var routeValues = new RouteValueDictionary();
+            routeValues.Add("area", "CustomerPanel");
+            routeValues.Add("filtered_Products", products);
+            //var json = JsonConvert.SerializeObject(products);
+            string json = JsonConvert.SerializeObject(products, Formatting.None,
+    new JsonSerializerSettings
+    {
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+    });
+            TempData["data"] = json;
+
+            return RedirectToAction("Index", "Products", routeValues);
+            //return RedirectToAction("Index", "Products", new { area = "CustomerPanel", filtered_Products = products });
+
+            //return View(products);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

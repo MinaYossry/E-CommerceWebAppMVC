@@ -21,6 +21,7 @@ using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 {
@@ -60,6 +61,11 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         // GET: SellerPanel/Products
         public async Task<IActionResult> Index()
         {
+            string json = TempData["data"] as string;
+            List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json);
+
+            //List<Product> filtered = TempData["data"] as List<Product>;
+
             /* We have to use Any instead of where, as FilterAsync expects a `boolen`
              * While `Where` returns a List.
              * 
@@ -84,9 +90,11 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             //}
 
             //return View(productList);
+            if(products.Count() != 0)
+                products = products.Where(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false).ToList();
+            else
+                products = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
 
-
-            var products = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
             var viewModelList = new List<DisplayInStockProductsViewModel>();
 
             foreach (var product in products)
