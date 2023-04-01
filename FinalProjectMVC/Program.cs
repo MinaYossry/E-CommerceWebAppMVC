@@ -92,6 +92,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #region Services using => Repository pattern scopes 
 
 builder.Services.AddScoped<IRepository<Admin>, AdminRepoService>();
+builder.Services.AddScoped<IRepository<Address>, AddressRepService>();
 builder.Services.AddScoped<IRepository<Order>, OrderRepoService>();
 builder.Services.AddScoped<IRepository<Brand>, BrandRepoService>();
 builder.Services.AddScoped<IRepository<CartItem>, CartItemsRepoService>();
@@ -114,16 +115,20 @@ builder.Services.AddScoped<IRepository<SubCategory>, SubCategoryRepoService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseMigrationsEndPoint();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseMigrationsEndPoint();
+//}
+//else
+//{
+//    app.UseExceptionHandler("/Home/Error");
+//    app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+//    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+//    app.UseHsts();
+//}
+
+app.UseExceptionHandler("/Home/Error");
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

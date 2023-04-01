@@ -1,11 +1,5 @@
-﻿@page
-@model AccessDeniedModel
-@{
-    ViewData["Title"] = "Error";
-}
-
-@section Style
-{
+﻿@section Style
+    {
     <link rel="stylesheet" href="~/css/ErrorStyle.css" />
 }
 
@@ -17,11 +11,14 @@
         <div class="col-md-7">
             <div class="row ms-5">
                 <div class="col-md-12">
-                   <h1 class="display-1">  401</h1>
+                    @if (ViewData["StatusCode"] != null)
+                    {
+                        <h1 class="display-1">@ViewData["StatusCode"]</h1>
+                    }
                 </div>
 
                 <div class="col-md-12">
-                    <p class="message">  Unauthorized</p>
+                    <p class="message">@ViewData["ErrorMessage"]</p>
                 </div>
             </div>
         </div>

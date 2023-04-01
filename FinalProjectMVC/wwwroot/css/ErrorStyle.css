@@ -1,0 +1,26 @@
+﻿.container-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.error-message {
+    font-size: 6rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+    background: linear-gradient(to right, #ffb347, #ffcc33);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3)
+}
+
+.col-md-4, .col-md-8 {
+    flex-shrink: 0;
+}
+
+.message {
+    font-size: 2rem;
+}

@@ -1,6 +1,7 @@
 ﻿
 
 using FinalProjectMVC.Areas.SellerPanel.Models;
+using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
@@ -29,6 +30,8 @@ namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
 
         //public IEnumerable<SelectListItem>? SellersList; 
         public List<SellerProduct>? SellersList; 
+
+        public List<Review>? ReviewsList;
 
     }
 }

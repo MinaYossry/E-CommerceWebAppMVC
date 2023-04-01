@@ -1,6 +1,7 @@
 ﻿using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -31,6 +32,7 @@ namespace FinalProjectMVC.Controllers
             return View();
         }
 
+
         public IActionResult showdata(int id)
         {
             var products = _context.Products.Where(p=>p.SubCategoryId== id).ToList();
@@ -51,10 +53,39 @@ namespace FinalProjectMVC.Controllers
             //return View(products);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [Route("Home/Error")]
+        public IActionResult Error(int? statusCode = null)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+
+
+            string errorMessage;
+            switch (statusCode)
+            {
+                case 400:
+                    errorMessage = "Bad Request";
+                    break;
+                case 401:
+                    errorMessage = "Unauthorized";
+                    break;
+                case 403:
+                    errorMessage = "Forbidden";
+                    break;
+                case 404:
+                    errorMessage = "Page Not Found";
+                    break;
+                case 500:
+                    errorMessage = "Internal Server Error";
+                    break;
+                default:
+                    var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+                    var exception = exceptionHandlerPathFeature?.Error;
+                    errorMessage = exception?.Message;
+                    break;
+            }
+            ViewData["StatusCode"] = statusCode;
+            ViewData["ErrorMessage"] = errorMessage;
+            return View();
+
         }
     }
 }
