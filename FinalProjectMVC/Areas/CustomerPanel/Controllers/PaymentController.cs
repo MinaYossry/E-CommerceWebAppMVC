@@ -43,7 +43,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             List<OrderItem> My_Order_Items = new List<OrderItem>();
 
 
-            var domain = "http://localhost:5009/";
+            var domain = "https://localhost:5009/";
             var options = new SessionCreateOptions
             {
                 LineItems = new List<SessionLineItemOptions>(),
