@@ -10,6 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using FinalProjectMVC.Services;
 using System.Text.Json.Serialization;
+using Stripe;
+using Customer = FinalProjectMVC.Models.Customer;
+using Review = FinalProjectMVC.Models.Review;
+using Product = FinalProjectMVC.Areas.SellerPanel.Models.Product;
+using FileService = FinalProjectMVC.Services.FileService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +22,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Main DB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+
 
 // Identity Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -84,7 +92,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 #region Services using => Repository pattern scopes 
 
 builder.Services.AddScoped<IRepository<Admin>, AdminRepoService>();
-builder.Services.AddScoped<IRepository<Address>, AddressRepService>();
+builder.Services.AddScoped<IRepository<FinalProjectMVC.Models.Address>, AddressRepService>();
 builder.Services.AddScoped<IRepository<Order>, OrderRepoService>();
 builder.Services.AddScoped<IRepository<Brand>, BrandRepoService>();
 builder.Services.AddScoped<IRepository<CartItem>, CartItemsRepoService>();
@@ -126,6 +134,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:Secretkey").Get<string>();
 
 app.UseAuthorization();
 
