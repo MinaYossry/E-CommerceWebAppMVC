@@ -70,11 +70,16 @@
                 </tr>
             </tbody>
         </table>
-        
-        <form action="/create-checkout-session" method="POST">
-            <button type="submit" id="checkout-button" class="btn btn-primary btn-lg btn-block">Checkout</button>
-        </form>
-
+        <div class="form-group">
+            <label for="inputAddress">Address</label>
+            <select class="form-control" id="inputAddress">
+                <option selected>Choose...</option>
+                <option>123 Main St</option>
+                <option>456 Maple Ave</option>
+                <option>789 Oak Blvd</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary btn-lg btn-block">Checkout</button>
     </div>
 </div>
 
