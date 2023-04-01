@@ -165,7 +165,7 @@
             </div>
         </div>
 
-        <form asp-action="ReportReview" method="post">
+        <form asp-action="Create" asp-area="AdminPanel" asp-controller="Reports" asp-route-ProductId="@Model.ProductId" asp-route-SellerId="@Model.SellerId" method="post">
             <div class="modal fade" id="@($"reportModal{item.Id}")" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -175,6 +175,7 @@
                         </div>
                         <div class="modal-body">
                             <input type="hidden" id="reviewId" name="ReviewId" value="@item.Id">
+                            <input type="hidden" id="reviewId" name="ApplicationUserId" value="@User.GetUserId()">
                             <label for="Name" class="form-label">Reason for reporting</label>
                             <input name="Name" type="text" class="form-control" />
                             <textarea id="Description" name="Description" class="form-control mt-2" rows="3"></textarea>
@@ -195,7 +196,7 @@
 
 
 <script>
-        function redirectToView(sellerId) {
+    function redirectToView(sellerId) {
         // Get the productId from the model
         var productId = @Model.ProductId;
         // Construct the URL for the view with query parameters
@@ -204,6 +205,11 @@
 
         // Redirect to the URL
         window.location.href = url;
+    }
+
+
+    function createReport(reviewId) {
+        
     }
 
 </script>

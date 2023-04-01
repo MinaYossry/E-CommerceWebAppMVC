@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.Identity.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
 using FinalProjectMVC.Areas.AdminPanel.ViewModel;
-using Castle.Core.Resource;
-using FinalProjectMVC.Areas.SellerPanel.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
@@ -33,6 +27,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         }
 
         // GET: AdminPanel/Reports
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
 
@@ -58,6 +53,8 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                     SellerName = $"{Report.Review?.Seller?.ApplicationUser?.FirstName} {Report.Review?.Seller?.ApplicationUser?.LastName}",
                     CustomerId = Report.Review?.CustomerId ?? "",
                     CustomerName = $"{Report.Review?.Customer?.ApplicationUser?.FirstName} {Report.Review?.Customer?.ApplicationUser?.LastName}",
+                    ApplicationUserId = Report?.ApplicationUserId ?? "",
+                    ApplicationUserName = $"{Report?.ApplicationUser?.FirstName} {Report?.ApplicationUser?.LastName}",
                 }
                 ); ;
             }
@@ -68,6 +65,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteReview(int Id)
         {
             // Find the report with the given ID
@@ -121,6 +119,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> MarkAsSolved(int Id)
         {
             // Find the report with the given ID
@@ -155,6 +154,28 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             return RedirectToAction("Index");
         }
 
-      
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("/CreateReport")]
+        public async Task<IActionResult> Create(Report report, int ProductId, string SellerId)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await reportRepo.InsertAsync(report);
+                }
+                catch
+                {
+                    return BadRequest();
+                }
+
+                return RedirectToAction("Details", "Products", new { area = "CustomerPanel", Id = ProductId, SellerId });
+            }
+
+            return BadRequest();
+        }
+
+
     }
 }

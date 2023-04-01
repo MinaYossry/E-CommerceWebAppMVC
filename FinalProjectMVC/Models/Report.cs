@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Models
@@ -25,5 +26,10 @@ namespace FinalProjectMVC.Models
         public int ReviewId { get; set; }
 
         public virtual Review? Review { get; set; }
+
+        [ForeignKey("ApplicationUser")]
+        public required string ApplicationUserId { get; set; }
+
+        public virtual ApplicationUser? ApplicationUser { get; set; }
     }
 }

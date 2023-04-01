@@ -33,5 +33,9 @@ namespace FinalProjectMVC.Areas.AdminPanel.ViewModel
         public required string CustomerId { get; set; }
 
         public required string CustomerName { get; set;}
+
+        public required string ApplicationUserId { get; set;}
+
+        public required string ApplicationUserName { get; set;}
     }
 }
