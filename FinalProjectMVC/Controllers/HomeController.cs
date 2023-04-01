@@ -27,11 +27,11 @@ namespace FinalProjectMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var products = await productRepo.GetAllAsync();
+            var products = (await productRepo.GetAllAsync()).Where(p => p.SellerProducts.Count > 0);
             var viewModel = new FrontPageViewModel()
             { 
                 BestSelllerProducts = products.Take(4).ToList(),
-                FeaturedProducts = products.Take(4).ToList(),
+                FeaturedProducts = products.Skip(4).Take(4).ToList(),
             };
 
             return View(viewModel);
