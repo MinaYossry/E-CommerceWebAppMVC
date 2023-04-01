@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 {
@@ -62,6 +63,14 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         // GET: SellerPanel/Products
         public async Task<IActionResult> Index(List<Product> filtered_products)
         {
+            string json = TempData["data"] as string;
+            //List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json)??new List<Product>();
+            List<Product> products = new List<Product>();
+
+
+
+            //List<Product> filtered = TempData["data"] as List<Product>;
+
             /* We have to use Any instead of where, as FilterAsync expects a `boolen`
              * While `Where` returns a List.
              * 
@@ -75,11 +84,26 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
                 using navigational property (sellerProducts) helps be to access that table 
                 to filter based on it.
 
-                If we use Include, then it's like using join()
-            */
-            var products = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
+            //var productList = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
 
-            //var filterdProducts = filtered_products.Where(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false).ToList();
+            //foreach (var product in productList)
+            //{
+            //    var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
+            //    if (sellerProducts != null)
+            //    {
+            //        var lowestPrice = sellerProducts.Min(sp => sp.Price);
+            //        //product.LowestPrice = lowestPrice;
+            //        product.SellerWithLowestPrice = sellerProducts.FirstOrDefault(sp => sp.Price == lowestPrice)?.Seller?.Name;
+            //    }
+            //}
+
+            //return View(productList);
+            */
+            if (products.Count() != 0)
+                products = products.Where(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false).ToList();
+            else
+                products = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
+
             var viewModelList = new List<DisplayInStockProductsViewModel>();
 
             foreach (var product in products)
@@ -92,6 +116,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
                   * That's why we needed to ge filtered list out of Product table 
                     and a List out of `SellerProduct` Table. 
                  */
+                 
                 var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
 
                 if (sellerProducts != null)
