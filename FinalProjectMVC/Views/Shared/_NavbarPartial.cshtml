@@ -80,32 +80,3 @@
         </div>
     </div>
 </nav>
-<nav class="navbar navbar-expand-lg bg-secondary bg-gradient text-black">
-    <div class="container">
-
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            @{
-                var Categories = _categoryRepo.GetAll();
-
-                foreach (var category in Categories)
-                {
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            @category.Name
-                        </a>
-
-                        @if (category.SubCategories is not null)
-                        {
-                            <ul class="dropdown-menu">
-                                @foreach (var item in category.SubCategories)
-                                {
-                                    <li><a class="dropdown-item" href="#">@item.Name</a></li>
-                                }
-                            </ul>
-                        }
-                    </li>
-                }
-            }
-        </ul>
-    </div>
-</nav>
