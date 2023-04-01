@@ -11,18 +11,28 @@
     <Compile Remove="Areas\CustomerPanel\Data\**" />
     <Compile Remove="Areas\SellerPanel\Data\**" />
     <Compile Remove="ViewModel\**" />
+    <Compile Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <Compile Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
     <Content Remove="Areas\CustomerPanel\Data\**" />
     <Content Remove="Areas\SellerPanel\Data\**" />
     <Content Remove="ViewModel\**" />
+    <Content Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <Content Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
     <EmbeddedResource Remove="Areas\CustomerPanel\Data\**" />
     <EmbeddedResource Remove="Areas\SellerPanel\Data\**" />
     <EmbeddedResource Remove="ViewModel\**" />
+    <EmbeddedResource Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <EmbeddedResource Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
     <None Remove="Areas\CustomerPanel\Data\**" />
     <None Remove="Areas\SellerPanel\Data\**" />
     <None Remove="ViewModel\**" />
+    <None Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <None Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
     <TypeScriptCompile Remove="Areas\CustomerPanel\Data\**" />
     <TypeScriptCompile Remove="Areas\SellerPanel\Data\**" />
     <TypeScriptCompile Remove="ViewModel\**" />
+    <TypeScriptCompile Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <TypeScriptCompile Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -379,8 +389,6 @@
     <Folder Include="Areas\AdminPanel\Data\" />
     <Folder Include="Areas\AdminPanel\Views\Shared\" />
     <Folder Include="Areas\SellerPanel\Models\" />
-    <Folder Include="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\" />
-    <Folder Include="wwwroot\1-LandingPage %28otherpages -about %29\" />
     <Folder Include="wwwroot\Uploads\" />
   </ItemGroup>
 

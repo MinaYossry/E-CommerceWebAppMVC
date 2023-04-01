@@ -1,6 +1,12 @@
 ﻿@model IEnumerable<CartItem>
+@using FinalProjectMVC.Areas.AdminPanel.Models;
+@using FinalProjectMVC.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
 @using Microsoft.Extensions.Options
 @inject IOptions<FinalProjectMVC.Models.StripeSettings> Stripe
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 
 @{
@@ -71,9 +77,66 @@
             </tbody>
         </table>
 
-        <form action="/create-checkout-session" method="POST">
-            <button type="submit" id="checkout-button" class="btn btn-primary btn-lg btn-block">Checkout</button>
-        </form>
+        @{
+            var Addresses = (await UserManager.GetUserAsync(User))?.Addresses;
+            if (Addresses is not null && Addresses.Count != 0)
+            {
+                <form action="/create-checkout-session" method="POST">
+                    <select class="form-control" name="AddressId" asp-items="@(new SelectList(Addresses, "Id", "City"))"></select>
+                    <button type="submit" id="checkout-button" class="btn btn-primary btn-lg btn-block mt-2">Checkout</button>
+                </form>
+            }
+            else
+            {
+                <h1 id="IDidIt"></h1>
+                <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addAddressModal">Add new address</button>
+
+                @* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
+                <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+
+
+                        <form id="CreateAddress" asp-area="" asp-controller="Addresses" asp-action="Create" method="post">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addAddressModalLabel">Add new address</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div asp-validation-summary="All" class="text-danger"></div>
+                                    <div class="form-group">
+                                        <label for="StreetName" class="control-label">Street Name</label>
+                                        <input required name="StreetName" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="BuildingNumber" class="control-label">Building Number</label>
+                                        <input required name="BuildingNumber" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="City" class="control-label">City</label>
+                                        <input required name="City" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Region" class="control-label">Region</label>
+                                        <input required name="Region" class="form-control" />
+                                    </div>
+                                    <input name="UserId" value="@User.GetUserId()" hidden readonly />
+                                </div>
+                                <div class="modal-footer">
+                                    <input  type="submit" value="Create" class="btn btn-primary" />
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </form>
+
+
+                    </div>
+                </div>
+            }
+        }
+        
+
+        
 
     </div>
 </div>
@@ -86,6 +149,28 @@
 
     <script>
 
+        document.getElementById('CreateAddress').addEventListener('submit', async (event) => {
+
+            //console.log("QuerySelector event got activated");
+
+            // This line prevent the `Post` being done by the from ,
+            // So we are not moved to another page.
+            event.preventDefault();
+
+            // The data filled in the form.
+            const formData = new FormData(event.target);
+
+            //console.log(event.target.action);
+            const response = await fetch(event.target.action, {
+                method: 'POST',
+                body: formData
+            });
+            if (response.ok) {
+                document.getElementById('IDidIt').textContent = "Done";
+            }
+
+            location.reload()
+        });
     
         const alertPlaceholder = $('#liveAlertPlaceholder');
 
@@ -180,26 +265,6 @@
         }
 
 
-
-                //$(function () {
-                //    $('[data-action="increment"]').click(function () {
-                //        var input = $(this).siblings('input[type="text"]');
-                //        var quantity = parseInt(input.val());
-                //        input.val(quantity + 1);
-                //    });
-
-                //    $('[data-action="decrement"]').click(function () {
-                //        var input = $(this).siblings('input[type="text"]');
-                //        var quantity = parseInt(input.val());
-                //        if (quantity > 1) {
-                //            input.val(quantity - 1);
-                //        }
-                //    });
-
-                //    $('[data-action="remove"]').click(function () {
-                //        $(this).closest('tr').remove();
-                //    });
-                //});
     </script>
 
 }

@@ -20,7 +20,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         public ApplicationDbContext _context { get; }
 
         [HttpPost]
-        public ActionResult Create()
+        public ActionResult Create([FromForm] int AddressId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -32,8 +32,8 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             {
                 CustomerId = userId,
                 OrderDate = DateTime.Now,
-                TotalPrice = totalPrice
-                //OrderItems = (ICollection<OrderItem>)cartItems,
+                TotalPrice = totalPrice,
+                AddressId = AddressId
             };
             _context.Orders.Add(newOrder);
 

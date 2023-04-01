@@ -1,66 +1,56 @@
-﻿@using FinalProjectMVC.Areas.AdminPanel.Models;
+﻿@model FinalProjectMVC.ViewModels.FrontPageViewModel;
+@using FinalProjectMVC.Areas.AdminPanel.Models;
 @{
     ViewData["Title"] = "Home Page";
-    List<Category> Categoires = ViewBag.Categories;
+    //List<Category> Categoires = ViewBag.Categories;
 
-    List<Brand> Brands = ViewBag.Brands;
+    //List<Brand> Brands = ViewBag.Brands;
 }
 
 
-
-
-
-<div class="flex-shrink-0 p-3" style="width: 280px;">
-
-    <ul class="list-unstyled ps-0">
-
-        @foreach (var item in Categoires)
+@section FeaturedProducts 
+{
+    <div class="container-fluid p-5 my-4 bg-dark ">
+        <h2 class="text-white">Featured Products</h2>
+    <div class="row">
+        @foreach (var item in Model.FeaturedProducts)
         {
-            <li class="mb-1">
-                <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#@item.Id" aria-expanded="false">
-                    @item.Name
-                </button>
-                <div class="collapse" id="@item.Id">
-                    <ul class="list-unstyled ps-0">
-                        @foreach(var subCat in item.SubCategories)
-                        {
-                            <li>
-                                <a href="@Url.Action("showdata", "Home", new { id = subCat.Id })">@subCat.Name @subCat.Id</a>
-                            </li>
-                        }
-                    </ul>
+            <div class="col-md-3">
+                <div class="card">
+                        <img src="data:image;base64,@(Convert.ToBase64String(item.ProductImage ?? new byte[0]))" class="card-img-top" />
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">
+                            $@(item.SellerProducts?.FirstOrDefault()?.Price ?? (decimal)50.00)
+                        </p>
+                        <a href="#" class="btn btn-primary">Buy Now</a>
+                    </div>
                 </div>
-            </li>
-        }
-
-
-        <li class="mb-1">
-            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                Orders
-            </button>
-            <div class="collapse" id="orders-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="list-group-item">New</a></li>
-                    <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Processed</a></li>
-                    <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Shipped</a></li>
-                    <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Returned</a></li>
-                </ul>
             </div>
-        </li>
-    </ul>
+        }
+    </div>
 </div>
+}
 
 
 @section Header {
-    <div class="bg-dark py-5">
-        <div class="container px-4 px-lg-5 my-5">
-            <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Shop in style</h1>
-                <p class="lead fw-normal text-white-50 mb-0">Welcome to `Mesh`Amazon</p>
 
-                <img src="~/WebsiteLogo/meshAmazonLogo-yellow.png" style="width: 200px; height: 200px;" />
-
-
+    <div class="container-fluid bg-light-subtle">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 align-self-center">
+                    <h1>Welcome to Mesh-Amazon Website!</h1>
+                    <p>
+                        Here you will find everything you need at the best prices. Browse
+                        our catalog and choose from a wide range of products.
+                    </p>
+                    <a href="#" class="btn btn-primary">Shop Now</a>
+                </div>
+                <div class="col-md-4">
+                    <img src="~/WebsiteLogo/meshAmazonLogo-small.png"
+                         alt="Mesh-Amazon Website"
+                         class="img-fluid" />
+                </div>
             </div>
         </div>
     </div>
@@ -69,7 +59,7 @@
 @{
     string UrlPath = "https://d2csxpduxe849s.cloudfront.net/media/E32629C6-9347-4F84-81FEAEF7BFA342B3/C0DBF8AC-DB0E-4621-96C05D3B6E366D02/E142C7C6-62EF-4320-A6C2DB6EB2B3F4E1/WebsiteJpg_XL-FELEC_Main%20Visual_Purple_Website.jpg";
 }
-<h1 class="text-center m-5">Shop by Category</h1>
+@*<h1 class="text-center m-5">Shop by Category</h1>
 <div class="row">
     @foreach (var Category in Categoires)
     {
@@ -95,4 +85,4 @@
             </div>
         </div>
     }
-</div>
+</div>*@
