@@ -1,5 +1,8 @@
 ﻿using FinalProjectMVC.Areas.Identity.Data;
+using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
+using FinalProjectMVC.RepositoryPattern;
+using FinalProjectMVC.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -12,19 +15,26 @@ namespace FinalProjectMVC.Controllers
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IRepository<Product> productRepo;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IRepository<Product> productRepo)
         {
             _logger = logger;
             _context = context;
+            this.productRepo = productRepo;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            ViewBag.Categories = _context.Categories.Include(c => c.SubCategories).ToList();
-            ViewBag.Brands = _context.Brands.ToList();
-            return View();
+            var products = await productRepo.GetAllAsync();
+            var viewModel = new FrontPageViewModel()
+            { 
+                BestSelllerProducts = products.Take(4).ToList(),
+                FeaturedProducts = products.Take(4).ToList(),
+            };
+
+            return View(viewModel);
         }
 
         public IActionResult Privacy()
