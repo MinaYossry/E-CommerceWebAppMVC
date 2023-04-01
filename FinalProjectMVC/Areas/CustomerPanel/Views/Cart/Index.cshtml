@@ -163,11 +163,13 @@
                     let newValue = oldValue - (data.oldCount * data.price);
                     if (_action == 'remove')
                     {
-                        alert(`Item #${_cartItemId} has been removed from cart`, 'danger')
+                        //alert(`Item #${_cartItemId} has been removed from cart`, 'danger')
+                        alert(`Item has been removed from cart`, 'danger')
+
                     }
                     else
                     {
-                        alert(`Item #${_cartItemId} has been updated`, "success");
+                        alert(`Item has been updated`, "success");
                         newValue += data.count * data.price;
                     }
                     OrderSubTotalSpan.text(newValue.toFixed(2))
