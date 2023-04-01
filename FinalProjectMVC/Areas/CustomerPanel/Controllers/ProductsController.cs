@@ -216,7 +216,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         [HttpPost]
         public async Task<IActionResult> Search(string product_Name)
         {
-            var products = await _productRepository.FilterAsync(p => (p.SellerProducts?.Any(x => x.Count > 0) ?? false) && p.Name == product_Name);
+            var products = await _productRepository.FilterAsync(p => (p.SellerProducts?.Any(x => x.Count > 0) ?? false) && p.Name.Contains(product_Name, StringComparison.OrdinalIgnoreCase));
             var viewModelList = new List<DisplayInStockProductsViewModel>();
             ViewBag.Categories = await _categoryRepository.GetAllAsync();
 
