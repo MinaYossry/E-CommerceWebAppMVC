@@ -5,6 +5,7 @@ using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Security.Claims;
@@ -67,6 +68,9 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var cartItemCount = (await _cartItemRepo.FilterAsync(sp => sp.CustomerId == userId));
+
+           
+            //ViewBag.CustomerAdress = new SelectList()
 
             return View(cartItemCount);
         }
