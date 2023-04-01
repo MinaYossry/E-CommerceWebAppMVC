@@ -10,7 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using FinalProjectMVC.Services;
 using System.Text.Json.Serialization;
-using Microsoft.CodeAnalysis.Scripting;
+using Stripe;
+using Customer = FinalProjectMVC.Models.Customer;
+using Review = FinalProjectMVC.Models.Review;
+using Product = FinalProjectMVC.Areas.SellerPanel.Models.Product;
+using FileService = FinalProjectMVC.Services.FileService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,15 +23,15 @@ var builder = WebApplication.CreateBuilder(args);
 #region Main DB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+
+
 // Identity Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseLazyLoadingProxies().UseSqlServer(connectionString));
 
 #endregion
 
-#region Stripe
-builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
-#endregion
 
 #region Identity customization
 // Adjusted after adding new Identity class
@@ -126,7 +130,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:Secretkey").Get<String>();
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:Secretkey").Get<string>();
 
 app.UseAuthorization();
 

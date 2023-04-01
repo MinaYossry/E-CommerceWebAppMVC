@@ -64,7 +64,10 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         public async Task<IActionResult> Index(List<Product> filtered_products)
         {
             string json = TempData["data"] as string;
-            List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json);
+            //List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json)??new List<Product>();
+            List<Product> products = new List<Product>();
+
+
 
             //List<Product> filtered = TempData["data"] as List<Product>;
 
@@ -95,7 +98,8 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             //}
 
             //return View(productList);
-            if(products.Count() != 0)
+            */
+            if (products.Count() != 0)
                 products = products.Where(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false).ToList();
             else
                 products = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
@@ -112,6 +116,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
                   * That's why we needed to ge filtered list out of Product table 
                     and a List out of `SellerProduct` Table. 
                  */
+                 
                 var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
 
                 if (sellerProducts != null)

@@ -1,4 +1,5 @@
-﻿using FinalProjectMVC.Areas.Identity.Data;
+﻿using Castle.Components.DictionaryAdapter.Xml;
+using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Stripe.Checkout;
 using System.Security.Claims;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
@@ -16,6 +18,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
     public class CartController : Controller
     {
+        private readonly ApplicationDbContext _context;
 
         private readonly IRepository<Product> _productRepository;
         //private readonly IRepository<Seller> _sellerRepository;
@@ -41,10 +44,13 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             UserManager<ApplicationUser> userManager,
 
             IRepository<CartItem> cartItemRepo,
-               
-            IRepository<Customer> customerRepo
+
+            IRepository<Customer> customerRepo,
+
+            ApplicationDbContext context
 
             )
+
 
         {
             _productRepository = productRepository;
@@ -57,6 +63,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             _userManager = userManager;
             _cartItemRepo = cartItemRepo;
             _customerRepo = customerRepo;
+            _context = context;
         }
 
 
@@ -120,7 +127,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToCart(int sellerProductId, int count)
         {
-                /* User is a built-in property.*/
+            /* User is a built-in property.*/
 
             // This line returns the user object. 
             var user = await _userManager.GetUserAsync(User);
@@ -128,7 +135,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             // This line returns the userId only. 
             // UserId is the same as customerId due to 1:1 relation
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-           
+
 
             if (user == null)
             {
@@ -142,7 +149,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
                 Count = count
             };
 
-            await _cartItemRepo.InsertAsync( cartItem );
+            await _cartItemRepo.InsertAsync(cartItem);
 
             //_context.CartItems.Add(cartItem);
             //await _context.SaveChangesAsync();
@@ -165,6 +172,22 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             // Count property of List, You have to () to include the await.
             int cartItem = (await _cartItemRepo.FilterAsync(sp => sp.CustomerId == userId)).Count;
             return Ok(cartItem);
+        }
+
+
+        public IActionResult success(string id)
+        {
+            List<CartItem> cartItems = _context.CartItems.Where(item => item.CustomerId == id).ToList();
+            _context.CartItems.RemoveRange(cartItems);
+            _context.SaveChanges();
+            return View();
+        }
+        public IActionResult cancel(int id)
+        {
+            var my_order = _context.Orders.FirstOrDefault(o => o.OrderId == id);
+            _context.Orders.Remove(my_order);
+            _context.SaveChanges();
+            return View();
         }
     }
 }
