@@ -33,8 +33,8 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
     {
 
         private readonly IRepository<Product> _productRepository;
+        private readonly IRepository<Category> _categoryRepository;
         //private readonly IRepository<Seller> _sellerRepository;
-        //private readonly IRepository<Category> _categoryRepository;
         //private readonly IRepository<Brand> _brandRepository;
         //private readonly IRepository<SubCategory> _subCategoryRepository;
         //private readonly SignInManager<ApplicationUser> _signInManager;
@@ -43,7 +43,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         public ProductsController(
             IRepository<Product> productRepository,
             ////IRepository<Seller> sellerRepository,
-            //IRepository<Category> categoryRepository,
+            IRepository<Category> categoryRepository,
             //IRepository<Brand> brandRepository,
             //IRepository<SubCategory> subCategoryRepository,
             //SignInManager<ApplicationUser> signInManager,
@@ -53,7 +53,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         {
             _productRepository = productRepository;
             //this._sellerRepository = sellerRepository;
-            //this._categoryRepository = categoryRepository;
+            this._categoryRepository = categoryRepository;
             //this._brandRepository = brandRepository;
             //this._subCategoryRepository = subCategoryRepository;
             //this._signInManager = signInManager;
@@ -61,11 +61,11 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         }
 
         // GET: SellerPanel/Products
-        public async Task<IActionResult> Index(List<Product> filtered_products)
+        public async Task<IActionResult> Index()
         {
-            string json = TempData["data"] as string;
-            //List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json)??new List<Product>();
-            List<Product> products = new List<Product>();
+            //string json = TempData["data"] as string;
+            ////List<Product> products = JsonConvert.DeserializeObject<List<Product>>(json)??new List<Product>();
+            //List<Product> products = new List<Product>();
 
 
 
@@ -99,24 +99,25 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
             //return View(productList);
             */
-            if (products.Count() != 0)
-                products = products.Where(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false).ToList();
-            else
-                products = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
+            //if (products.Count() != 0)
+            //    products = products.Where(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false).ToList();
+            //else
+            var products = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
 
             var viewModelList = new List<DisplayInStockProductsViewModel>();
 
+            ViewBag.Categories = await _categoryRepository.GetAllAsync();
             foreach (var product in products)
             {
-                 /*Now this linQ is also important to analyse the products we got, 
-                  * Here we filter the SellerProduct table to get only the records of the 
-                  * 1- sellers that sell that specific product, 
-                  * 2- and they have that product currently In-stock
-                  * 
-                  * That's why we needed to ge filtered list out of Product table 
-                    and a List out of `SellerProduct` Table. 
-                 */
-                 
+                /*Now this linQ is also important to analyse the products we got, 
+                 * Here we filter the SellerProduct table to get only the records of the 
+                 * 1- sellers that sell that specific product, 
+                 * 2- and they have that product currently In-stock
+                 * 
+                 * That's why we needed to ge filtered list out of Product table 
+                   and a List out of `SellerProduct` Table. 
+                */
+
                 var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
 
                 if (sellerProducts != null)
@@ -158,6 +159,106 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         }
 
         
+        public async Task<IActionResult> filter(int id)
+        {
+            var products = await _productRepository.FilterAsync(p => (p.SellerProducts?.Any(x => x.Count > 0) ?? false) && p.SubCategoryId == id);
+            var viewModelList = new List<DisplayInStockProductsViewModel>();
+            ViewBag.Categories = await _categoryRepository.GetAllAsync();
+
+            foreach (var product in products)
+            {
+                /*Now this linQ is also important to analyse the products we got, 
+                 * Here we filter the SellerProduct table to get only the records of the 
+                 * 1- sellers that sell that specific product, 
+                 * 2- and they have that product currently In-stock
+                 * 
+                 * That's why we needed to ge filtered list out of Product table 
+                   and a List out of `SellerProduct` Table. 
+                */
+
+                var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
+
+                if (sellerProducts != null)
+                {
+                    var lowestPrice = sellerProducts.Min(sp => sp.Price);
+
+                    // Returns the  Cheapest instance of sold by a seller.
+                    var sellerProductWithLowestPrice = sellerProducts
+                        .FirstOrDefault(sp => sp.Price == lowestPrice);
+
+                    var productViewModel = new DisplayInStockProductsViewModel
+                    {
+                        ProductId = product.Id,
+                        ProductName = product.Name,
+                        ProductPrice = lowestPrice,
+                        ProductDescription = product.Description,
+                        ProductImage = product.ProductImage,
+
+                        SellerId = sellerProductWithLowestPrice?.SellerId,
+                        SellerNameWithLowestPrice = sellerProductWithLowestPrice?.Seller?.ApplicationUser?.FirstName,
+                        Count = sellerProductWithLowestPrice.Count,
+
+                        Brand = product?.Brand?.Name,
+                        SubCategory = product?.SubCategory?.Name
+
+                    };
+
+                    viewModelList.Add(productViewModel);
+
+                }
+            }
+
+
+            return View("Index",viewModelList);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Search(string product_Name)
+        {
+            var products = await _productRepository.FilterAsync(p => (p.SellerProducts?.Any(x => x.Count > 0) ?? false) && p.Name == product_Name);
+            var viewModelList = new List<DisplayInStockProductsViewModel>();
+            ViewBag.Categories = await _categoryRepository.GetAllAsync();
+
+            foreach (var product in products)
+            {
+
+                var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
+
+                if (sellerProducts != null)
+                {
+                    var lowestPrice = sellerProducts.Min(sp => sp.Price);
+
+                    // Returns the  Cheapest instance of sold by a seller.
+                    var sellerProductWithLowestPrice = sellerProducts
+                        .FirstOrDefault(sp => sp.Price == lowestPrice);
+
+                    var productViewModel = new DisplayInStockProductsViewModel
+                    {
+                        ProductId = product.Id,
+                        ProductName = product.Name,
+                        ProductPrice = lowestPrice,
+                        ProductDescription = product.Description,
+                        ProductImage = product.ProductImage,
+
+                        SellerId = sellerProductWithLowestPrice?.SellerId,
+                        SellerNameWithLowestPrice = sellerProductWithLowestPrice?.Seller?.ApplicationUser?.FirstName,
+                        Count = sellerProductWithLowestPrice.Count,
+
+                        Brand = product?.Brand?.Name,
+                        SubCategory = product?.SubCategory?.Name
+
+                    };
+
+                    viewModelList.Add(productViewModel);
+
+                }
+            }
+            return View("Index", viewModelList);
+        }
+
+
+
         // GET: SellerPanel/Products/Details/5
         [Route("Product/{id:int}/{SellerId}")]
         public async Task<IActionResult> Details(int? id, string? SellerId)
