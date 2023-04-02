@@ -1,5 +1,6 @@
 ﻿using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.RepositoryPattern;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
+    [Authorize("Admin")]
     public class SubCategoriesController : Controller
     {
         public IRepository<SubCategory> SubCategoryRepository { get; }

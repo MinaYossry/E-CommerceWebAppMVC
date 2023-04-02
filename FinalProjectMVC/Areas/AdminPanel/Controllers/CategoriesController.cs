@@ -1,11 +1,13 @@
 ﻿using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.RepositoryPattern;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
+    [Authorize("Admin")]
     public class CategoriesController : Controller
     {
         public IRepository<Category> CategoryRepository { get; }

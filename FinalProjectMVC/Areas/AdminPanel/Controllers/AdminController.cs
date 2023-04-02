@@ -49,20 +49,6 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                 Customers = (await customerRepo.GetAllAsync()).Count
             };
 
-            // var OrdersCount = Context.Orders.Count();
-            // ViewBag.NewOrders = OrdersCount;
-
-            // var ProductsCount = Context.Products.Count();
-            // ViewBag.NewProducts = ProductsCount;
-
-            // var SellersCount = Context.Sellers.Count();
-            // ViewBag.Sellers = SellersCount;
-
-            // var CustomersCount = Context.Customers.Count();
-            // ViewBag.Customers = CustomersCount;
-
-            // var Reports = Context.Reports.Count();
-            // ViewBag.ReportsCount = Reports;
             return View(ViewModel);
         }
 
