@@ -33,6 +33,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         }
 
         // GET: SellerPanel/Products
+        [Route("Products")]
         public async Task<IActionResult> Index()
         {
             var products = await _productRepository.FilterAsync(p => p.SellerProducts?.Any(x => x.Count > 0) ?? false);
@@ -41,15 +42,16 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             return View(viewModelList);
         }
 
-        public async Task<IActionResult> filter(int id)
+        [Route("Products/{SubCategoryId:int}")]
+        public async Task<IActionResult> Filter(int SubCategoryId)
         {
-            var products = await _productRepository.FilterAsync(p => (p.SellerProducts?.Any(x => x.Count > 0) ?? false) && p.SubCategoryId == id);
+            var products = await _productRepository.FilterAsync(p => (p.SellerProducts?.Any(x => x.Count > 0) ?? false) && p.SubCategoryId == SubCategoryId);
             var viewModelList = await CreateDisplayViewModelList(products);
             ViewBag.Categories = await _categoryRepository.GetAllAsync();
             return View("Index", viewModelList);
         }
 
-        [HttpPost]
+        [Route("Products/Search")]
         public async Task<IActionResult> Search(string product_Name)
         {
             var products = await _productRepository.FilterAsync(p => (p.SellerProducts?.Any(x => x.Count > 0) ?? false) && p.Name.Contains(product_Name, StringComparison.OrdinalIgnoreCase));

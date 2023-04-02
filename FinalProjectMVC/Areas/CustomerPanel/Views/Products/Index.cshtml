@@ -36,7 +36,7 @@
                             <ul class="dropdown-menu">
                                 @foreach (var subCat in item.SubCategories)
                                 {
-                                    <li><a class="dropdown-item" href="@Url.Action("filter", "Products", new { id = subCat.Id })">@subCat.Name</a></li>
+                                        <li><a class="dropdown-item" href="@Url.Action("Filter", "Products", new { SubCategoryId = subCat.Id })">@subCat.Name</a></li>
                                 }
                             </ul>
                         </li>       
