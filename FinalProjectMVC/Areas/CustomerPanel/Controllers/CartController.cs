@@ -10,18 +10,12 @@ using System.Security.Claims;
 namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 {
     [Area("CustomerPanel")]
-    [Authorize(Roles = "Customer")] // I think authorization should be added on specific Actions
-
+    [Authorize(Roles = "Customer")]
     public class CartController : Controller
     {
         readonly ApplicationDbContext _context;
 
         readonly IRepository<Product> _productRepository;
-        // private readonly IRepository<Seller> _sellerRepository;
-        // private readonly IRepository<Category> _categoryRepository;
-        // private readonly IRepository<Brand> _brandRepository;
-        // private readonly IRepository<SubCategory> _subCategoryRepository;
-        // private readonly SignInManager<ApplicationUser> _signInManager;
         readonly IRepository<SellerProduct> _sellerProductRepo;
         readonly IRepository<CartItem> _cartItemRepo;
         readonly IRepository<Customer> _customerRepo;
@@ -30,11 +24,6 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
         public CartController(
             IRepository<Product> productRepository,
-            ////IRepository<Seller> sellerRepository,
-            //IRepository<Category> categoryRepository,
-            //IRepository<Brand> brandRepository,
-            //IRepository<SubCategory> subCategoryRepository,
-            //SignInManager<ApplicationUser> signInManager,
             IRepository<SellerProduct> sellerProductRepo,
             UserManager<ApplicationUser> userManager,
 
@@ -47,11 +36,6 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             )
         {
             _productRepository = productRepository;
-            // this._sellerRepository = sellerRepository;
-            // this._categoryRepository = categoryRepository;
-            // this._brandRepository = brandRepository;
-            // this._subCategoryRepository = subCategoryRepository;
-            // this._signInManager = signInManager;
             _sellerProductRepo = sellerProductRepo;
             _userManager = userManager;
             _cartItemRepo = cartItemRepo;
@@ -71,8 +55,6 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateCartItem([FromBody] CartItemUpdateRequest request)
         {
-            // find the cart item with the given ID
-            // var cartItem = _cartItemRepo. CartItems.SingleOrDefault(ci => ci.Id == request.CartItemId);
 
             var cartItem = (await _cartItemRepo.FilterAsync(sp => sp.Id == request.CartItemId)).SingleOrDefault();
 
@@ -109,13 +91,8 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToCart(int sellerProductId, int count)
         {
-            /* User is a built-in property.*/
-
-            // This line returns the user object. 
             var user = await _userManager.GetUserAsync(User);
 
-            // This line returns the userId only. 
-            // UserId is the same as customerId due to 1:1 relation
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (user == null) return Unauthorized();
@@ -129,23 +106,14 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
             await _cartItemRepo.InsertAsync(cartItem);
 
-            // _context.CartItems.Add(cartItem);
-            // await _context.SaveChangesAsync();
-
-            // return RedirectToAction("Index");
-
-            // Count property of List, You have to () to include the await.
             var cartItemCount = (await _cartItemRepo.FilterAsync(sp => sp.CustomerId == userId)).Count;
             return Ok(cartItemCount);
-
-            // return View(model: userId);
         }
 
         public async Task<IActionResult> GetCartCount()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Count property of List, You have to () to include the await.
             var cartItem = (await _cartItemRepo.FilterAsync(sp => sp.CustomerId == userId)).Count;
             return Ok(cartItem);
         }
