@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
-    [Authorize("Admin")]
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         public IRepository<Category> CategoryRepository { get; }

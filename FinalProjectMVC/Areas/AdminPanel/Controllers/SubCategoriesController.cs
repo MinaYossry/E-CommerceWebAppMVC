@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
-    [Authorize("Admin")]
+    [Authorize(Roles = "Admin")]
     public class SubCategoriesController : Controller
     {
         public IRepository<SubCategory> SubCategoryRepository { get; }
