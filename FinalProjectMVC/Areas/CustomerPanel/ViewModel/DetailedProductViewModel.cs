@@ -3,6 +3,9 @@
 using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
 {
@@ -10,6 +13,10 @@ namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
     {
         public int ProductId { get; set; }
         public string? ProductName { get; set; }
+
+        [DataType(DataType.Currency)]
+        [Column(TypeName = "money")]
+        [DisplayFormat(DataFormatString = "{0:N2}")]
         public decimal ProductPrice { get; set; }
         public string? ProductDescription { get; set; }
         public byte[]? ProductImage { get; set; }

@@ -90,7 +90,8 @@ else
 
 
                                 <p class="card-text"><strong> Sold by :</strong> @product.SellerNameWithLowestPrice</p>
-                                <p class="card-text"><strong> Price:</strong> @product.ProductPrice</p>
+                                <p class="card-text">
+                                    <strong> Price:</strong> @Math.Round(product.ProductPrice, 2)</p>
                                 <p class="card-text"><strong> Items inStock:</strong> @product.Count</p>
 
 

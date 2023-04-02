@@ -54,11 +54,11 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .HasDefaultValueSql("getdate()");
 
 
-            //builder.Entity<Seller>().Navigation(s => s.SellerProducts).AutoInclude();
-            ////builder.Entity<SellerProduct>().Navigation(s => s.Product).AutoInclude();
-            ////builder.Entity<SellerProduct>().Navigation(s => s.Seller).AutoInclude();
-            //builder.Entity<Product>().Navigation(p => p.Brand).AutoInclude();
-            //builder.Entity<Product>().Navigation(p => p.SellerProducts).AutoInclude();
+            builder.Entity<Order>()
+               .HasOne(o => o.Address)
+               .WithMany()
+               .HasForeignKey(o => o.AddressId)
+               .OnDelete(DeleteBehavior.Restrict);
         }
 
         public virtual DbSet<Product> Products { get; set; }

@@ -12,6 +12,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
 
         [DataType(DataType.Currency)]
         [Column(TypeName = "money")]
+        [DisplayFormat(DataFormatString = "{0:N2}")]
         public decimal Price { get; set; }
 
         [ForeignKey(nameof(Seller))]
@@ -23,6 +24,15 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         public virtual Product? Product { get; set; }
 
         public virtual ICollection<OrderItem>? OrderItems { get; set; }
-        public virtual ICollection<CartItem>? CartItems { get; set; }    
+        public virtual ICollection<CartItem>? CartItems { get; set; }
+
+        [NotMapped]
+        public string DataTextFieldLabel
+        {
+            get
+            {
+                return $"{Seller?.ApplicationUser?.FirstName} | ${Math.Round(Price, 2)}";
+            }
+        }
     }
 }

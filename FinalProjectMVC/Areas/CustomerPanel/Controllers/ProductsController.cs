@@ -279,7 +279,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
             var availableSellers = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.Count > 0);
 
-            ViewData["SellerName"] = new SelectList(availableSellers, "SellerId", "Seller.ApplicationUser.FirstName",SellerId);
+            ViewData["SellerName"] = new SelectList(availableSellers, "SellerId", "DataTextFieldLabel", SellerId);
 
 
             var DetailedProductviewModel = new DetailedProductViewModel

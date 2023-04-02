@@ -26,7 +26,7 @@
                     <h2 class="fw-bold mb-4">@Model.ProductName</h2>
                     <hr>
                     <p class="mb-3">@Model.ProductDescription</p>
-                    <h4 class="fw-bold mb-3">Price: $@Model.ProductPrice</h4>
+                    <h4 class="fw-bold mb-3">Price: $@Math.Round(Model.ProductPrice, 2)</h4>
                     <h4 class="fw-bold mb-3">Count: @Model.Count</h4>
                     <!-- Choosing a seller section -->
                     <div class="mb-3">
@@ -42,9 +42,51 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-end">
-                    <!-- Add to cart button -->
-                    <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#cartModal">Add to Cart</button>
+                    @if(User.IsInRole(Roles.Customer.ToString()))
+                    {
+                        <!-- Add to cart button -->
+                        <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#cartModal">Add to Cart</button>
+                        @* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
+                        <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
 
+
+                                <form id="cartForm" asp-area="CustomerPanel" asp-controller="Cart" asp-action="AddToCart" method="post">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="cartModalLabel">Add to Cart</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Quantity selection -->
+                                            <div class="mb-3">
+                                                <label for="quantitySelect" class="form-label">Choose a quantity:</label>
+                                                <select id="quantitySelect" name="count" class="form-select">
+                                                    @for (int i = 1; i <= Model.Count; i++)
+                                                    {
+                                                        <option value="@i">@i</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <!-- Other stuff here -->
+                                        </div>
+                                        <div class="modal-footer">
+                                            <!-- Confirm button -->
+                                            @* We are sending The `sellerId` in the form but while hidden.*@
+                                            <input type="hidden" name="sellerProductId" value="@Model.CurrentSellerProduct?.Id" />
+
+
+                                            <button type="submit" class="btn btn-primary">Confirm</button>
+                                            <!-- Cancel button -->
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    }
 
                     <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
                 </div>
@@ -55,47 +97,7 @@
     </div>
 </div>
 
-@* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
-<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
 
-
-        <form id="cartForm" asp-area="CustomerPanel" asp-controller="Cart" asp-action="AddToCart" method="post">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cartModalLabel">Add to Cart</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Quantity selection -->
-                    <div class="mb-3">
-                        <label for="quantitySelect" class="form-label">Choose a quantity:</label>
-                        <select id="quantitySelect" name="count" class="form-select">
-                            @for (int i = 1; i <= Model.Count; i++)
-                            {
-                                <option value="@i">@i</option>
-                            }
-                        </select>
-                    </div>
-                    <!-- Other stuff here -->
-                </div>
-                <div class="modal-footer">
-                    <!-- Confirm button -->
-
-                    @* We are sending The `sellerId` in the form but while hidden.*@
-                    <input type="hidden" name="sellerProductId" value="@Model.CurrentSellerProduct?.Id" />
-
-
-                    <button type="submit" class="btn btn-primary">Confirm</button>
-                    <!-- Cancel button -->
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </form>
-
-
-    </div>
-</div>
 
 <!-- Delete Confirmation Modal -->
 <form asp-action="Delete" asp-route-id="@Model?.CurrentSellerProduct?.Id" method="post">
