@@ -14,131 +14,142 @@
     decimal ShippingCost = (decimal)10.0;
 }
 
-<div class="row">
-    <div class="col-md-8">
-        <div class="mt-3" style="min-height: 60px" id="liveAlertPlaceholder"></div>
-        <h2>Your Cart</h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th></th>
-                </tr>
-
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+<div class="row d-flex justify-content-center">
+    @if(Model.Count() == 0)
+    {
+        <div class="alert alert-primary" role="alert">
+            Your cart is empty!
+        </div>
+    }
+    else
+    {
+        <div class="col-md-8">
+            <div class="mt-3" style="min-height: 60px" id="liveAlertPlaceholder"></div>
+            <h2>Your Cart</h2>
+            <table class="table table-striped">
+                <thead>
                     <tr>
-                        <td>
-                            <div class="media">
-                                <img src="data:image;base64,@(Convert.ToBase64String(item.SellerProduct.Product.ProductImage ?? new byte[0]))" class="mr-3 align-self-center" style="width: 50px;">
-                                <div class="media-body">
-                                    <h5 class="mt-0">@item.SellerProduct.Product.Name</h5>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="input-group">
-                                <button class="btn btn-outline-secondary" data-Id="@item.Id" data-Id="@item.Id" type="button" data-action="decrement">-</button>
-                                <input type="text" class="form-control" data-Id="@item.Id" style="width:25px" value="@item.Count" disabled>
-                                <button class="btn btn-outline-secondary" data-Id="@item.Id" type="button" data-action="increment">+</button>
-                            </div>
-                        </td>
-                        <td>$@item.SellerProduct.Price</td>
-                        <td>
-
-                            <button type="button" class="btn btn-danger" data-Id="@item.Id" data-action="remove">Remove</button>
-                        </td>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th></th>
                     </tr>
+
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="media">
+                                    <img src="data:image;base64,@(Convert.ToBase64String(item.SellerProduct.Product.ProductImage ?? new byte[0]))" class="mr-3 align-self-center" style="width: 50px;">
+                                    <div class="media-body">
+                                        <h5 class="mt-0">@item.SellerProduct.Product.Name</h5>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <button class="btn btn-outline-secondary" data-Id="@item.Id" data-Id="@item.Id" type="button" data-action="decrement">-</button>
+                                    <input type="text" class="form-control" data-Id="@item.Id" style="width:25px" value="@item.Count" disabled>
+                                    <button class="btn btn-outline-secondary" data-Id="@item.Id" type="button" data-action="increment">+</button>
+                                </div>
+                            </td>
+                            <td>$@Math.Round(item.SellerProduct.Price, 2)</td>
+                            <td>
+
+                                <button type="button" class="btn btn-danger" data-Id="@item.Id" data-action="remove">Remove</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <h2>Summary</h2>
+
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td>Subtotal</td>
+                        <td>$<span id="OrderSubTotal">@Math.Round(Model.Sum(p => p.Count * p.SellerProduct.Price),2)</span></td>
+                    </tr>
+                    <tr>
+                        <td>Shipping</td>
+                        <td>$<span id="ShippingCost">@ShippingCost</span></td>
+                    </tr>
+                    <tr>
+                        <td>Total</td>
+                        <td>$<span id="OrderTotalCost">@Math.Round((Model.Sum(p => p.Count * p.SellerProduct.Price) + ShippingCost),2)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            @{
+                var Addresses = (await UserManager.GetUserAsync(User))?.Addresses;
+                if (Addresses is not null && Addresses.Count != 0)
+                {
+                    <form action="/create-checkout-session" method="POST">
+                        <select class="form-control" name="AddressId" asp-items="@(new SelectList(Addresses, "Id", "City"))"></select>
+                        <button type="submit" id="checkout-button" class="btn btn-primary btn-lg btn-block mt-2">Checkout</button>
+                    </form>
                 }
-            </tbody>
-        </table>
-    </div>
-    <div class="col-md-4 mt-8">
-        <h2>Summary</h2>
+                else
+                {
+                    <h1 id="IDidIt"></h1>
+                    <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addAddressModal">Add new address</button>
 
-        <table class="table table-bordered">
-            <tbody>
-                <tr>
-                    <td>Subtotal</td>
-                    <td>$<span id="OrderSubTotal">@Model.Sum(p => p.Count * p.SellerProduct.Price)</span></td>
-                </tr>
-                <tr>
-                    <td>Shipping</td>
-                    <td>$<span id="ShippingCost">@ShippingCost</span></td>
-                </tr>
-                <tr>
-                    <td>Total</td>
-                    <td>$<span id="OrderTotalCost">@(Model.Sum(p => p.Count * p.SellerProduct.Price) + ShippingCost)</span></td>
-                </tr>
-            </tbody>
-        </table>
-
-        @{
-            var Addresses = (await UserManager.GetUserAsync(User))?.Addresses;
-            if (Addresses is not null && Addresses.Count != 0)
-            {
-                <form action="/create-checkout-session" method="POST">
-                    <select class="form-control" name="AddressId" asp-items="@(new SelectList(Addresses, "Id", "City"))"></select>
-                    <button type="submit" id="checkout-button" class="btn btn-primary btn-lg btn-block mt-2">Checkout</button>
-                </form>
-            }
-            else
-            {
-                <h1 id="IDidIt"></h1>
-                <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#addAddressModal">Add new address</button>
-
-                @* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
-                <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
+                    @* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
+                    <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
 
 
-                        <form id="CreateAddress" asp-area="" asp-controller="Addresses" asp-action="Create" method="post">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="addAddressModalLabel">Add new address</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <form id="CreateAddress" asp-area="" asp-controller="Addresses" asp-action="Create" method="post">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addAddressModalLabel">Add new address</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div asp-validation-summary="All" class="text-danger"></div>
+                                        <div class="form-group">
+                                            <label for="StreetName" class="control-label">Street Name</label>
+                                            <input required name="StreetName" class="form-control" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="BuildingNumber" class="control-label">Building Number</label>
+                                            <input required name="BuildingNumber" class="form-control" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="City" class="control-label">City</label>
+                                            <input required name="City" class="form-control" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="Region" class="control-label">Region</label>
+                                            <input required name="Region" class="form-control" />
+                                        </div>
+                                        <input name="UserId" value="@User.GetUserId()" hidden readonly />
+                                    </div>
+                                    <div class="modal-footer">
+                                        <input  type="submit" value="Create" class="btn btn-primary" />
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    </div>
                                 </div>
-                                <div class="modal-body">
-                                    <div asp-validation-summary="All" class="text-danger"></div>
-                                    <div class="form-group">
-                                        <label for="StreetName" class="control-label">Street Name</label>
-                                        <input required name="StreetName" class="form-control" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="BuildingNumber" class="control-label">Building Number</label>
-                                        <input required name="BuildingNumber" class="form-control" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="City" class="control-label">City</label>
-                                        <input required name="City" class="form-control" />
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="Region" class="control-label">Region</label>
-                                        <input required name="Region" class="form-control" />
-                                    </div>
-                                    <input name="UserId" value="@User.GetUserId()" hidden readonly />
-                                </div>
-                                <div class="modal-footer">
-                                    <input  type="submit" value="Create" class="btn btn-primary" />
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                </div>
-                            </div>
-                        </form>
+                            </form>
 
 
+                        </div>
                     </div>
-                </div>
+
+                    
+                }
             }
-        }
         
 
         
 
-    </div>
+        </div>
+    }
 </div>
 
 @section PaymentScript{
@@ -149,28 +160,33 @@
 
     <script>
 
-        document.getElementById('CreateAddress').addEventListener('submit', async (event) => {
+        var CreateAddressForm = document.getElementById('CreateAddress');
+        if (CreateAddressForm)
+        {
+            CreateAddressForm.addEventListener('submit', async (event) => {
 
-            //console.log("QuerySelector event got activated");
+                //console.log("QuerySelector event got activated");
 
-            // This line prevent the `Post` being done by the from ,
-            // So we are not moved to another page.
-            event.preventDefault();
+                // This line prevent the `Post` being done by the from ,
+                // So we are not moved to another page.
+                event.preventDefault();
 
-            // The data filled in the form.
-            const formData = new FormData(event.target);
+                // The data filled in the form.
+                const formData = new FormData(event.target);
 
-            //console.log(event.target.action);
-            const response = await fetch(event.target.action, {
-                method: 'POST',
-                body: formData
+                //console.log(event.target.action);
+                const response = await fetch(event.target.action, {
+                    method: 'POST',
+                    body: formData
+                });
+                if (response.ok) {
+                    document.getElementById('IDidIt').textContent = "Done";
+                }
+
+                location.reload()
             });
-            if (response.ok) {
-                document.getElementById('IDidIt').textContent = "Done";
-            }
-
-            location.reload()
-        });
+        }
+        
     
         const alertPlaceholder = $('#liveAlertPlaceholder');
 
@@ -249,11 +265,11 @@
                     let newValue = oldValue - (data.oldCount * data.price);
                     if (_action == 'remove')
                     {
-                        alert(`Item #${_cartItemId} has been removed from cart`, 'danger')
+                        alert(`Item has been removed from cart`, 'danger')
                     }
                     else
                     {
-                        alert(`Item #${_cartItemId} has been updated`, "success");
+                        alert(`Item has been updated`, "success");
                         newValue += data.count * data.price;
                     }
                     OrderSubTotalSpan.text(newValue.toFixed(2))
