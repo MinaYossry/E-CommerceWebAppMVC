@@ -45,11 +45,13 @@
             padding: 2px 4px;
         }
     </style>
+
+    @RenderSection("PaymentScript",false)
 </head>
 <body>
     <header>
         <partial name="_NavbarPartial" />
-        
+        @RenderSection("filterSection",false);
     </header>
 
     @RenderSection("Header", false)
@@ -60,7 +62,7 @@
         @RenderBody()
     </div>
 
-        <partial name="_FooterPartial" />
+    <partial name="_FooterPartial" />
     
 
 
