@@ -1,8 +1,7 @@
-﻿using System.ComponentModel;
+﻿using FinalProjectMVC.Areas.SellerPanel.Models;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Models
 {

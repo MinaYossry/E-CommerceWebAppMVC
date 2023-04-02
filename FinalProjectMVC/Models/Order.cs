@@ -1,13 +1,8 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
 
 namespace FinalProjectMVC.Models
 {
-
-    
-
     public class Order
     {
         [Key]
@@ -25,7 +20,6 @@ namespace FinalProjectMVC.Models
 
         [Required, DataType(DataType.DateTime)]
         public DateTime OrderDate { get; set; }
-
 
         [ForeignKey("Address")]
         public int AddressId { get; set; }

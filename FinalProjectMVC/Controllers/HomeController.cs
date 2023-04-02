@@ -1,22 +1,17 @@
 ﻿using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Areas.SellerPanel.Models;
-using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
 using FinalProjectMVC.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace FinalProjectMVC.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IRepository<Product> productRepo;
-        private readonly ILogger<HomeController> _logger;
+        readonly ApplicationDbContext _context;
+        readonly IRepository<Product> productRepo;
+        readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IRepository<Product> productRepo)
         {
@@ -28,8 +23,9 @@ namespace FinalProjectMVC.Controllers
         public async Task<IActionResult> Index()
         {
             var products = (await productRepo.GetAllAsync()).Where(p => p.SellerProducts.Count > 0);
+
             var viewModel = new FrontPageViewModel()
-            { 
+            {
                 BestSelllerProducts = products.Take(4).ToList(),
                 FeaturedProducts = products.Skip(4).Take(4).ToList(),
             };
@@ -37,17 +33,13 @@ namespace FinalProjectMVC.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+        public IActionResult Privacy() => View();
 
         [Route("Home/Error")]
         public IActionResult Error(int? statusCode = null)
         {
-
-
             string errorMessage;
+
             switch (statusCode)
             {
                 case 400:
@@ -71,10 +63,10 @@ namespace FinalProjectMVC.Controllers
                     errorMessage = exception?.Message;
                     break;
             }
+
             ViewData["StatusCode"] = statusCode;
             ViewData["ErrorMessage"] = errorMessage;
             return View();
-
         }
     }
 }

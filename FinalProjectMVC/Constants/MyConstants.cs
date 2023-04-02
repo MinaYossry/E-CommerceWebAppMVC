@@ -2,13 +2,13 @@
 {
     public enum Roles
     {
-        Admin, 
-        Seller,                                                 
+        Admin,
+        Seller,
         Customer,
-        CustomerService,                                                                                                  
+        CustomerService,
         WebDeveloper
-        
-    }       
+
+    }
     public class MyConstants
     {
     }

@@ -1,19 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FinalProjectMVC.Areas.AdminPanel.ViewModel;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
-using FinalProjectMVC.Areas.AdminPanel.ViewModel;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
     public class ReportsController : Controller
     {
-       // private readonly ApplicationDbContext _context;
-        private readonly IRepository<Report> reportRepo;
-        private readonly IRepository<Review> reviewRepo;
+        // private readonly ApplicationDbContext _context;
+        readonly IRepository<Report> reportRepo;
+        readonly IRepository<Review> reviewRepo;
 
         public ReportsController(
             //ApplicationDbContext context,
@@ -21,7 +19,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             IRepository<Review> reviewRepo
             )
         {
-        //    _context = context;
+            //    _context = context;
             this.reportRepo = reportRepo;
             this.reviewRepo = reviewRepo;
         }
@@ -30,7 +28,6 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-
             var viewMode = new List<AdminReportsReviewsViewModel>();
 
             var ReportsList = (await reportRepo.GetAllAsync()).OrderBy(x => x.IsSolved).ToList();
@@ -56,9 +53,9 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                     ApplicationUserId = Report?.ApplicationUserId ?? "",
                     ApplicationUserName = $"{Report?.ApplicationUser?.FirstName} {Report?.ApplicationUser?.LastName}",
                 }
-                ); ;
+                ); 
+;
             }
-
 
             return View(viewMode);
         }
@@ -70,10 +67,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         {
             // Find the report with the given ID
             var report = await reportRepo.GetDetailsAsync(Id);
-            if (report is null)
-            {
-                return NotFound();
-            }
+            if (report is null) return NotFound();
 
             // If the report is already marked as solved, return an error
             if (report.IsSolved)
@@ -102,6 +96,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                 report.SolveDate = DateTime.Now;
 
                 report.Review.IsDeleted = true;
+
                 try
                 {
                     await reportRepo.UpdateAsync(Id, report);
@@ -124,10 +119,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         {
             // Find the report with the given ID
             var report = await reportRepo.GetDetailsAsync(Id);
-            if (report is null)
-            {
-                return NotFound();
-            }
+            if (report is null) return NotFound();
 
             // If the report is already marked as solved, return an error
             if (report.IsSolved)
@@ -140,6 +132,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             {
                 report.IsSolved = true;
                 report.SolveDate = DateTime.Now;
+
                 try
                 {
                     await reportRepo.UpdateAsync(Id, report);
@@ -175,7 +168,5 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 
             return BadRequest();
         }
-
-
     }
 }

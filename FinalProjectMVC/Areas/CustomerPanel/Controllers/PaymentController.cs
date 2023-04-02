@@ -1,8 +1,6 @@
 ﻿using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Stripe.Checkout;
 using System.Security.Claims;
 
@@ -12,10 +10,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        public PaymentController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public PaymentController(ApplicationDbContext context) => _context = context;
 
         public ApplicationDbContext _context { get; }
 
@@ -24,26 +19,26 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            List<CartItem> cartItems = _context.CartItems.Where(item => item.CustomerId == userId).ToList();
+            var cartItems = _context.CartItems.Where(item => item.CustomerId == userId).ToList();
 
             var totalPrice = cartItems.Sum(cartItem => cartItem.SellerProduct?.Price * cartItem.Count ?? 0);
 
-            Order newOrder = new Order()
+            var newOrder = new Order()
             {
                 CustomerId = userId,
                 OrderDate = DateTime.Now,
                 TotalPrice = totalPrice,
                 AddressId = AddressId
             };
+
             _context.Orders.Add(newOrder);
 
             _context.SaveChanges();
 
-
-            List<OrderItem> My_Order_Items = new List<OrderItem>();
-
+            var My_Order_Items = new List<OrderItem>();
 
             var domain = "https://localhost:7111/";
+
             var options = new SessionCreateOptions
             {
                 LineItems = new List<SessionLineItemOptions>(),
@@ -66,6 +61,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
                         Status = OrderStatus.Pending
                     }
                 );
+
                 var sessionLineItem = new SessionLineItemOptions
                 {
 
@@ -81,19 +77,18 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
                     },
                     Quantity = item.Count,
                 };
+
                 options.LineItems.Add(sessionLineItem);
             }
 
             _context.OrderItems.AddRange(My_Order_Items);
             _context.SaveChanges();
 
-
             var service = new SessionService();
-            Session session = service.Create(options);
+            var session = service.Create(options);
 
             Response.Headers.Add("Location", session.Url);
             return new StatusCodeResult(303);
-
         }
     }
 }

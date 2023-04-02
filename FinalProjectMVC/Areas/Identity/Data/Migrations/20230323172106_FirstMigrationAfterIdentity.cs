@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -31,6 +30,7 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Admins", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_Admins_AspNetUsers_Id",
                         column: x => x.Id,
@@ -47,10 +47,7 @@ namespace FinalProjectMVC.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Brands", x => x.Id);
-                });
+                constraints: table => table.PrimaryKey("PK_Brands", x => x.Id));
 
             migrationBuilder.CreateTable(
                 name: "Categories",
@@ -60,10 +57,7 @@ namespace FinalProjectMVC.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
-                });
+                constraints: table => table.PrimaryKey("PK_Categories", x => x.Id));
 
             migrationBuilder.CreateTable(
                 name: "Customers",
@@ -75,6 +69,7 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Customers", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_Customers_AspNetUsers_Id",
                         column: x => x.Id,
@@ -94,6 +89,7 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sellers", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_Sellers_AspNetUsers_Id",
                         column: x => x.Id,
@@ -114,6 +110,7 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubCategories", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_SubCategories_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -134,6 +131,7 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CartItems", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_CartItems_Customers_CustomerId",
                         column: x => x.CustomerId,
@@ -155,6 +153,7 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.OrderId);
+
                     table.ForeignKey(
                         name: "FK_Orders_Customers_CustomerId",
                         column: x => x.CustomerId,
@@ -180,17 +179,20 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Addresses", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_Addresses_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+
                     table.ForeignKey(
                         name: "FK_Addresses_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id");
+
                     table.ForeignKey(
                         name: "FK_Addresses_Sellers_SellerId",
                         column: x => x.SellerId,
@@ -214,12 +216,14 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_Products_Brands_BrandId",
                         column: x => x.BrandId,
                         principalTable: "Brands",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+
                     table.ForeignKey(
                         name: "FK_Products_SubCategories_SubCategoryId",
                         column: x => x.SubCategoryId,
@@ -241,6 +245,7 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OrderItems", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_OrderItems_Orders_OrderId",
                         column: x => x.OrderId,
@@ -263,12 +268,14 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reports", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_Reports_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+
                     table.ForeignKey(
                         name: "FK_Reports_Products_ProductId",
                         column: x => x.ProductId,
@@ -292,12 +299,14 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Reviews", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_Reviews_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+
                     table.ForeignKey(
                         name: "FK_Reviews_Products_ProductId",
                         column: x => x.ProductId,
@@ -320,12 +329,14 @@ namespace FinalProjectMVC.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SellerProducts", x => x.Id);
+
                     table.ForeignKey(
                         name: "FK_SellerProducts_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+
                     table.ForeignKey(
                         name: "FK_SellerProducts_Sellers_SellerId",
                         column: x => x.SellerId,

@@ -1,8 +1,4 @@
-﻿using FinalProjectMVC.Models;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel;
-
-namespace FinalProjectMVC.Areas.AdminPanel.ViewModel
+﻿namespace FinalProjectMVC.Areas.AdminPanel.ViewModel
 {
     public class AdminReportsReviewsViewModel
     {
@@ -32,10 +28,10 @@ namespace FinalProjectMVC.Areas.AdminPanel.ViewModel
 
         public required string CustomerId { get; set; }
 
-        public required string CustomerName { get; set;}
+        public required string CustomerName { get; set; }
 
-        public required string ApplicationUserId { get; set;}
+        public required string ApplicationUserId { get; set; }
 
-        public required string ApplicationUserName { get; set;}
+        public required string ApplicationUserName { get; set; }
     }
 }

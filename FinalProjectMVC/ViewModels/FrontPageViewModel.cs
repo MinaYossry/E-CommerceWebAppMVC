@@ -6,6 +6,5 @@ namespace FinalProjectMVC.ViewModels
     {
         public required List<Product> FeaturedProducts { get; set; }
         public required List<Product> BestSelllerProducts { get; set; }
-
     }
 }

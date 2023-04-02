@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FinalProjectMVC.Areas.AdminPanel.Models;
+using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.AdminPanel.Models;
-using FinalProjectMVC.Models;
-using FinalProjectMVC.Areas.Identity.Data;
-using FinalProjectMVC.RepositoryPattern;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
@@ -34,16 +28,10 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         // GET: AdminPanel/SubCategories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var subCategory = (await SubCategoryRepository.GetDetailsAsync(id));
-            if (subCategory == null)
-            {
-                return NotFound();
-            }
+            if (subCategory == null) return NotFound();
 
             return View(subCategory);
         }
@@ -72,8 +60,10 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                 {
                     throw new Exception("Couldn't insert new subCategory");
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["CategoryId"] = new SelectList(await CategoryRepository.GetAllAsync(), "Id", "Name");
             return View(subCategory);
         }
@@ -81,16 +71,10 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         // GET: AdminPanel/SubCategories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var subCategory = (await SubCategoryRepository.GetDetailsAsync(id));
-            if (subCategory == null)
-            {
-                return NotFound();
-            }
+            if (subCategory == null) return NotFound();
             ViewData["CategoryId"] = new SelectList(await CategoryRepository.GetAllAsync(), "Id", "Name", subCategory.CategoryId);
             return View(subCategory);
         }
@@ -102,10 +86,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CategoryId")] SubCategory subCategory)
         {
-            if (id != subCategory.Id)
-            {
-                return NotFound();
-            }
+            if (id != subCategory.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -124,8 +105,10 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["CategoryId"] = new SelectList(await CategoryRepository.GetAllAsync(), "Id", "Name", subCategory.CategoryId);
             return View(subCategory);
         }
@@ -133,16 +116,10 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         // GET: AdminPanel/SubCategories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var subCategory = (await SubCategoryRepository.GetDetailsAsync(id));
-            if (subCategory == null)
-            {
-                return NotFound();
-            }
+            if (subCategory == null) return NotFound();
 
             return View(subCategory);
         }
@@ -153,11 +130,11 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var subCategory = (await SubCategoryRepository.GetDetailsAsync(id));
+
             if (subCategory != null)
             {
                 try
                 {
-
                     await SubCategoryRepository.DeleteAsync(subCategory.Id);
                 }
                 catch
@@ -165,13 +142,13 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                     throw new Exception("Sorry, Couldn't Delete Sub Category");
                 }
             }
-            
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool SubCategoryExists(int id)
+        bool SubCategoryExists(int id)
         {
-          return (SubCategoryRepository.GetAll()?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (SubCategoryRepository.GetAll()?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

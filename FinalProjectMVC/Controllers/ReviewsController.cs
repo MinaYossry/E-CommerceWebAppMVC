@@ -1,22 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using FinalProjectMVC.Areas.Identity.Data;
-using FinalProjectMVC.Models;
+﻿using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Constants;
+using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
 using FinalProjectMVC.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProjectMVC.Controllers
 {
     public class ReviewsController : Controller
     {
-
-        private readonly IRepository<Review> _reviewtRepository;
+        readonly IRepository<Review> _reviewtRepository;
 
         public ReviewsController(IRepository<Review> reviewtRepository)
         {
             _reviewtRepository = reviewtRepository;
         }
-
 
         // POST: Reviews/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -29,6 +27,7 @@ namespace FinalProjectMVC.Controllers
             {
                 return Unauthorized();
             }
+
             if (ModelState.IsValid)
             {
                 var review = new Review
@@ -39,6 +38,7 @@ namespace FinalProjectMVC.Controllers
                     SellerId = model.SellerId,
                     ProductId = model.ProductId
                 };
+
                 try
                 {
                     await _reviewtRepository.InsertAsync(review);
@@ -50,8 +50,8 @@ namespace FinalProjectMVC.Controllers
 
                 return RedirectToAction("Details", "Products", new { area = "CustomerPanel", Id = model.ProductId, SellerId = model.SellerId });
             }
-            return RedirectToAction("Details", "Products", new { area = "CustomerPanel", Id = model.ProductId, SellerId = model.SellerId });
 
+            return RedirectToAction("Details", "Products", new { area = "CustomerPanel", Id = model.ProductId, SellerId = model.SellerId });
         }
 
         // POST: Reviews/Delete/5

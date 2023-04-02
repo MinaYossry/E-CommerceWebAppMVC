@@ -9,6 +9,5 @@
         public int Sellers { get; set; }
 
         public int Customers { get; set; }
-
     }
 }

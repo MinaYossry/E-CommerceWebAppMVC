@@ -1,8 +1,7 @@
-﻿using System.ComponentModel;
+﻿using FinalProjectMVC.Areas.SellerPanel.Models;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Net.Http.Headers;
-using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Models
 {
@@ -20,7 +19,7 @@ namespace FinalProjectMVC.Models
         public int Id { get; set; }
 
         [DefaultValue(OrderStatus.Pending)]
-        [EnumDataType(enumType:  typeof(OrderStatus))]
+        [EnumDataType(enumType: typeof(OrderStatus))]
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
         [ForeignKey("Order")]
@@ -33,13 +32,12 @@ namespace FinalProjectMVC.Models
         public virtual SellerProduct? SellerProduct { get; set; }
 
         [Required]
-        [Range(0,10)]
+        [Range(0, 10)]
         public int Count { get; set; }
 
         [Required]
         [DataType(DataType.Currency)]
         [Column(TypeName = "money")]
         public decimal Price { get; set; }
-
     }
 }

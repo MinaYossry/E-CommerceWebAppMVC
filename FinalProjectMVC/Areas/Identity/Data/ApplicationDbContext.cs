@@ -3,8 +3,6 @@ using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
-using FinalProjectMVC.Areas.SellerPanel.ViewModel;
 
 namespace FinalProjectMVC.Areas.Identity.Data
 {
@@ -53,12 +51,11 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .Property(r => r.CreatedDate)
                 .HasDefaultValueSql("getdate()");
 
-
             builder.Entity<Order>()
-               .HasOne(o => o.Address)
-               .WithMany()
-               .HasForeignKey(o => o.AddressId)
-               .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(o => o.Address)
+                .WithMany()
+                .HasForeignKey(o => o.AddressId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public virtual DbSet<Product> Products { get; set; }
@@ -77,6 +74,6 @@ namespace FinalProjectMVC.Areas.Identity.Data
         public virtual DbSet<Report> Reports { get; set; }
         public virtual DbSet<Review> Reviews { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
-      //  public DbSet<FinalProjectMVC.Areas.SellerPanel.ViewModel.SellerOrderItemViewModel> SellerOrderItemViewModel { get; set; } = default!;
+        //  public DbSet<FinalProjectMVC.Areas.SellerPanel.ViewModel.SellerOrderItemViewModel> SellerOrderItemViewModel { get; set; } = default!;
     }
 }

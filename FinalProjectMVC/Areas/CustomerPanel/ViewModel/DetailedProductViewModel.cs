@@ -1,11 +1,8 @@
-﻿
-
-using FinalProjectMVC.Areas.SellerPanel.Models;
+﻿using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
 {
@@ -21,24 +18,21 @@ namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
         public string? ProductDescription { get; set; }
         public byte[]? ProductImage { get; set; }
         public string? SellerName { get; set; } // SellerName
-        //public decimal LowestPrice { get; set; }
+        // public decimal LowestPrice { get; set; }
 
         public string? SellerId { get; set; } // note that : SellerID is a `String`
 
         public string? SubCategory { get; set; }
-            
-        public string? Brand { get; set;  }
+
+        public string? Brand { get; set; }
 
         public int Count { get; set; }
 
-
         public SellerProduct? CurrentSellerProduct { get; set; } // Seller record
 
-
-        //public IEnumerable<SelectListItem>? SellersList; 
-        public List<SellerProduct>? SellersList; 
+        // public IEnumerable<SelectListItem>? SellersList;
+        public List<SellerProduct>? SellersList;
 
         public List<Review>? ReviewsList;
-
     }
 }

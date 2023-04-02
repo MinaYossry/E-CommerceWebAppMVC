@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using FinalProjectMVC.Areas.Identity.Data;
 using System.ComponentModel.DataAnnotations;
-using FinalProjectMVC.Areas.Identity.Data;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinalProjectMVC.Models
 {

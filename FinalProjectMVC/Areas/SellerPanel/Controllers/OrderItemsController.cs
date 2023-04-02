@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.Identity.Data;
-using FinalProjectMVC.Models;
-using Microsoft.AspNetCore.Authorization;
-using FinalProjectMVC.RepositoryPattern;
-using FinalProjectMVC.Areas.SellerPanel.ViewModel;
+﻿using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Areas.SellerPanel.Models;
+using FinalProjectMVC.Areas.SellerPanel.ViewModel;
+using FinalProjectMVC.Models;
+using FinalProjectMVC.RepositoryPattern;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 {
@@ -13,10 +13,10 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
     [Authorize(Roles = "Seller")]
     public class OrderItemsController : Controller
     {
-        private readonly IRepository<OrderItem> orderItemsRepo;
-        private readonly IRepository<SellerProduct> sellerProductRepo;
+        readonly IRepository<OrderItem> orderItemsRepo;
+        readonly IRepository<SellerProduct> sellerProductRepo;
 
-        public OrderItemsController( IRepository<OrderItem> orderItemsRepo, IRepository<SellerProduct> sellerProductRepo)
+        public OrderItemsController(IRepository<OrderItem> orderItemsRepo, IRepository<SellerProduct> sellerProductRepo)
         {
             this.orderItemsRepo = orderItemsRepo;
             this.sellerProductRepo = sellerProductRepo;
@@ -34,30 +34,27 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 if (orderItem.Order?.Customer is not null &&
                     orderItem.Order?.Address is not null &&
                     orderItem.SellerProduct?.Product is not null)
-                viewModel.Add(new()
-                {
-                    Id = orderItem.Id,
-                    Status = orderItem.Status,
-                    Count = orderItem.Count,
-                    Price = orderItem.SellerProduct.Price,
-                    OrderDate = orderItem.Order.OrderDate,
-                    Customer = orderItem.Order.Customer,
-                    Address = orderItem.Order.Address,
-                    Product = orderItem.SellerProduct.Product
-                });
+                    viewModel.Add(new()
+                    {
+                        Id = orderItem.Id,
+                        Status = orderItem.Status,
+                        Count = orderItem.Count,
+                        Price = orderItem.SellerProduct.Price,
+                        OrderDate = orderItem.Order.OrderDate,
+                        Customer = orderItem.Order.Customer,
+                        Address = orderItem.Order.Address,
+                        Product = orderItem.SellerProduct.Product
+                    });
             }
 
-            
             return View(viewModel);
         }
-
 
         public async Task<IActionResult> UpdateOrderStatus(int? Id, OrderStatus orderStatus)
         {
             var orderItem = await orderItemsRepo.GetDetailsAsync(Id);
 
-            if (orderItem is null)
-                return NotFound();
+            if (orderItem is null) return NotFound();
 
             if (orderItem.Status == OrderStatus.Pending)
             {
@@ -69,6 +66,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 else
                 {
                     orderItem.SellerProduct.Count -= orderItem.Count;
+
                     try
                     {
                         await sellerProductRepo.UpdateAsync(orderItem.SellerProductId, orderItem.SellerProduct);
@@ -112,14 +110,9 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 
         public IActionResult CancelOrder(int? id)
         {
-            return  RedirectToAction( nameof(UpdateOrderStatus), new { Id = id, orderStatus = OrderStatus.Cancelled });
+            return RedirectToAction(nameof(UpdateOrderStatus), new { Id = id, orderStatus = OrderStatus.Cancelled });
         }
 
-       
-
-        private bool OrderItemExists(int id)
-        {
-            return orderItemsRepo.GetDetails(id) is not null;
-        }
+        bool OrderItemExists(int id) => orderItemsRepo.GetDetails(id) is not null;
     }
 }

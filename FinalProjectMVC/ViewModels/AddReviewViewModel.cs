@@ -1,9 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using FinalProjectMVC.Areas.SellerPanel.Models;
-using FinalProjectMVC.Models;
-
-namespace FinalProjectMVC.ViewModels
+﻿namespace FinalProjectMVC.ViewModels
 {
     public class AddReviewViewModel
     {

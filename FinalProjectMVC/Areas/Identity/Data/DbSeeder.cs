@@ -1,7 +1,5 @@
 ﻿using FinalProjectMVC.Constants;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Build.Framework;
-using System;
 
 namespace FinalProjectMVC.Areas.Identity.Data
 {
@@ -9,14 +7,14 @@ namespace FinalProjectMVC.Areas.Identity.Data
     {
         public static async Task SeedRolesAndAdminAsync(IServiceProvider service)
         {
-            //Seed Roles
+            // Seed Roles
 
             // 1- getting the services (API's) responsible for `Users` and `roles` manging
             var userManager = service.GetService<UserManager<ApplicationUser>>();
             var roleManager = service.GetService<RoleManager<IdentityRole>>();
 
             // 2- creating and adding roles to the `roleManger` Instance
-            if (roleManager is not null && userManager is not null )
+            if (roleManager is not null && userManager is not null)
             {
                 await roleManager.CreateAsync(new IdentityRole(Roles.Admin.ToString()));
                 await roleManager.CreateAsync(new IdentityRole(Roles.Seller.ToString()));
@@ -24,8 +22,7 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 await roleManager.CreateAsync(new IdentityRole(Roles.CustomerService.ToString()));
                 await roleManager.CreateAsync(new IdentityRole(Roles.WebDeveloper.ToString()));
 
-
-            // creating admin in code to be secure. 
+                // creating admin in code to be secure. 
 
                 var user = new ApplicationUser
                 {
@@ -36,8 +33,8 @@ namespace FinalProjectMVC.Areas.Identity.Data
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true
                 };
-                var userInDb = await userManager.FindByEmailAsync(user.Email);
 
+                var userInDb = await userManager.FindByEmailAsync(user.Email);
 
                 // If no user is found with that email (Email = "admin@gmail.com")
                 // Then we create an new account and set it as admin.
@@ -57,6 +54,5 @@ namespace FinalProjectMVC.Areas.Identity.Data
                  */
             }
         }
-
     }
 }

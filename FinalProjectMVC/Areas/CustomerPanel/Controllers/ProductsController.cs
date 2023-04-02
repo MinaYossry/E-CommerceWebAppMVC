@@ -1,35 +1,28 @@
 ﻿using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Areas.CustomerPanel.ViewModel;
 using FinalProjectMVC.Areas.SellerPanel.Models;
-using FinalProjectMVC.Areas.SellerPanel.ViewModel;
-using FinalProjectMVC.Constants;
 using FinalProjectMVC.RepositoryPattern;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 {
     [Area("CustomerPanel")]
     public class ProductsController : Controller
     {
-
-        private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<Category> _categoryRepository;
-        private readonly IRepository<SellerProduct> _sellerProductRepo;
+        readonly IRepository<Product> _productRepository;
+        readonly IRepository<Category> _categoryRepository;
+        readonly IRepository<SellerProduct> _sellerProductRepo;
 
         public ProductsController(
             IRepository<Product> productRepository,
             IRepository<Category> categoryRepository,
             IRepository<SellerProduct> sellerProductRepo
             )
-
         {
             _productRepository = productRepository;
-            this._categoryRepository = categoryRepository;
-            this._sellerProductRepo = sellerProductRepo;
+            _categoryRepository = categoryRepository;
+            _sellerProductRepo = sellerProductRepo;
         }
 
         // GET: SellerPanel/Products
@@ -60,12 +53,14 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
             return View("Index", viewModelList);
         }
 
-        private async Task<List<DisplayInStockProductsViewModel>> CreateDisplayViewModelList(IEnumerable<Product> products)
+        async Task<List<DisplayInStockProductsViewModel>> CreateDisplayViewModelList(IEnumerable<Product> products)
         {
             var viewModelList = new List<DisplayInStockProductsViewModel>();
+
             foreach (var product in products)
             {
                 var sellerProducts = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == product.Id && sp.Count > 0);
+
                 if (sellerProducts != null)
                 {
                     var lowestPrice = sellerProducts.Min(sp => sp.Price);
@@ -86,35 +81,26 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
                         Brand = product?.Brand?.Name,
                         SubCategory = product?.SubCategory?.Name
                     };
+
                     viewModelList.Add(productViewModel);
                 }
             }
+
             return viewModelList;
         }
-
-
-
 
         // GET: SellerPanel/Products/Details/5
         [Route("Product/{id:int}/{SellerId}")]
         public async Task<IActionResult> Details(int? id, string? SellerId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
+            if (id == null) return NotFound();
 
             var sellerProductRow = (await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.SellerId == SellerId)).FirstOrDefault();
-            if (sellerProductRow == null)
-            {
-                return NotFound();
-            }
+            if (sellerProductRow == null) return NotFound();
 
             var availableSellers = await _sellerProductRepo.FilterAsync(sp => sp.ProductId == id && sp.Count > 0);
 
             ViewData["SellerName"] = new SelectList(availableSellers, "SellerId", "DataTextFieldLabel", SellerId);
-
 
             var DetailedProductviewModel = new DetailedProductViewModel
             {
@@ -138,15 +124,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.Controllers
 
             };
 
-
             return View(DetailedProductviewModel);
         }
-
-
-
-
-
-
     }
 }
-

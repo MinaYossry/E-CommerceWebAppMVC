@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FinalProjectMVC.Areas.Identity.Data;
+using FinalProjectMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.Identity.Data;
-using FinalProjectMVC.Models;
 
 namespace FinalProjectMVC.Controllers
 {
     public class ReportsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        readonly ApplicationDbContext _context;
 
-        public ReportsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public ReportsController(ApplicationDbContext context) => _context = context;
 
         // GET: Reports
         public async Task<IActionResult> Index()
@@ -38,10 +31,8 @@ namespace FinalProjectMVC.Controllers
                 .Include(r => r.ApplicationUser)
                 .Include(r => r.Review)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (report == null)
-            {
-                return NotFound();
-            }
+
+            if (report == null) return NotFound();
 
             return View(report);
         }
@@ -67,6 +58,7 @@ namespace FinalProjectMVC.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", report.ApplicationUserId);
             ViewData["ReviewId"] = new SelectList(_context.Reviews, "Id", "Id", report.ReviewId);
             return View(report);
@@ -81,10 +73,7 @@ namespace FinalProjectMVC.Controllers
             }
 
             var report = await _context.Reports.FindAsync(id);
-            if (report == null)
-            {
-                return NotFound();
-            }
+            if (report == null) return NotFound();
             ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", report.ApplicationUserId);
             ViewData["ReviewId"] = new SelectList(_context.Reviews, "Id", "Id", report.ReviewId);
             return View(report);
@@ -97,10 +86,7 @@ namespace FinalProjectMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,IsSolved,CreatedDate,SolveDate,ReviewId,ApplicationUserId")] Report report)
         {
-            if (id != report.Id)
-            {
-                return NotFound();
-            }
+            if (id != report.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -111,17 +97,13 @@ namespace FinalProjectMVC.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReportExists(report.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ReportExists(report.Id)) return NotFound();
+                    else throw;
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ApplicationUserId"] = new SelectList(_context.Users, "Id", "Id", report.ApplicationUserId);
             ViewData["ReviewId"] = new SelectList(_context.Reviews, "Id", "Id", report.ReviewId);
             return View(report);
@@ -139,10 +121,8 @@ namespace FinalProjectMVC.Controllers
                 .Include(r => r.ApplicationUser)
                 .Include(r => r.Review)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (report == null)
-            {
-                return NotFound();
-            }
+
+            if (report == null) return NotFound();
 
             return View(report);
         }
@@ -156,19 +136,18 @@ namespace FinalProjectMVC.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Reports'  is null.");
             }
+
             var report = await _context.Reports.FindAsync(id);
+
             if (report != null)
             {
                 _context.Reports.Remove(report);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ReportExists(int id)
-        {
-          return (_context.Reports?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        bool ReportExists(int id) => (_context.Reports?.Any(e => e.Id == id)).GetValueOrDefault();
     }
 }
