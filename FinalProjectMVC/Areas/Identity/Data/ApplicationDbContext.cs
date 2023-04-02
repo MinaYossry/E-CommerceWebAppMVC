@@ -56,6 +56,12 @@ namespace FinalProjectMVC.Areas.Identity.Data
                 .WithMany()
                 .HasForeignKey(o => o.AddressId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Review>()
+                 .HasOne(r => r.Seller)
+                 .WithMany()
+                 .HasForeignKey(r => r.SellerId)
+                 .OnDelete(DeleteBehavior.Restrict);
         }
 
         public virtual DbSet<Product> Products { get; set; }
