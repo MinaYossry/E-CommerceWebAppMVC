@@ -3,10 +3,12 @@ using FinalProjectMVC.Constants;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
 using FinalProjectMVC.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProjectMVC.Controllers
 {
+    [Authorize]
     public class ReviewsController : Controller
     {
         readonly IRepository<Review> _reviewtRepository;

@@ -1,11 +1,13 @@
 ﻿using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.Controllers
 {
+    [Authorize]
     public class ReportsController : Controller
     {
         readonly ApplicationDbContext _context;

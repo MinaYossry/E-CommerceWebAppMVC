@@ -1,5 +1,6 @@
 ﻿using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 {
     [Area("SellerPanel")]
+    [Authorize]
     public class ReportsController : Controller
     {
         readonly ApplicationDbContext _context;
