@@ -87,6 +87,10 @@
                             </div>
                         </div>
                     }
+                    else if (!SignInManager.IsSignedIn(User))
+                    {
+                        <p class="text-primary align-self-center me-2">Sign in to add items to cart</p>
+                    }
 
                     <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
                 </div>
