@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FinalProjectMVC.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class testttttt : Migration
+    public partial class RemoveFromReports : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

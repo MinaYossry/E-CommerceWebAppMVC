@@ -90,7 +90,7 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account
             [StringLength(50)]
             public required string LastName { get; set; }
 
-            public string? TaxNumber { get; set; }
+            public string TaxNumber { get; set; } = string.Empty;
 
             public required string Role { get; set; }
 
