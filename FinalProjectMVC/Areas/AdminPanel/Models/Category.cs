@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using FinalProjectMVC.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Models
 {

@@ -1,9 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.AdminPanel.Models;
+﻿using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.Models;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Models
 {
@@ -21,7 +20,6 @@ namespace FinalProjectMVC.Areas.SellerPanel.Models
         public string? Description { get; set; }
 
         public byte[]? ProductImage { get; set; }
-
 
         [Required]
         [ForeignKey(nameof(SubCategory))]

@@ -1,10 +1,7 @@
-﻿using FinalProjectMVC.Areas.AdminPanel.Models;
-using FinalProjectMVC.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Contracts;
 
 namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
 {
@@ -12,7 +9,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
     {
         [Required(ErrorMessage = "Must enter unique serial number for the product")]
         [DisplayName("Serial Number")]
-        public int SerialNumber { get; set; } 
+        public int SerialNumber { get; set; }
 
         [StringLength(maximumLength: 100, MinimumLength = 5, ErrorMessage = "Name can't be less than 5 more that 100 letters")]
         [DisplayName("Product Name")]

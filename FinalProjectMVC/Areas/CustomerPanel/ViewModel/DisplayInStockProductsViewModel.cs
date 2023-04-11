@@ -1,6 +1,4 @@
-﻿
-
-using FinalProjectMVC.Areas.SellerPanel.Models;
+﻿using FinalProjectMVC.Areas.SellerPanel.Models;
 
 namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
 {
@@ -12,7 +10,7 @@ namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
         public string? ProductDescription { get; set; }
         public byte[]? ProductImage { get; set; }
         public string? SellerName { get; set; } // SellerName
-        //public decimal LowestPrice { get; set; }
+        // public decimal LowestPrice { get; set; }
 
         public string? SellerId { get; set; } // note that : SellerID is a `String`
 
@@ -25,11 +23,5 @@ namespace FinalProjectMVC.Areas.CustomerPanel.ViewModel
         public string? SellerNameWithLowestPrice { get; set; }
 
         public SellerProduct? sellerProductWithLowestPrice { get; set; }
-
-
-      
-
-
-       
     }
 }

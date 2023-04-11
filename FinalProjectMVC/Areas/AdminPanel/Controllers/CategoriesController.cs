@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.AdminPanel.Models;
-using FinalProjectMVC.Models;
-using FinalProjectMVC.Areas.Identity.Data;
+﻿using FinalProjectMVC.Areas.AdminPanel.Models;
 using FinalProjectMVC.RepositoryPattern;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
+    [Authorize("Admin")]
     public class CategoriesController : Controller
     {
         public IRepository<Category> CategoryRepository { get; }
@@ -23,33 +18,21 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         }
 
         // GET: AdminPanel/Categories
-        public async Task<IActionResult> Index()
-        {
-            return View(await CategoryRepository.GetAllAsync());
-        }
+        public async Task<IActionResult> Index() => View(await CategoryRepository.GetAllAsync());
 
         // GET: AdminPanel/Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var category = await CategoryRepository.GetDetailsAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (category == null) return NotFound();
 
             return View(category);
         }
 
         // GET: AdminPanel/Categories/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         // POST: AdminPanel/Categories/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -68,24 +51,20 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                 {
                     throw new Exception("Sorry, Couldn't add category");
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(category);
         }
 
         // GET: AdminPanel/Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var category = await CategoryRepository.GetDetailsAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (category == null) return NotFound();
             return View(category);
         }
 
@@ -96,10 +75,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category category)
         {
-            if (id != category.Id)
-            {
-                return NotFound();
-            }
+            if (id != category.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -113,7 +89,6 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                     {
                         throw new Exception("Sorry, Couldn't update category");
                     }
-                    
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -126,24 +101,20 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(category);
         }
 
         // GET: AdminPanel/Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var category = await CategoryRepository.GetDetailsAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (category == null) return NotFound();
 
             return View(category);
         }
@@ -154,6 +125,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var category = await CategoryRepository.GetDetailsAsync(id);
+
             if (category != null)
             {
                 try
@@ -164,14 +136,14 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                 {
                     throw new Exception("Sorry, Couldn't Delete category");
                 }
-
             }
+
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
+        bool CategoryExists(int id)
         {
-          return (CategoryRepository.GetAll()?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (CategoryRepository.GetAll()?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

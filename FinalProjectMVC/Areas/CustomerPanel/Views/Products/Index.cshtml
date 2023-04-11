@@ -1,10 +1,51 @@
 ﻿@using FinalProjectMVC.Areas.AdminPanel.Models;
+@using FinalProjectMVC.Areas.Identity.Data;
+@using Microsoft.AspNetCore.Identity;
 @model IEnumerable<FinalProjectMVC.Areas.CustomerPanel.ViewModel.DisplayInStockProductsViewModel>
+
+
+
 
 @{
     ViewData["Title"] = "Index";
     List<Category> Categories = ViewBag.Categories;
-    List<Brand> Brands = ViewBag.Brands;
+}
+
+@section filterSection{
+
+    <nav class="navbar bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasNavbarLabel">FILTER</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+
+                    @foreach (var item in Categories)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @item.Name
+                            </a>
+                            <ul class="dropdown-menu">
+                                @foreach (var subCat in item.SubCategories)
+                                {
+                                        <li><a class="dropdown-item" href="@Url.Action("Filter", "Products", new { SubCategoryId = subCat.Id })">@subCat.Name</a></li>
+                                }
+                            </ul>
+                        </li>       
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
 }
 
 
@@ -40,7 +81,6 @@ else
                         <div class="col-8">
                             <div class="card-body">
                                 <h5 class="card-title">@product.ProductName</h5>
-                                <p class="card-text">@product.ProductDescription</p>
 
                                 @* Show a specific price based on seller,
                         get a list of all the sellers selling this product
@@ -50,7 +90,8 @@ else
 
 
                                 <p class="card-text"><strong> Sold by :</strong> @product.SellerNameWithLowestPrice</p>
-                                <p class="card-text"><strong> Price:</strong> @product.ProductPrice</p>
+                                <p class="card-text">
+                                    <strong> Price:</strong> @Math.Round(product.ProductPrice, 2)</p>
                                 <p class="card-text"><strong> Items inStock:</strong> @product.Count</p>
 
 

@@ -8,15 +8,17 @@
 <div class="accordion" id="accordionExample">
     @foreach (var item in Model)
     {
+        var reportGuid = Guid.NewGuid();
+        var reviewGuid = Guid.NewGuid();
         <div class="card">
-            <div class="card-header" id="@($"heading{item.ReportId}")">
+            <div class="card-header" id="@($"heading{reportGuid}")">
                 <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="@($"#collapse{item.ReportId}")" aria-expanded="false" aria-controls="@($"collapse{item.ReportId}")">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="@($"#collapse{reportGuid}")" aria-expanded="false" aria-controls="@($"collapse{reportGuid}")">
                         <span class="font-weight-bold">Report:</span> #@item.ReportId
                         <span class="text-muted">|</span>
                         <span class="font-weight-bold">@item.Name</span>
                         <div class="ml-auto">
-                            <span class="font-weight-bold">@item.SellerName</span>
+                            <span class="font-weight-bold">@item.ApplicationUserName</span>
                             <span class="text-muted">|</span>
                             <span class="font-italic">@item.CreatedDate</span>
                         </div>
@@ -27,15 +29,15 @@
                 </h2>
             </div>
 
-            <div id="@($"collapse{item.ReportId}")" class="collapse" aria-labelledby="@($"heading{item.ReportId}")" data-parent="#accordionExample">
+            <div id="@($"collapse{reportGuid}")" class="collapse" aria-labelledby="@($"heading{reportGuid}")" data-parent="#accordionExample">
                 <div class="card-body">
                     <p>@item.Description</p>
 
                     <div class="accordion" id="innerAccordion">
                         <div class="card">
-                            <div class="card-header" id="@($"heading{item.ReportId}{item.ReviewId}{item.Name}")">
+                            <div class="card-header" id="@($"heading{reviewGuid}")">
                                 <h2 class="mb-0">
-                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="@($"#collapse{item.ReportId}{item.ReviewId}{item.Name}")" aria-expanded="false" aria-controls="@($"collapse{item.ReportId}{item.ReviewId}{item.Name}")">
+                                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="@($"#collapse{reviewGuid}")" aria-expanded="false" aria-controls="@($"collapse{reviewGuid}")">
                                         <span class="font-weight-bold">Review:</span> #@item.ReviewId
                                         <span class="text-muted">|</span>
                                         <span class="font-weight-bold">@item.ReviewName</span>
@@ -53,7 +55,7 @@
 
                             </div>
 
-                            <div id="@($"collapse{item.ReportId}{item.ReviewId}{item.Name}")" class="collapse" aria-labelledby="@($"heading{item.ReportId}{item.ReviewId}{item.Name}")" data-parent="#innerAccordion">
+                            <div id="@($"collapse{reviewGuid}")" class="collapse" aria-labelledby="@($"heading{reviewGuid}")" data-parent="#innerAccordion">
                                 <div class="card-body">
                                     <p>@item.ReviewDescription</p>
                                 </div>
@@ -71,19 +73,19 @@
                 }
                 else
                 {
-                    <button class="btn btn-success mr-2" type="button" data-toggle="modal" data-target="@($"#markAsSolvedModal{item.ReportId}")">Mark as Solved</button>
+                    <button class="btn btn-success mr-2" type="button" data-toggle="modal" data-target="@($"#markAsSolvedModal{reportGuid}")">Mark as Solved</button>
                  //   <button class="btn btn-warning mr-2" type="button" onclick="blockUser(@item.SellerId)">Block User</button>
-                    <button class="btn btn-danger mr-2" type="button" data-toggle="modal" data-target="@($"#DeleteReviewModal{item.ReportId}")">Delete Review</button>
+                    <button class="btn btn-danger mr-2" type="button" data-toggle="modal" data-target="@($"#DeleteReviewModal{reportGuid}")">Delete Review</button>
                 }
             </div>
         </div>
 
         <!-- Mark as Solved Modal -->
-        <div class="modal fade" id="@($"markAsSolvedModal{item.ReportId}")" tabindex="-1" role="dialog" aria-labelledby="@($"markAsSolvedModalLabel{item.ReportId}")" aria-hidden="true">
+        <div class="modal fade" id="@($"markAsSolvedModal{reportGuid}")" tabindex="-1" role="dialog" aria-labelledby="@($"markAsSolvedModalLabel{reportGuid}")" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="@($"markAsSolvedModalLabel{item.ReportId}")">Mark Report #@item.ReportId as Solved?</h5>
+                        <h5 class="modal-title" id="@($"markAsSolvedModalLabel{reportGuid}")">Mark Report #@item.ReportId as Solved?</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -104,11 +106,11 @@
 
 
         <!-- Delete Review -->
-        <div class="modal fade" id="@($"DeleteReviewModal{item.ReportId}")" tabindex="-1" role="dialog" aria-labelledby="@($"DeleteReviewModalLabel{item.ReportId}")" aria-hidden="true">
+        <div class="modal fade" id="@($"DeleteReviewModal{reportGuid}")" tabindex="-1" role="dialog" aria-labelledby="@($"DeleteReviewModalLabel{reportGuid}")" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="@($"DeleteReviewModalLabel{item.ReportId}")">Delete Review #@item.ReviewId?</h5>
+                        <h5 class="modal-title" id="@($"DeleteReviewModalLabel{reportGuid}")">Delete Review #@item.ReviewId?</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -119,7 +121,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                         <form asp-action="DeleteReview" method="post">
-                            <input type="hidden" name="Id" value="@item.ReviewId" />
+                            <input type="hidden" name="Id" value="@item.ReportId" />
                             <button type="submit" class="btn btn-danger">Delete Review</button>
                         </form>
                     </div>

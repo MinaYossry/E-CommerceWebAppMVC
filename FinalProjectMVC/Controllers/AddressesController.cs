@@ -1,26 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.Identity.Data;
+﻿using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
-using Microsoft.AspNetCore.Authorization;
 using FinalProjectMVC.RepositoryPattern;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.Controllers
 {
     [Authorize]
     public class AddressesController : Controller
     {
-        private readonly IRepository<Address> addressRepo;
+        readonly IRepository<Address> addressRepo;
 
-        public AddressesController(IRepository<Address> addressRepo)
-        {
-            this.addressRepo = addressRepo;
-        }
+        public AddressesController(IRepository<Address> addressRepo) => this.addressRepo = addressRepo;
 
         // GET: Addresses
         public async Task<IActionResult> Index()
@@ -31,16 +23,10 @@ namespace FinalProjectMVC.Controllers
         // GET: Addresses/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var address = await addressRepo.GetDetailsAsync(id);
-            if (address == null)
-            {
-                return NotFound();
-            }
+            if (address == null) return NotFound();
 
             if (address.UserId != User.GetUserId())
             {
@@ -51,10 +37,7 @@ namespace FinalProjectMVC.Controllers
         }
 
         // GET: Addresses/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         // POST: Addresses/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -71,28 +54,22 @@ namespace FinalProjectMVC.Controllers
                 await addressRepo.InsertAsync(address);
                 return RedirectToAction(nameof(Index));
             }
+
             return View(address);
         }
 
         // GET: Addresses/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var address = await addressRepo.GetDetailsAsync(id);
-            if (address == null)
-            {
-                return NotFound();
-            }
+            if (address == null) return NotFound();
 
             if (address.UserId != User.GetUserId())
             {
                 return Unauthorized();
             }
-
 
             return View(address);
         }
@@ -104,10 +81,7 @@ namespace FinalProjectMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,StreetName,BuildingNumber,City,Region,UserId")] Address address)
         {
-            if (id != address.Id)
-            {
-                return NotFound();
-            }
+            if (id != address.Id) return NotFound();
 
             if (address.UserId != User.GetUserId())
                 return Unauthorized();
@@ -120,34 +94,24 @@ namespace FinalProjectMVC.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AddressExists(address.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
+                    if (!AddressExists(address.Id)) return NotFound();
+                    else return BadRequest();
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(address);
         }
 
         // GET: Addresses/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var address = await addressRepo.GetDetailsAsync(id);
 
-            if (address == null)
-            {
-                return NotFound();
-            }
+            if (address == null) return NotFound();
 
             if (address.UserId != User.GetUserId())
                 return Unauthorized();
@@ -162,14 +126,10 @@ namespace FinalProjectMVC.Controllers
         {
             var address = await addressRepo.GetDetailsAsync(id);
 
-            if (address == null)
-            {
-                return NotFound();
-            }
+            if (address == null) return NotFound();
 
             if (address.UserId != User.GetUserId())
                 return Unauthorized();
-
 
             try
             {
@@ -177,22 +137,13 @@ namespace FinalProjectMVC.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AddressExists(address.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                if (!AddressExists(address.Id)) return NotFound();
+                else return BadRequest();
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AddressExists(int id)
-        {
-            return addressRepo.GetDetails(id) is not null;
-        }
+        bool AddressExists(int id) => addressRepo.GetDetails(id) is not null;
     }
 }

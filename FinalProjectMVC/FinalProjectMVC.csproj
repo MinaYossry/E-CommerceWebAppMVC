@@ -8,6 +8,34 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\CustomerPanel\Data\**" />
+    <Compile Remove="Areas\SellerPanel\Data\**" />
+    <Compile Remove="ViewModel\**" />
+    <Compile Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <Compile Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
+    <Content Remove="Areas\CustomerPanel\Data\**" />
+    <Content Remove="Areas\SellerPanel\Data\**" />
+    <Content Remove="ViewModel\**" />
+    <Content Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <Content Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
+    <EmbeddedResource Remove="Areas\CustomerPanel\Data\**" />
+    <EmbeddedResource Remove="Areas\SellerPanel\Data\**" />
+    <EmbeddedResource Remove="ViewModel\**" />
+    <EmbeddedResource Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <EmbeddedResource Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
+    <None Remove="Areas\CustomerPanel\Data\**" />
+    <None Remove="Areas\SellerPanel\Data\**" />
+    <None Remove="ViewModel\**" />
+    <None Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <None Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
+    <TypeScriptCompile Remove="Areas\CustomerPanel\Data\**" />
+    <TypeScriptCompile Remove="Areas\SellerPanel\Data\**" />
+    <TypeScriptCompile Remove="ViewModel\**" />
+    <TypeScriptCompile Remove="wwwroot\1-LandingPage %28otherpages -about %29\**" />
+    <TypeScriptCompile Remove="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="wwwroot\AdminPanel\bower_components\bootstrap\.bower.json" />
     <Content Include="wwwroot\AdminPanel\bower_components\bootstrap\.bundlewatch.config.json" />
     <Content Include="wwwroot\AdminPanel\bower_components\bootstrap\.cspell.json" />
@@ -354,17 +382,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.5" />
+    <PackageReference Include="Stripe.net" Version="41.12.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Areas\AdminPanel\Data\" />
     <Folder Include="Areas\AdminPanel\Views\Shared\" />
-    <Folder Include="Areas\CustomerPanel\Data\" />
-    <Folder Include="Areas\SellerPanel\Data\" />
     <Folder Include="Areas\SellerPanel\Models\" />
-    <Folder Include="ViewModel\" />
-    <Folder Include="wwwroot\2-Identity%28Login-Regesteration-forgetPW%29\" />
-    <Folder Include="wwwroot\1-LandingPage %28otherpages -about %29\" />
     <Folder Include="wwwroot\Uploads\" />
   </ItemGroup>
 
@@ -5873,18 +5897,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Update="Areas\CustomerPanel\Views\Products\Index.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Areas\CustomerPanel\Views\Reports\Create.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Areas\CustomerPanel\Views\Reports\Edit.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Areas\CustomerPanel\Views\Shared\_Layout.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>

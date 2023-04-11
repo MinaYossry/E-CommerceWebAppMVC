@@ -7,6 +7,6 @@ namespace FinalProjectMVC.ViewModels
         public string Name { get; set; }
         public string Description { get; set; }
         [Range(1, 5)]
-        public int Rating { get; set;}
+        public int Rating { get; set; }
     }
 }

@@ -1,7 +1,4 @@
-﻿using FinalProjectMVC.Areas.SellerPanel.Models;
-using System.ComponentModel.DataAnnotations;
-
-namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
+﻿namespace FinalProjectMVC.Areas.SellerPanel.ViewModel
 {
     public class DisplaySellerProductDetailesViewModel
     {

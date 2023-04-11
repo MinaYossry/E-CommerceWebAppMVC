@@ -1,7 +1,6 @@
 ﻿
 using FinalProjectMVC.Areas.SellerPanel.Models;
 using FinalProjectMVC.Models;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

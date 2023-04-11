@@ -1,6 +1,5 @@
 ﻿using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace FinalProjectMVC.RepositoryPattern
 {
@@ -8,7 +7,6 @@ namespace FinalProjectMVC.RepositoryPattern
     {
         public ReviewRepoService(ApplicationDbContext context) : base(context)
         {
-
         }
     }
 }

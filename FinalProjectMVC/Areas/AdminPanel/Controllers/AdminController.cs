@@ -2,7 +2,6 @@
 using FinalProjectMVC.Areas.AdminPanel.ViewModel;
 using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Areas.SellerPanel.Models;
-using FinalProjectMVC.Constants;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
 using Microsoft.AspNetCore.Authorization;
@@ -16,12 +15,12 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IRepository<Order> orderRepo;
-        private readonly IRepository<Product> productRepo;
-        private readonly IRepository<Seller> sellerRepo;
-        private readonly IRepository<Customer> customerRepo;
+        readonly UserManager<ApplicationUser> _userManager;
+        readonly RoleManager<IdentityRole> _roleManager;
+        readonly IRepository<Order> orderRepo;
+        readonly IRepository<Product> productRepo;
+        readonly IRepository<Seller> sellerRepo;
+        readonly IRepository<Customer> customerRepo;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
@@ -50,23 +49,8 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                 Customers = (await customerRepo.GetAllAsync()).Count
             };
 
-            //var OrdersCount = Context.Orders.Count();
-            //ViewBag.NewOrders = OrdersCount;
-
-            //var ProductsCount = Context.Products.Count();
-            //ViewBag.NewProducts = ProductsCount;
-
-            //var SellersCount = Context.Sellers.Count();
-            //ViewBag.Sellers = SellersCount;
-
-            //var CustomersCount = Context.Customers.Count();
-            //ViewBag.Customers = CustomersCount;
-
-            //var Reports = Context.Reports.Count();
-            //ViewBag.ReportsCount = Reports;
             return View(ViewModel);
         }
-
 
         public async Task<IActionResult> ManageUserRoles()
         {
@@ -82,7 +66,6 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             return View(viewModel);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> SetUserRole(string SelectedUserId, string SelectedRoleId)
         {
@@ -97,6 +80,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 
                 // Assign user to selected role
                 var result = await _userManager.AddToRoleAsync(user, role.Name);
+
                 if (result.Succeeded)
                 {
                     // Role assignment was successful
@@ -115,9 +99,5 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 
             return RedirectToAction("ManageUserRoles");
         }
-
-
-
     }
-
 }

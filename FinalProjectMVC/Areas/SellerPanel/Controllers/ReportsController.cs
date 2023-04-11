@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FinalProjectMVC.Areas.Identity.Data;
+using FinalProjectMVC.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.Identity.Data;
-using FinalProjectMVC.Models;
 
 namespace FinalProjectMVC.Areas.SellerPanel.Controllers
 {
     [Area("SellerPanel")]
+    [Authorize]
     public class ReportsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        readonly ApplicationDbContext _context;
 
-        public ReportsController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
+        public ReportsController(ApplicationDbContext context) => _context = context;
 
         // GET: SellerPanel/Reports/Create
         public IActionResult Create()
@@ -41,6 +35,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ReviewId"] = new SelectList(_context.Reviews, "Id", "Id", report.ReviewId);
             return View(report);
         }
@@ -54,10 +49,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
             }
 
             var report = await _context.Reports.FindAsync(id);
-            if (report == null)
-            {
-                return NotFound();
-            }
+            if (report == null) return NotFound();
             ViewData["ReviewId"] = new SelectList(_context.Reviews, "Id", "Id", report.ReviewId);
             return View(report);
         }
@@ -69,10 +61,7 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,IsSolved,ReviewId")] Report report)
         {
-            if (id != report.Id)
-            {
-                return NotFound();
-            }
+            if (id != report.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -83,24 +72,17 @@ namespace FinalProjectMVC.Areas.SellerPanel.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReportExists(report.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!ReportExists(report.Id)) return NotFound();
+                    else throw;
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ReviewId"] = new SelectList(_context.Reviews, "Id", "Id", report.ReviewId);
             return View(report);
         }
 
-        private bool ReportExists(int id)
-        {
-            return (_context.Reports?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        bool ReportExists(int id) => (_context.Reports?.Any(e => e.Id == id)).GetValueOrDefault();
     }
 }

@@ -2,25 +2,22 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using FinalProjectMVC.Areas.Identity.Data;
 using FinalProjectMVC.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
 
 namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        
+        readonly UserManager<ApplicationUser> _userManager;
+        readonly SignInManager<ApplicationUser> _signInManager;
+
         // Injecting the fieService using repository patter. 
-        private readonly IFileService _fileService;
+        readonly IFileService _fileService;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
@@ -66,13 +63,12 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-           
+
             [StringLength(50)]
-            public  string FirstName { get; set; }
+            public string FirstName { get; set; }
 
             [StringLength(50)]
             public string LastName { get; set; }
-
 
             [Phone]
             [Display(Name = "Phone number")]
@@ -84,15 +80,12 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
             // The img itself  will be stored locally, this is why `ImageFile`
             // was not added to migration.
             public IFormFile ImageFile { get; set; }
-
-           
         }
 
-        private async Task LoadAsync(ApplicationUser user)
+        async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-
 
             Username = userName;
 
@@ -109,14 +102,15 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 ProfilePicture = user.ProfilePicture
-               
-                
+
+
             };
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -129,6 +123,7 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -141,9 +136,11 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+
             if (Input.PhoneNumber != phoneNumber)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
@@ -168,6 +165,7 @@ namespace FinalProjectMVC.Areas.Identity.Pages.Account.Manage
             if (Input.ImageFile != null)
             {
                 var result = _fileService.SaveImage(Input.ImageFile);
+
                 if (result.Item1 == 1)
                 {
                     // Storing current photo for deletion.

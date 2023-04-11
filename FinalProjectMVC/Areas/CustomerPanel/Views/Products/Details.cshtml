@@ -1,5 +1,12 @@
-﻿@using Microsoft.AspNetCore.Mvc.Rendering;
+﻿@using FinalProjectMVC.Areas.Identity.Data;
+@using FinalProjectMVC.Constants;
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@using Microsoft.AspNetCore.Identity;
 @model FinalProjectMVC.Areas.CustomerPanel.ViewModel.DetailedProductViewModel
+
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 
 @{
     ViewData["Title"] = $"Details of {Model.ProductName}";
@@ -19,7 +26,7 @@
                     <h2 class="fw-bold mb-4">@Model.ProductName</h2>
                     <hr>
                     <p class="mb-3">@Model.ProductDescription</p>
-                    <h4 class="fw-bold mb-3">Price: $@Model.ProductPrice</h4>
+                    <h4 class="fw-bold mb-3">Price: $@Math.Round(Model.ProductPrice, 2)</h4>
                     <h4 class="fw-bold mb-3">Count: @Model.Count</h4>
                     <!-- Choosing a seller section -->
                     <div class="mb-3">
@@ -35,9 +42,55 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex justify-content-end">
-                    <!-- Add to cart button -->
-                    <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#cartModal">Add to Cart</button>
+                    @if(User.IsInRole(Roles.Customer.ToString()))
+                    {
+                        <!-- Add to cart button -->
+                        <button type="button" class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#cartModal">Add to Cart</button>
+                        @* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
+                        <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
 
+
+                                <form id="cartForm" asp-area="CustomerPanel" asp-controller="Cart" asp-action="AddToCart" method="post">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="cartModalLabel">Add to Cart</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <!-- Quantity selection -->
+                                            <div class="mb-3">
+                                                <label for="quantitySelect" class="form-label">Choose a quantity:</label>
+                                                <select id="quantitySelect" name="count" class="form-select">
+                                                    @for (int i = 1; i <= Model.Count; i++)
+                                                    {
+                                                        <option value="@i">@i</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                            <!-- Other stuff here -->
+                                        </div>
+                                        <div class="modal-footer">
+                                            <!-- Confirm button -->
+                                            @* We are sending The `sellerId` in the form but while hidden.*@
+                                            <input type="hidden" name="sellerProductId" value="@Model.CurrentSellerProduct?.Id" />
+
+
+                                            <button type="submit" class="btn btn-primary">Confirm</button>
+                                            <!-- Cancel button -->
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+
+                            </div>
+                        </div>
+                    }
+                    else if (!SignInManager.IsSignedIn(User))
+                    {
+                        <p class="text-primary align-self-center me-2">Sign in to add items to cart</p>
+                    }
 
                     <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
                 </div>
@@ -48,47 +101,7 @@
     </div>
 </div>
 
-@* #CartModal is the id the gets called by the original button. using data-bs-target="#cartModal" *@
-<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
 
-
-        <form id="cartForm" asp-area="CustomerPanel" asp-controller="Cart" asp-action="AddToCart" method="post">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cartModalLabel">Add to Cart</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Quantity selection -->
-                    <div class="mb-3">
-                        <label for="quantitySelect" class="form-label">Choose a quantity:</label>
-                        <select id="quantitySelect" name="count" class="form-select">
-                            @for (int i = 1; i <= Model.Count; i++)
-                            {
-                                <option value="@i">@i</option>
-                            }
-                        </select>
-                    </div>
-                    <!-- Other stuff here -->
-                </div>
-                <div class="modal-footer">
-                    <!-- Confirm button -->
-
-                    @* We are sending The `sellerId` in the form but while hidden.*@
-                    <input type="hidden" name="sellerProductId" value="@Model.CurrentSellerProduct?.Id" />
-
-
-                    <button type="submit" class="btn btn-primary">Confirm</button>
-                    <!-- Cancel button -->
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </form>
-
-
-    </div>
-</div>
 
 <!-- Delete Confirmation Modal -->
 <form asp-action="Delete" asp-route-id="@Model?.CurrentSellerProduct?.Id" method="post">
@@ -106,54 +119,90 @@
 <!-- Reviews Section -->
 <div class="container py-5">
     <h3 class="fw-bold mb-4">Reviews</h3>
-    <div class="row">
-        <div class="col-lg-12 mb-3">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-body">
-                    <h5 class="card-title">mohamed</h5>
-                    <p class="card-text">the product was soooo bad </p>
-                    <p class="card-text"><small class="text-muted">20/2/2020</small></p>
-                </div>
-                <div class="card-footer d-flex justify-content-end">
-                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#reportModal" data-review-id="5">Report</button>
+    @if(User.IsInRole(Roles.Customer.ToString()))
+    {
+        <div class="row">
+            <div class="col-lg-12 mb-3">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-body">
+                        <h5 class="card-title">Create a New Review</h5>
+                        <form asp-action="Create" asp-controller="Reviews" asp-area="">
+                            <input type="text" hidden value="@Model.ProductId" name="ProductId" />
+                            <input type="text" hidden value="@Model.SellerId" name="SellerId" />
+                            <input type="text" hidden value="@User.GetUserId()" name="CustomerId" />
+                            <div class="mb-3">
+                                <label for="review-title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="review-title" name="Name" placeholder="Enter review title">
+                            </div>
+                            <div class="mb-3">
+                                <label for="review-description" class="form-label">Description</label>
+                                <textarea class="form-control" name="Description" id="review-description" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
+    @foreach (var item in Model.ReviewsList)
+    {
+        <div class="row">
+            <div class="col-lg-12 mb-3">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name | <small class="text-muted note-fontsize-10">@item.Customer.ApplicationUser.FirstName @item.Customer.ApplicationUser.LastName</small></h5>
+                        <p class="card-text">@item.Description</p>
+                        <p class="card-text"><small class="text-muted">@item.CreatedDate</small></p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-end">
+                        @if(item.CustomerId == User.GetUserId())
+                        {
+                            <form asp-action="Delete" asp-controller="Reviews" asp-area="">
+                                <input type="hidden" name="Id" value="@item.Id" />
+                                <input type="submit" value="Delete" class="btn btn-danger" />
+                            </form>
+                        } else
+                        {
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="@($"#reportModal{item.Id}")" data-review-id="@item.Id">Report</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form asp-action="Create" asp-area="AdminPanel" asp-controller="Reports" asp-route-ProductId="@Model.ProductId" asp-route-SellerId="@Model.SellerId" method="post">
+            <div class="modal fade" id="@($"reportModal{item.Id}")" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reportModalLabel">Report Review</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="reviewId" name="ReviewId" value="@item.Id">
+                            <input type="hidden" id="reviewId" name="ApplicationUserId" value="@User.GetUserId()">
+                            <label for="Name" class="form-label">Reason for reporting</label>
+                            <input name="Name" type="text" class="form-control" />
+                            <textarea id="Description" name="Description" class="form-control mt-2" rows="3"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
 </div>
 
 <!-- Report Review Modal -->
-<form asp-action="ReportReview" method="post">
-    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="reportModalLabel">Report Review</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="reviewId" name="reviewId" value="">
-                    <label for="reason" class="form-label">Reason for reporting</label>
-                    <textarea id="reason" name="reason" class="form-control" rows="3"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</form>
 
 
 
 <script>
-
-   
-
-
-
-        function redirectToView(sellerId) {
+    function redirectToView(sellerId) {
         // Get the productId from the model
         var productId = @Model.ProductId;
         // Construct the URL for the view with query parameters
@@ -162,6 +211,11 @@
 
         // Redirect to the URL
         window.location.href = url;
+    }
+
+
+    function createReport(reviewId) {
+        
     }
 
 </script>

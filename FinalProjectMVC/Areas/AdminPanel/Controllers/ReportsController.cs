@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using FinalProjectMVC.Areas.Identity.Data;
+﻿using FinalProjectMVC.Areas.AdminPanel.ViewModel;
 using FinalProjectMVC.Models;
 using FinalProjectMVC.RepositoryPattern;
-using FinalProjectMVC.Areas.AdminPanel.ViewModel;
-using Castle.Core.Resource;
-using FinalProjectMVC.Areas.SellerPanel.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 {
     [Area("AdminPanel")]
     public class ReportsController : Controller
     {
-       // private readonly ApplicationDbContext _context;
-        private readonly IRepository<Report> reportRepo;
-        private readonly IRepository<Review> reviewRepo;
+        // private readonly ApplicationDbContext _context;
+        readonly IRepository<Report> reportRepo;
+        readonly IRepository<Review> reviewRepo;
 
         public ReportsController(
             //ApplicationDbContext context,
@@ -27,15 +19,15 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             IRepository<Review> reviewRepo
             )
         {
-        //    _context = context;
+            //    _context = context;
             this.reportRepo = reportRepo;
             this.reviewRepo = reviewRepo;
         }
 
         // GET: AdminPanel/Reports
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
-
             var viewMode = new List<AdminReportsReviewsViewModel>();
 
             var ReportsList = (await reportRepo.GetAllAsync()).OrderBy(x => x.IsSolved).ToList();
@@ -58,24 +50,24 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                     SellerName = $"{Report.Review?.Seller?.ApplicationUser?.FirstName} {Report.Review?.Seller?.ApplicationUser?.LastName}",
                     CustomerId = Report.Review?.CustomerId ?? "",
                     CustomerName = $"{Report.Review?.Customer?.ApplicationUser?.FirstName} {Report.Review?.Customer?.ApplicationUser?.LastName}",
+                    ApplicationUserId = Report?.ApplicationUserId ?? "",
+                    ApplicationUserName = $"{Report?.ApplicationUser?.FirstName} {Report?.ApplicationUser?.LastName}",
                 }
-                ); ;
+                ); 
+;
             }
-
 
             return View(viewMode);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteReview(int Id)
         {
             // Find the report with the given ID
             var report = await reportRepo.GetDetailsAsync(Id);
-            if (report is null)
-            {
-                return NotFound();
-            }
+            if (report is null) return NotFound();
 
             // If the report is already marked as solved, return an error
             if (report.IsSolved)
@@ -104,6 +96,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
                 report.SolveDate = DateTime.Now;
 
                 report.Review.IsDeleted = true;
+
                 try
                 {
                     await reportRepo.UpdateAsync(Id, report);
@@ -121,14 +114,12 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> MarkAsSolved(int Id)
         {
             // Find the report with the given ID
             var report = await reportRepo.GetDetailsAsync(Id);
-            if (report is null)
-            {
-                return NotFound();
-            }
+            if (report is null) return NotFound();
 
             // If the report is already marked as solved, return an error
             if (report.IsSolved)
@@ -141,6 +132,7 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             {
                 report.IsSolved = true;
                 report.SolveDate = DateTime.Now;
+
                 try
                 {
                     await reportRepo.UpdateAsync(Id, report);
@@ -155,6 +147,26 @@ namespace FinalProjectMVC.Areas.AdminPanel.Controllers
             return RedirectToAction("Index");
         }
 
-      
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("/CreateReport")]
+        public async Task<IActionResult> Create(Report report, int ProductId, string SellerId)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await reportRepo.InsertAsync(report);
+                }
+                catch
+                {
+                    return BadRequest();
+                }
+
+                return RedirectToAction("Details", "Products", new { area = "CustomerPanel", Id = ProductId, SellerId });
+            }
+
+            return BadRequest();
+        }
     }
 }

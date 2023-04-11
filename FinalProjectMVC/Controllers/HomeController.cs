@@ -1,38 +1,72 @@
 ﻿using FinalProjectMVC.Areas.Identity.Data;
-using FinalProjectMVC.Models;
-using Microsoft.AspNetCore.Authorization;
+using FinalProjectMVC.Areas.SellerPanel.Models;
+using FinalProjectMVC.RepositoryPattern;
+using FinalProjectMVC.ViewModels;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace FinalProjectMVC.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ILogger<HomeController> _logger;
+        readonly ApplicationDbContext _context;
+        readonly IRepository<Product> productRepo;
+        readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IRepository<Product> productRepo)
         {
             _logger = logger;
             _context = context;
+            this.productRepo = productRepo;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            ViewBag.Categories = _context.Categories.ToList();
-            ViewBag.Brands = _context.Brands.ToList();
+            var products = (await productRepo.GetAllAsync()).Where(p => p.SellerProducts.Count > 0);
+
+            var viewModel = new FrontPageViewModel()
+            {
+                BestSelllerProducts = products.Take(4).ToList(),
+                FeaturedProducts = products.Skip(4).Take(4).ToList(),
+            };
+
+            return View(viewModel);
+        }
+
+        public IActionResult Privacy() => View();
+
+        [Route("Home/Error")]
+        public IActionResult Error(int? statusCode = null)
+        {
+            string errorMessage;
+
+            switch (statusCode)
+            {
+                case 400:
+                    errorMessage = "Bad Request";
+                    break;
+                case 401:
+                    errorMessage = "Unauthorized";
+                    break;
+                case 403:
+                    errorMessage = "Forbidden";
+                    break;
+                case 404:
+                    errorMessage = "Page Not Found";
+                    break;
+                case 500:
+                    errorMessage = "Internal Server Error";
+                    break;
+                default:
+                    var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+                    var exception = exceptionHandlerPathFeature?.Error;
+                    errorMessage = exception?.Message;
+                    break;
+            }
+
+            ViewData["StatusCode"] = statusCode;
+            ViewData["ErrorMessage"] = errorMessage;
             return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
